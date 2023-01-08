@@ -1,0 +1,65 @@
+{
+  "allFiles": [
+    {
+      "file": "/data/data/com.itsaky.androidide/files/home/PlatformerReact/android/build.gradle",
+      "selection": {
+        "end": {
+          "column": 0,
+          "index": -1,
+          "line": 0
+        },
+        "start": {
+          "column": 0,
+          "index": -1,
+          "line": 0
+        }
+      }
+    },
+    {
+      "file": "/data/data/com.itsaky.androidide/files/home/PlatformerReact/android/gradle.properties",
+      "selection": {
+        "end": {
+          "column": 0,
+          "index": -1,
+          "line": 0
+        },
+        "start": {
+          "column": 0,
+          "index": -1,
+          "line": 0
+        }
+      }
+    },
+    {
+      "file": "/data/data/com.itsaky.androidide/files/home/PlatformerReact/android/settings.gradle",
+      "selection": {
+        "end": {
+          "column": 0,
+          "index": -1,
+          "line": 0
+        },
+        "start": {
+          "column": 0,
+          "index": -1,
+          "line": 0
+        }
+      }
+    },
+    {
+      "file": "/data/data/com.itsaky.androidide/files/home/PlatformerReact/android/app/build.gradle",
+      "selection": {
+        "end": {
+          "column": 0,
+          "index": -1,
+          "line": 0
+        },
+        "start": {
+          "column": 0,
+          "index": -1,
+          "line": 0
+        }
+      }
+    }
+  ],
+  "selectedFile": "/data/data/com.itsaky.androidide/files/home/PlatformerReact/android/app/build.gradle"
+}
