@@ -1,0 +1,14 @@
+{
+  colors: {
+    primarySurface: "hsl(290, 100%, 55%)",
+    surfaceLight: "rgba(75, 75, 75, 0.1)",
+    background: "#11071F",
+    textSecond: "#dedede"
+  },
+  
+  sizes: {
+    paddingSmall: 10,
+    paddingMedium: 20,
+    paddingLarge: 50
+  }
+}
