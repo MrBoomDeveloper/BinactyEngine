@@ -1,4 +1,4 @@
-import { StyleSheet, View, Image, Text } from "react-native";
+import { StatusBar, StyleSheet, View, Image, Text } from "react-native";
 
 import { sizes, colors } from "../util/variables";
 
@@ -27,7 +27,8 @@ const styles = StyleSheet.create({
   avatar: {
     width: 38,
     height: 38,
-    borderRadius: 2
+    borderRadius: 2,
+    marginLeft: StatusBar.currentHeight * 2
   },
   
   stats: {
