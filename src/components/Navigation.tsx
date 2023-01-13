@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { StatusBar, StyleSheet, ScrollView, View, Text, Image, Pressable } from "react-native";
-import { sizes, colors } from "../util/variables";
+import { paddings, colors } from "../util/variables";
 
 interface navigationItem {
   icon: string,
@@ -34,7 +34,8 @@ function Navigation({items}: navigationItem[]) {
 const styles = StyleSheet.create({
   navigation: {
     height: "100%",
-    padding: sizes.paddingSmall,
+    padding: paddings.small,
+    paddingRight: paddings.medium,
     backgroundColor: colors.surfaceLight
   },
   
@@ -44,8 +45,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginLeft: StatusBar.currentHeight,
     fontSize: 15,
-    padding: 5,
-    borderRadius: 5
+    padding: paddings.small,
+    paddingRight: 25,
+    borderRadius: 10
   },
   
   itemActive: {
