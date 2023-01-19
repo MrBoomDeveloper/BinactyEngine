@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
   header: {
     display: "flex",
     flexDirection: "row",
-    padding: sizes.paddingMedium,
+    padding: sizes.medium,
     backgroundColor: colors.surfaceLight
   },
   
@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 2,
-    marginLeft: StatusBar.currentHeight * 2
+    marginLeft: StatusBar.currentHeight
   },
   
   stats: {

@@ -1,17 +1,29 @@
-import { StatusBar, StyleSheet, Text, View, Image, Alert } from 'react-native';
-import Header from "./src/components/Header";
-import Navigation, { navigationItem } from "./src/components/Navigation";
+import React from "react";
+import { StatusBar, Pressable, StyleSheet, Text, TextInput, View, Image, Alert } from 'react-native';
 import { colors, sizes } from "./src/util/variables.json";
+import Header from "./src/components/Header";
+import Navigation from "./src/components/Navigation";
+import Button from "./src/components/Button";
 
-const navItems: navigationItems[] = [
-  { label: "Home", key: "home", icon: "./src/static/ui/ic_home.png" },
-  { label: "Character", key: "me", icon: "./src/static/ui/ic_me.png" },
-  { label: "Season Pass", key: "pass", icon: "./src/static/ui/ic_pass.png" },
-  { label: "Shop", key: "shop", icon: "./src/static/ui/ic_shop.png" },
-  { label: "Changelog", key: "logs", icon: "./src/static/ui/ic_changelog.png" }
-]
+const navItems = [{ 
+  label: "Home", key: "home",
+  icon: { active: require("./src/static/icon/home_active.png"), inactive: require("./src/static/icon/home.png") }
+}, { 
+  label: "Character", key: "me",
+  icon: "./src/static/ui/ic_me.png"
+}, {
+  	label: "Season Pass", key: "pass",
+  	icon: "./src/static/ui/ic_pass.png"
+}, {
+  	label: "Shop", key: "shop",
+  	icon: { active: require("./src/static/icon/shop_active.png"), inactive: require("./src/static/icon/shop.png") }
+}, {
+	label: "Changelog", key: "logs",
+	icon: "./src/static/ui/ic_changelog.png"
+}];
 
 function App() {
+  return <TextInput placeholder="Your nickname" value="Player" />;
   return (
     <View style={styles.homeScreen}>
       <StatusBar hidden={true}/>
@@ -24,8 +36,9 @@ function App() {
             <View style={styles.homeMainColumn}>
               <Image source={require("./src/static/banner/gamemode/reznya.jpg")} style={styles.homeBanner} />
               <Text style={styles.title}>Demo level</Text>
-              <Text style={styles.button}>Play!</Text>
-              <Text style={styles.button}>Change gamemode</Text>
+              <TextInput placeholder="Your nickname" value="Player" />
+              <Button label="Play!" />
+              <Button label="Change gamemode" />
             </View>
           </View>
         </View>
@@ -66,26 +79,13 @@ const styles = StyleSheet.create({
   homeBanner: {
     width: "100%",
     height: 125,
-    backgroundColor: "red"
+    backgroundColor: "black"
   },
   
   title: {
     fontSize: 20,
     padding: 10,
     color: "white"
-  },
-  
-  button: {
-    width: "100%",
-    color: "white",
-    backgroundColor: "orange",
-    marginBottom: 5,
-    padding: 10,
-    fontSize: 15,
-    display: "flex",
-    justifyContent: 'center',
-    alignItems: "center",
-    textAlign: "center"
   }
 });
 

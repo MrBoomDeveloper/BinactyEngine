@@ -1,12 +1,6 @@
 import { useState } from "react";
 import { StatusBar, StyleSheet, ScrollView, View, Text, Image, Pressable } from "react-native";
-import { paddings, colors } from "../util/variables";
-
-interface navigationItem {
-  icon: string,
-  label: string,
-  key: string
-}
+import { sizes, colors } from "../util/variables";
 
 function NavigationItem({icon, label, onSelect, isSelected}) {
   const style = isSelected 
@@ -14,13 +8,13 @@ function NavigationItem({icon, label, onSelect, isSelected}) {
     : {...styles.item, ...styles.itemInactive};
   return (
     <Pressable onPress={() => onSelect(label)} style={style}>
-      <Image style={styles.itemIcon} source={{uri: icon}} />
-      <Text style={styles.itemLabel}>{label}</Text>
+      <Image style={styles.itemIcon} source={isSelected ? (icon.active || icon.inactive) : (icon.inactive || icon.active)}/>
+      <Text style={isSelected ? styles.itemLabel : {...styles.itemLabel, ...styles.itemLabelActive}}>{label}</Text>
     </Pressable>
   );
 }
 
-function Navigation({items}: navigationItem[]) {
+export default function Navigation({items}: navigationItem[]) {
   const [select, setSelected] = useState(items[0].label);
   return (
     <View style={{height: "100%"}}>
@@ -34,8 +28,8 @@ function Navigation({items}: navigationItem[]) {
 const styles = StyleSheet.create({
   navigation: {
     height: "100%",
-    padding: paddings.small,
-    paddingRight: paddings.medium,
+    paddingTop: sizes.big,
+    paddingRight: sizes.big,
     backgroundColor: colors.surfaceLight
   },
   
@@ -44,8 +38,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginLeft: StatusBar.currentHeight,
-    fontSize: 15,
-    padding: paddings.small,
+    padding: sizes.medium,
     paddingRight: 25,
     borderRadius: 10
   },
@@ -61,13 +54,18 @@ const styles = StyleSheet.create({
   },
   
   itemIcon: {
-    width: 50,
-    height: 50
+  	marginRight: sizes.medium,
+    width: 23,
+    height: 23
   },
   
   itemLabel: {
-    color: "white"
+    color: "white",
+    fontSize: 15,
+    fontWeight: "500"
+  },
+  
+  itemLabelActive: {
+  	fontWeight: "400"
   }
 });
-
-export default Navigation;

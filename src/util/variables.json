@@ -7,8 +7,10 @@
   },
   
   sizes: {
-    paddingSmall: 10,
-    paddingMedium: 20,
-    paddingLarge: 50
+    tiny: 2,
+    small: 5,
+    medium: 10,
+    big: 15,
+    large: 25
   }
 }
