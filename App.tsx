@@ -1,29 +1,17 @@
 import React from "react";
-import { StatusBar, Pressable, StyleSheet, Text, TextInput, View, Image, Alert } from 'react-native';
+import { StatusBar, Pressable, StyleSheet, Text, View, Image, NativeModules } from 'react-native';
 import { colors, sizes } from "./src/util/variables.json";
 import Header from "./src/components/Header";
 import Navigation from "./src/components/Navigation";
 import Button from "./src/components/Button";
+const { GameNative } = NativeModules;
+//import GameNative from "./src/GameNative";
+import { navItems } from "./src/data/HomeData";
 
-const navItems = [{ 
-  label: "Home", key: "home",
-  icon: { active: require("./src/static/icon/home_active.png"), inactive: require("./src/static/icon/home.png") }
-}, { 
-  label: "Character", key: "me",
-  icon: "./src/static/ui/ic_me.png"
-}, {
-  	label: "Season Pass", key: "pass",
-  	icon: "./src/static/ui/ic_pass.png"
-}, {
-  	label: "Shop", key: "shop",
-  	icon: { active: require("./src/static/icon/shop_active.png"), inactive: require("./src/static/icon/shop.png") }
-}, {
-	label: "Changelog", key: "logs",
-	icon: "./src/static/ui/ic_changelog.png"
-}];
+const player = GameNative.getPlayerData("MrBoomDev");
+console.log(player);
 
 function App() {
-  return <TextInput placeholder="Your nickname" value="Player" />;
   return (
     <View style={styles.homeScreen}>
       <StatusBar hidden={true}/>
@@ -36,9 +24,11 @@ function App() {
             <View style={styles.homeMainColumn}>
               <Image source={require("./src/static/banner/gamemode/reznya.jpg")} style={styles.homeBanner} />
               <Text style={styles.title}>Demo level</Text>
-              <TextInput placeholder="Your nickname" value="Player" />
-              <Button label="Play!" />
-              <Button label="Change gamemode" />
+              
+              <View style={styles.actions}>
+                <Button label="Play!" onPress={() => GameNative.play(0)}/>
+                <Button label="Change gamemode" />
+              </View>
             </View>
           </View>
         </View>
@@ -86,6 +76,10 @@ const styles = StyleSheet.create({
     fontSize: 20,
     padding: 10,
     color: "white"
+  },
+  
+  actions: {
+    padding: 10
   }
 });
 
