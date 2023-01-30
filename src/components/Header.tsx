@@ -1,15 +1,18 @@
 import { StatusBar, StyleSheet, View, Image, Text } from "react-native";
-
 import { sizes, colors } from "../util/variables";
 
-function Header() {
+const avatars = {
+	klarrie: require("../static/avatar/premium.jpg")
+}
+
+function Header({nick, level, avatar}) {
   return (
     <View style={styles.header}>
-      <Image style={styles.avatar} source={require("../static/avatar/premium.jpg")}/>
+      <Image style={styles.avatar} source={avatars[avatar]}/>
       <View style={styles.stats}>
-        <Text style={styles.nicknameLabel}>MrBoomDev</Text>
+        <Text style={styles.nicknameLabel}>{nick}</Text>
         <View>
-          <Text style={styles.levelLabel}>Lvl.1</Text>
+          <Text style={styles.levelLabel}>Lvl.{level}</Text>
         </View>
       </View>
     </View>

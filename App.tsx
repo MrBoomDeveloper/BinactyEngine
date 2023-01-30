@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { StatusBar, Pressable, StyleSheet, Text, View, Image, NativeModules } from 'react-native';
 import { colors, sizes } from "./src/util/variables.json";
 import Header from "./src/components/Header";
@@ -8,33 +8,33 @@ const { GameNative } = NativeModules;
 //import GameNative from "./src/GameNative";
 import { navItems } from "./src/data/HomeData";
 
-const player = GameNative.getPlayerData("MrBoomDev");
-console.log(player);
-
 function App() {
-  return (
-    <View style={styles.homeScreen}>
-      <StatusBar hidden={true}/>
-      <Header />
-      
-      <View style={styles.dualContainer}>
-        <Navigation items={navItems} />
-        <View style={styles.pageScroller}>
-          <View style={styles.home}>
-            <View style={styles.homeMainColumn}>
-              <Image source={require("./src/static/banner/gamemode/reznya.jpg")} style={styles.homeBanner} />
-              <Text style={styles.title}>Demo level</Text>
-              
-              <View style={styles.actions}>
-                <Button label="Play!" onPress={() => GameNative.play(0)}/>
-                <Button label="Change gamemode" />
-              </View>
-            </View>
-          </View>
-        </View>
-      </View>
-    </View>
-  );
+	const [myData, setMyData] = useState();
+	GameNative.getMyData(setMyData);
+	
+	const setupNick = new Promise().then((resolved, rejected) => {
+		console.log(resolved + " " + rejected);
+	});
+	
+	return (<View style={styles.homeScreen}>
+		<StatusBar hidden={true}/>
+		<Header {...myData} />
+		<View style={styles.dualContainer}>
+			<Navigation items={navItems} />
+			<View style={styles.pageScroller}>
+				<View style={styles.home}>
+					<View style={styles.homeMainColumn}>
+						<Image source={require("./src/static/banner/gamemode/reznya.jpg")} style={styles.homeBanner} />
+						<Text style={styles.title}>Demo level</Text>
+						<View style={styles.actions}>
+							<Button label="Play!" onPress={() => GameNative.play(0)}/>
+							<Button label="Change gamemode" onPress={() => GameNative.setupNick(setupNick) } />
+						</View>
+					</View>
+				</View>
+			</View>
+		</View>
+	</View>);
 };
 
 const styles = StyleSheet.create({
