@@ -1,16 +1,18 @@
 {
-  colors: {
-    primarySurface: "hsl(290, 100%, 55%)",
-    surfaceLight: "rgba(75, 75, 75, 0.1)",
-    background: "#11071F",
-    textSecond: "#dedede"
-  },
-  
-  sizes: {
-    tiny: 2,
-    small: 5,
-    medium: 10,
-    big: 15,
-    large: 25
-  }
+	colors: {
+		primary: "#da33ff",
+		primarySurface: "hsl(290, 100%, 55%)",
+		secondary: "#E56EFF",
+		surfaceLight: "rgba(75, 75, 75, 0.1)",
+		background: "#11071F",
+		textSecond: "#dedede"
+	},
+	
+	sizes: {
+		tiny: 2,
+		small: 5,
+		medium: 10,
+		big: 15,
+		large: 25
+	}
 }
