@@ -9,8 +9,8 @@ interface ButtonInterface {
 	rippleColor?: string
 }
 
-export default function Button({label, icon, styleOuter, borderDisabled, rippleColor, ...props}: ButtonInterface) {
-	let ripple = {color: (rippleColor || colors.primary)};
+export default function Button({label, icon, styleOuter, borderDisabled, rippleColor = colors.primary, ...props}: ButtonInterface) {
+	let ripple = { color: rippleColor };
 	
 	let imageStyle = styles.icon;
 	if(!label) {
@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
 		color: colors.secondary,
 		padding: 10,
 		fontSize: 15,
-		fontWeight: 500,
+		fontWeight: "500",
 		textAlign: "center"
 	},
 	

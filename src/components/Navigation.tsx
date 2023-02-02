@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { StatusBar, StyleSheet, ScrollView, View, Text, Image, Pressable } from "react-native";
+import { StatusBar, StyleSheet, ScrollView, View, Text, Image, Pressable, TouchableOpacity } from "react-native";
 import { sizes, colors } from "../util/variables";
 
 function NavigationItem({icon, label, onSelect, isSelected}) {
@@ -7,10 +7,10 @@ function NavigationItem({icon, label, onSelect, isSelected}) {
     ? {...styles.item, ...styles.itemActive} 
     : {...styles.item, ...styles.itemInactive};
   return (
-    <Pressable onPress={() => onSelect(label)} style={style}>
+    <TouchableOpacity onPress={() => onSelect(label)} style={style}>
       <Image style={styles.itemIcon} source={isSelected ? (icon.active || icon.inactive) : (icon.inactive || icon.active)}/>
       <Text style={isSelected ? styles.itemLabel : {...styles.itemLabel, ...styles.itemLabelActive}}>{label}</Text>
-    </Pressable>
+    </TouchableOpacity>
   );
 }
 
