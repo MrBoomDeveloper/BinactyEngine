@@ -26,7 +26,7 @@ export default function Header({ player = {}, ...props }) {
 				</View>
 			</View>
 			<View style={styles.actions}>
-				<Button icon={require("../static/icon/settings.png")} borderDisabled={true} rippleColor="rgba(255, 255, 255, .4)" />
+				<Button icon={require("../static/icon/settings.png")} borderDisabled={true} rippleColor="rgba(255, 255, 255, .2)" />
 			</View>
 		</View>
 	);

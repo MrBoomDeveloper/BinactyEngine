@@ -1,16 +1,18 @@
-export const navItems = [{ 
-  label: "Home", key: "home",
-  icon: { active: require("../static/icon/home_active.png"), inactive: require("../static/icon/home.png") }
-}, { 
-  label: "Character", key: "me",
-  icon: "../static/ui/ic_me.png"
-}, {
-  	label: "Skills", key: "skills",
-  	icon: "../static/ui/ic_skills.png"
-}, {
-  	label: "Shop", key: "shop",
-  	icon: { active: require("../static/icon/shop_active.png"), inactive: require("../static/icon/shop.png") }
-}, {
-	label: "Changelog", key: "logs",
-	icon: "../static/ui/ic_changelog.png"
-}];
+export const NavItems = [
+	{
+		label: "Home", key: "home", id: "home",
+		icon: { active: require("@static/icon/home_active.png"), inactive: require("@static/icon/home.png") }
+	}, {
+		label: "Skills", key: "skills", id: "skills",
+		icon: { active: require("@static/icon/power_active.png"), inactive: require("@static/icon/power.png") }
+	}, {
+		label: "Shop", key: "shop", id: "shop",
+		icon: { active: require("@static/icon/shop_active.png"), inactive: require("@static/icon/shop.png") }
+	}, {
+		label: "News", key: "logs", id: "logs",
+		icon: require("@static/icon/news.png")
+	}, {
+		label: "About", key: "about", id: "about",
+		icon: { active: require("@static/icon/info_active.png"), inactive: require("@static/icon/info.png") }
+	}
+];
