@@ -9,7 +9,7 @@ interface ButtonInterface {
 	rippleColor?: string
 }
 
-export default function Button({label, icon, styleOuter, borderDisabled, rippleColor = colors.primary, ...props}: ButtonInterface) {
+export default function Button({label, icon, styleOuter, style, borderDisabled, rippleColor = colors.primary, ...props}: ButtonInterface) {
 	let ripple = { color: rippleColor };
 	
 	let imageStyle = styles.icon;
@@ -26,7 +26,7 @@ export default function Button({label, icon, styleOuter, borderDisabled, rippleC
 			style={pressableStyle}
 			android_ripple={ripple}>
 			
-			{icon && <Image source={icon} style={imageStyle} />} 
+			{icon && <Image source={icon} style={{...imageStyle, ...style}} />} 
 			{label && <Text style={styles.label}>{label}</Text>}
 			
 		</Pressable>

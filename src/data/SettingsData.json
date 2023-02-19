@@ -1,0 +1,29 @@
+[
+	{
+		title: "Screen inset", id: "inset",
+		description: "Padding between screen border and ui elements.",
+		type: "number", initial: 50
+	}, {
+		title: "Music volume", id: "musicVolume",
+		type: "number", initial: 100
+	}, {
+		title: "Sounds volume", id: "soundsVolume",
+		type: "number", initial: 100
+	}, {
+		title: "Allow crashlytics", id: "crashlytics",
+		description: "This thing prompts the developee, when you found an error.",
+		type: "boolean", initial: true, restart: "true"
+	}, {
+		title: "Show gameplay debug information", id: "debug",
+		description: "While playing you'll see the current FPS, Delta time between frames, current player position and etc.",
+		type: "boolean", initial: false
+	}, {
+		title: "Enable Stage Debug rendering", id: "debugStage",
+		description: "Draw colissions of ui elements.",
+		type: "boolean", initial: false
+	}, {
+		title: "Enable Box2D Debug Renderer", id: "debugRenderer",
+		description: "Show bodies colissions.",
+		type: "boolean", initial: false
+	}
+];

@@ -1,6 +1,6 @@
 import React from "react";
 import { StatusBar, StyleSheet, View, Image, Text } from "react-native";
-import Button from "./Button";
+import { Button } from "@components";
 import { sizes, colors } from "../util/variables";
 
 const avatars = {
@@ -13,11 +13,9 @@ interface playerDataBasic {
 	level: number
 }
 
-export default function Header({ player = {}, ...props }) {
-	const { nick = "Player", level = 1, avatar = "klarrie" } = player;
-	
+function Profile({nick, level, avatar}) {
 	return (
-		<View style={styles.header}>
+		<View style={styles.profile}>
 			<Image style={styles.avatar} source={avatars[avatar]}/>
 			<View style={styles.stats}>
 				<Text style={styles.nicknameLabel}>{nick}</Text>
@@ -25,8 +23,24 @@ export default function Header({ player = {}, ...props }) {
 					<Text style={styles.levelLabel}>Lvl.{level}</Text>
 				</View>
 			</View>
+		</View>
+	);
+}
+
+export default function Header({ title, actions, onClose, player}) {
+	return (
+		<View style={styles.header}>
+			{onClose && <Button styleOuter={styles.back} style={styles.backIcon} icon={require("@static/icon/back.png")} borderDisabled={true} rippleColor="rgba(255, 255, 255, .2)" onPress={onClose} />}
+			{title && <Text style={styles.title}>{title}</Text>}
+			{player && Profile(player)}
 			<View style={styles.actions}>
-				<Button icon={require("../static/icon/settings.png")} borderDisabled={true} rippleColor="rgba(255, 255, 255, .2)" />
+				{actions && actions.map(item => (
+					<Button key={item.key}
+						onPress={item.onPress}
+						icon={item.icon}
+						borderDisabled={true}
+						rippleColor="rgba(255, 255, 255, .2)" />
+				))}
 			</View>
 		</View>
 	);
@@ -37,7 +51,27 @@ const styles = StyleSheet.create({
 		display: "flex",
 		flexDirection: "row",
 		padding: sizes.medium,
-		backgroundColor: colors.surfaceLight
+		backgroundColor: colors.surfaceLight,
+		height: 60,
+		alignItems: "center"
+	},
+	
+	back: {
+		marginLeft: 5,
+		marginRight: 5,
+		padding: 2
+	},
+	
+	backIcon: {
+		width: 20,
+		height: 20
+	},
+	
+	title: {
+		color: "white",
+		fontSize: 15,
+		fontWeight: "500",
+		marginLeft: 10
 	},
 	
 	avatar: {
@@ -51,13 +85,19 @@ const styles = StyleSheet.create({
 		height: "100%",
 		marginLeft: 14,
 		padding: 1,
-		display: "flex"
+		display: "flex",
+		justifyContent: "center"
+	},
+	
+	profile: {
+		display: "flex",
+		flexDirection: "row"
 	},
 	
 	nicknameLabel: {
 		color: "white",
 		fontSize: 15,
-		flexGrow: 1
+		marginBottom: 5
 	},
 	
 	levelLabel: {
@@ -69,7 +109,6 @@ const styles = StyleSheet.create({
 	actions: {
 		paddingRight: 20,
 		flexGrow: 1,
-		height: "100%",
 		alignItems: "flex-end"
 	}
 });

@@ -5,8 +5,13 @@ export default function News() {
 	const [news, setNews] = useState("");
 	
 	const loadNews = async () => {
-		const result = await fetch("https://mrboomdev.ru");
-		const text = await result.text();
+		let text;
+		try {
+			const result = await fetch("https://mrboomdev.ru");
+			text = await result.text();
+		} catch(e) {
+			text = "Failed to connect our servers. Please try again later."
+		}
 		setNews(text);
 	}
 	
