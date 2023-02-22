@@ -78,7 +78,8 @@ function Controller({id, type, defaultValue, onUpdate}) {
 
 const styles = StyleSheet.create({
 	list: {
-		paddingTop: 15
+		paddingTop: 15,
+		paddingBottom: 50
 	},
 	
 	setting: {
