@@ -59,6 +59,7 @@ function Controller({id, type, defaultValue, onUpdate}) {
 		}
 	}
 	
+	
 	switch(type) {
 		case "boolean":
 			return (

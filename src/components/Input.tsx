@@ -1,9 +1,11 @@
-import { useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { View, Animated, Text, TextInput, StyleSheet } from "react-native";
 import { colors } from "@util/variables";
 
 export default function Input({error, onChangeText, style, ...props}) {
 	const animation = useRef(new Animated.Value(0));
+	const input = useRef();
+	const [isFocus, setIsFocus] = useState(false);
 	
 	useEffect(() => {
 		Animated.timing(animation.current, {
@@ -17,13 +19,17 @@ export default function Input({error, onChangeText, style, ...props}) {
 		animation.current = new Animated.Value(error == "" ? 0 : 1);
 	}, [error]);
 	
+	const borderColor = isFocus ? colors.primary : "rgba(250, 250, 250, .1)";
 	return (
-		<View style={[styles.holder, style]}>
+		<View style={{...styles.holder, ...style, borderColor}}>
 			<Animated.View style={{...styles.error, opacity: animation.current}}>
 				<Text style={styles.errorLabel}>{error}</Text>
 			</Animated.View>
-			<TextInput style={styles.text}
+			<TextInput ref={input}
+				style={styles.text}
 				onChangeText={onChangeText}
+				onFocus={() => setIsFocus(true)}
+				onBlur={() => setIsFocus(false)}
 				placeholder={String(props.placeholder || props.defaultValue)}
 				defaultValue={String(props.defaultValue)}
 				keyboardType={"number-pad"} />
@@ -40,8 +46,7 @@ const styles = StyleSheet.create({
 		height: 45,
 		minWidth: 75,
 		position: "relative",
-		borderWidth: 1,
-		borderColor: "rgba(250, 250, 250, .1)"
+		borderWidth: 1
 	},
 	
 	text: {

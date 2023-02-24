@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
 import { StyleSheet, ScrollView, View, Text } from "react-native";
 
+const url: string = "https://github.com/MrBoomDeveloper/platformer/releases.atom";
+
 export default function News() {
 	const [news, setNews] = useState("");
 	
 	const loadNews = async () => {
 		let text;
 		try {
-			const result = await fetch("https://mrboomdev.ru");
+			const result = await fetch(url);
 			text = await result.text();
 		} catch(e) {
 			text = "Failed to connect our servers. Please try again later."
