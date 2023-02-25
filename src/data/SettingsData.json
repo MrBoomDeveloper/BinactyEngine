@@ -18,12 +18,12 @@
 		description: "While playing you'll see the current FPS, Delta time between frames, current player position and etc.",
 		type: "boolean", initial: false
 	}, {
-		title: "Enable Stage Debug rendering", id: "debugStage",
-		description: "Draw colissions of ui elements.",
-		type: "boolean", initial: false
-	}, {
 		title: "Enable Box2D Debug Renderer", id: "debugRenderer",
 		description: "Show bodies colissions.",
+		type: "boolean", initial: false
+	}, {
+		title: "Disable Box2D Lights", id: "debugRaysDisable",
+		description: "Turn off all the lights in the game",
 		type: "boolean", initial: false
 	}
 ];
