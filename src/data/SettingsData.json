@@ -11,7 +11,7 @@
 		type: "number", initial: 100
 	}, {
 		title: "Allow crashlytics", id: "crashlytics",
-		description: "This thing prompts the developee, when you found an error.",
+		description: "This thing prompts the developer, when you found an error.",
 		type: "boolean", initial: true, restart: "true"
 	}, {
 		title: "Show gameplay debug information", id: "debug",
@@ -23,7 +23,7 @@
 		type: "boolean", initial: false
 	}, {
 		title: "Disable Box2D Lights", id: "debugRaysDisable",
-		description: "Turn off all the lights in the game",
+		description: "Turn off all the lights in the game.",
 		type: "boolean", initial: false
 	}
 ];

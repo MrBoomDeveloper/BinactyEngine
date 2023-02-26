@@ -1,9 +1,12 @@
 import { useRef, useEffect, useState } from "react";
-import { View, Image, Text, StyleSheet, Modal } from "react-native";
+import { ScrollView, View, Image, Text, StyleSheet, Modal } from "react-native";
 import { Button, Chips } from "@components";
 import { Gamemodes } from "@screens";
 import { sizes, colors } from "@util/variables";
 import GameNative from "../../GameNative";
+import Character from "./home/Character";
+import Missions from "./home/Missions";
+import Packs from "./home/Packs";
 
 export default function Home() {
 	const [gamemodesVisibility, setGamemodesVisbility] = useState(false);
@@ -12,20 +15,28 @@ export default function Home() {
 	return (
 		<View style={styles.home}>
 			<Gamemodes visible={gamemodesVisibility} onClose={() => setGamemodesVisbility(false)} onSelect={selectGamemode} />
+			<ScrollView 
+			  style={styles.overview}
+			  horizontal={true}
+			  overScrollMode="always">
 			
-			<View style={styles.overview}>
-				<View style={styles.mainColumn}>
+				<View style={{...styles.card, width: 275}}>
 					<Image source={require("@static/banner/gamemode/banner.jpg")} style={styles.banner} />
 					<View style={styles.info}>
 						<Text style={styles.title}>Demo level</Text>
 						<Text style={styles.description}>Hello there! Welcome to the "ActionPlatformer"! (The name will be changed in the future ._.)</Text>
 					</View>
 					<View style={styles.actions}>
-						<Button label="Play!" onPress={() => GameNative.play(currentGamemode)} styleOuter={styles.button} />
+						<Button label="Play!" onPress={() => GameNative.play("idk")} styleOuter={styles.button} />
 						<Button label="Change gamemode" style={styles.button} onPress={() => setGamemodesVisbility(true)} />
 					</View>
 				</View>
-			</View>
+				
+				<Character />
+				<Missions />
+				<Packs />
+				
+			</ScrollView>
 		</View>
 	);
 }
@@ -33,31 +44,20 @@ export default function Home() {
 const styles = StyleSheet.create({
 	home: {
 		width: "100%",
-		flexGrow: 1,
-		position: "relative"
-	},
-	
-	overview: {
-		position: "absolute",
-		top: 0,
-		bottom: 60,
-		left: 0,
-		right: 0,
-		padding: sizes.large,
-		display: "flex"
-	},
-	
-	gamemodes: {
-		position: "absolute",
+		justifyContent: "center",
 		flexGrow: 1
 	},
 	
-	mainColumn: {
-		width: 275,
-		height: "100%",
-		flexGrow: 1,
+	overview: {
+		height: "90%",
+		maxHeight: 500,
+		paddingHorizontal: sizes.large
+	},
+	
+	card: {
 		borderRadius: 12,
-		backgroundColor: "#190A29"
+		backgroundColor: "#190A29",
+		marginRight: 20
 	},
 	
 	banner: {

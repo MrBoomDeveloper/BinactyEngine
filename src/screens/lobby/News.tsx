@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { StyleSheet, ScrollView, View, Text } from "react-native";
+import { StyleSheet, ScrollView, FlatList, View, Text } from "react-native";
 
 const url: string = "https://github.com/MrBoomDeveloper/platformer/releases.atom";
 
@@ -7,14 +7,10 @@ export default function News() {
 	const [news, setNews] = useState("");
 	
 	const loadNews = async () => {
-		let text;
-		try {
-			const result = await fetch(url);
-			text = await result.text();
-		} catch(e) {
-			text = "Failed to connect our servers. Please try again later."
-		}
-		setNews(text);
+		fetch(url)
+			.then(result => result.text())
+			.then(setNews)
+			.catch(setNews);
 	}
 	
 	useEffect(() => {
@@ -22,10 +18,15 @@ export default function News() {
 	}, []);
 	
 	return (
-		<ScrollView style={styles.screen}>
-			<Text style={styles.title}>Latest news</Text>
-			<Text>{news}</Text>
-		</ScrollView>
+		<View style={styles.screen}>
+			<FlatList ListHeaderComponent={Header} />
+		</View>
+	);
+}
+
+function Header() {
+	return (
+		<Text style={styles.header}>Recent Updates</Text>
 	);
 }
 
@@ -34,7 +35,7 @@ const styles = StyleSheet.create({
 		padding: 25
 	},
 	
-	title: {
+	header: {
 		color: "white",
 		fontSize: 20,
 		fontWeight: "500",

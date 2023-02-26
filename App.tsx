@@ -12,7 +12,6 @@ const Wip = () => {
 	return (
 		<View style={{
 			width: "100%",
-			height: "100%",
 			flexGrow: 1,
 			display: "flex",
 			alignItems: "center",

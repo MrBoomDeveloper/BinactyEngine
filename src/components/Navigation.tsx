@@ -29,7 +29,7 @@ export default function Navigation({items, onSelect}) {
 	}
 	
 	return (
-		<View style={{height: "100%"}}>
+		<View style={styles.holder}>
 			<ScrollView style={styles.navigation}>
 				{items.map(data => (
 					<NavigationItem 
@@ -43,11 +43,16 @@ export default function Navigation({items, onSelect}) {
 }
 
 const styles = StyleSheet.create({
-	navigation: {
+	holder: {
 		height: "100%",
-		paddingTop: sizes.big,
-		paddingRight: sizes.big,
+		justifyContent: "center",
 		backgroundColor: colors.surfaceLight
+	},
+	
+	navigation: {
+		maxHeight: 500,
+		paddingTop: sizes.big,
+		paddingRight: sizes.big
 	},
 	
 	item: {

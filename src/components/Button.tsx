@@ -1,15 +1,7 @@
 import { Pressable, Text, Image, StyleSheet } from "react-native";
 import { colors } from "../util/variables";
 
-interface ButtonInterface {
-	label?: string,
-	icon?: unknown,
-	styleOuter?: any,
-	borderDisabled?: boolean,
-	rippleColor?: string
-}
-
-export default function Button({label, icon, styleOuter, style, borderDisabled, rippleColor = colors.primary, ...props}: ButtonInterface) {
+export default function Button({label, labelStyle, icon, styleOuter, style, borderDisabled, rippleColor = colors.primary, ...props}) {
 	let ripple = { color: rippleColor };
 	
 	let imageStyle = styles.icon;
@@ -27,7 +19,7 @@ export default function Button({label, icon, styleOuter, style, borderDisabled, 
 			android_ripple={ripple}>
 			
 			{icon && <Image source={icon} style={{...imageStyle, ...style}} />} 
-			{label && <Text style={styles.label}>{label}</Text>}
+			{label && <Text style={{...styles.label, ...labelStyle}}>{label}</Text>}
 			
 		</Pressable>
 	);
@@ -38,7 +30,9 @@ const styles = StyleSheet.create({
 		backgroundColor: "rgba(232, 128, 255, .04)",
 		borderColor: colors.primary,
 		borderWidth: 1.5,
-		borderRadius: 5
+		borderRadius: 5,
+		display: "flex",
+		justifyContent: "center"
 	},
 	
 	label: {

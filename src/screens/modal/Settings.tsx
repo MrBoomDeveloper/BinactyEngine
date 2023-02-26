@@ -24,7 +24,10 @@ export default function Settings({visible, onClose}) {
 	return (
 		<Dialog visible={visible} onClose={onClose}>
 			<Header title="Settings" onClose={onClose} />
-			<FlatList data={localSettings} renderItem={renderItem} style={styles.list} />
+			<FlatList 
+			  data={localSettings}
+			  renderItem={renderItem}
+			  style={styles.list} />
 		</Dialog>
 	);
 }
