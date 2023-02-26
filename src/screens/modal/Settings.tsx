@@ -26,8 +26,9 @@ export default function Settings({visible, onClose}) {
 			<Header title="Settings" onClose={onClose} />
 			<FlatList 
 			  data={localSettings}
-			  renderItem={renderItem}
-			  style={styles.list} />
+			  ListHeaderComponent={<View style={{marginTop: 10}} />}
+			  ListFooterComponent={<View style={{marginBottom: 50}} />}
+			  renderItem={renderItem} />
 		</Dialog>
 	);
 }
@@ -81,11 +82,6 @@ function Controller({id, type, defaultValue, onUpdate}) {
 }
 
 const styles = StyleSheet.create({
-	list: {
-		paddingTop: 15,
-		paddingBottom: 50
-	},
-	
 	setting: {
 		display: "flex",
 		alignItems: "center",

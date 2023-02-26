@@ -36,6 +36,7 @@ export default function Home() {
 				<Missions />
 				<Packs />
 				
+				<View style={{marginRight: 200}} />
 			</ScrollView>
 		</View>
 	);
@@ -49,9 +50,8 @@ const styles = StyleSheet.create({
 	},
 	
 	overview: {
-		height: "90%",
-		maxHeight: 500,
-		paddingHorizontal: sizes.large
+		paddingHorizontal: sizes.large,
+		maxHeight: 450
 	},
 	
 	card: {

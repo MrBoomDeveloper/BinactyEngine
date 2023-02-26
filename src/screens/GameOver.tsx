@@ -28,7 +28,7 @@ export default function GameOver() {
 	return (
 		<View style={styles.screen}>
 			<View style={styles.stats}>
-				<Text>stats</Text>
+				<Text>     </Text>
 			</View>
 			
 			<Animated.View style={{...styles.actions, opacity: buttonsAnimation}}>
