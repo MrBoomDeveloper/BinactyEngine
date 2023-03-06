@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import { View, Text, FlatList, StyleSheet } from "react-native";
 import { Button, Toggle, Input, Header } from "@components";
 import { sizes, colors } from "@util/variables";
@@ -6,7 +6,7 @@ import GameNative from "../../GameNative";
 import Dialog from "./Dialog";
 import settings from "@data/SettingsData"
 
-export default function Settings({visible, onClose}) {
+function Settings({visible, onClose}) {
 	const [localSettings, setLocalSettings] = useState(settings);
 	
 	useEffect(() => {
@@ -115,3 +115,5 @@ const styles = StyleSheet.create({
 		marginBottom: 10
 	}
 });
+
+export default memo(Settings);

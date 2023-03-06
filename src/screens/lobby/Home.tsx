@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, memo } from "react";
 import { ScrollView, View, Image, Text, StyleSheet, Modal } from "react-native";
 import { Button, Chips } from "@components";
 import { Gamemodes } from "@screens";
@@ -8,7 +8,7 @@ import Character from "./home/Character";
 import Missions from "./home/Missions";
 import Packs from "./home/Packs";
 
-export default function Home() {
+function Home() {
 	const [gamemodesVisibility, setGamemodesVisbility] = useState(false);
 	const [currentGamemode, selectGamemode] = useState(0);
 	
@@ -96,3 +96,5 @@ const styles = StyleSheet.create({
 		marginBottom: 5
 	}
 });
+
+export default memo(Home);

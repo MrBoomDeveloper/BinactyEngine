@@ -1,9 +1,12 @@
+import { memo } from "react";
 import { StyleSheet } from "react-native";
 
-export default function Profile() {
+function Profile() {
 	
 }
 
 const styles = StyleSheet.create({
 	
 });
+
+export default memo(Profile);

@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo } from "react";
 import { ScrollView, View, Text, StyleSheet, TouchableOpacity, ImageBackground } from "react-native";
 import { Button, Header } from "@components";
 import Dialog from "./Dialog";
 import GameNative from "../../GameNative";
 
-export default function Gamemodes({visible, onClose}) {
+function Gamemodes({visible, onClose}) {
 	const [gamemodes, setGamemodes] = useState({});
 	useEffect(() => {
 		GameNative.getGamemodes(setGamemodes);
@@ -137,3 +137,5 @@ const styles = StyleSheet.create({
 		marginTop: 4
 	}
 });
+
+export default memo(Gamemodes);
