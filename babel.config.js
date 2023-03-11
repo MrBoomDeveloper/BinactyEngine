@@ -9,7 +9,9 @@ module.exports = {
 				"@screens": "./src/screens",
 				"@data": "./src/data",
 				"@static": "./src/static",
-				"@util": "./src/util"
+				"@util": "./src/util",
+				"@context": "./src/context",
+				"@native": "./src/GameNative.ts"
 			}
 		}]
 	]

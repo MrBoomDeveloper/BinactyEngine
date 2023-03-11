@@ -1,23 +1,19 @@
 import { useState, useEffect, memo } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { View, Text, FlatList, StyleSheet } from "react-native";
 import { Button, Toggle, Input, Header } from "@components";
 import { sizes, colors } from "@util/variables";
-import GameNative from "../../GameNative";
 import Dialog from "./Dialog";
-import settings from "@data/SettingsData"
+import { update as updateSetting } from "@context/settings";
+import GameNative from "@native";
 
 function Settings({visible, onClose}) {
-	const [localSettings, setLocalSettings] = useState(settings);
-	
-	useEffect(() => {
-		GameNative.getKeys(settings, setLocalSettings);
-	}, []);
+	const settings = useSelector(state => state.settings.value);
+	const dispatch = useDispatch();
 	
 	const renderItem = ({item, index}) => {
 		return <Setting item={item} onUpdate={(newValue) => {
-			const newSettings = localSettings;
-			newSettings[index].initial = newValue;
-			setLocalSettings(newSettings);
+			dispatch(updateSetting({index, newValue}));
 		}} />
 	}
 	
@@ -25,7 +21,7 @@ function Settings({visible, onClose}) {
 		<Dialog visible={visible} onClose={onClose}>
 			<Header title="Settings" onClose={onClose} />
 			<FlatList 
-			  data={localSettings}
+			  data={settings}
 			  ListHeaderComponent={<View style={{marginTop: 10}} />}
 			  ListFooterComponent={<View style={{marginBottom: 50}} />}
 			  renderItem={renderItem} />

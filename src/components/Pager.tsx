@@ -31,8 +31,7 @@ export default function Pager({children, select}) {
 
 const styles = StyleSheet.create({
 	wrapper: {
-		flexGrow: 1,
-		overflow: "hidden"
+		flexGrow: 1
 	},
 	
 	pager: {

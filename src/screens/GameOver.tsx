@@ -101,6 +101,6 @@ const styles = StyleSheet.create({
 	},
 	
 	buttonLabel: {
-		fontSize: 16
+		fontSize: 18
 	}
 });

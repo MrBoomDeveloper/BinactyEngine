@@ -1,42 +1,43 @@
-import { useState, useEffect, memo } from "react";
-import { StyleSheet, ScrollView, FlatList, View, Text, TouchableOpacity, Linking } from "react-native";
+import { useState, useEffect, useMemo, memo } from "react";
+import { useSelector } from "react-redux";
+import { Dimensions, StyleSheet, ScrollView, FlatList, View, Text, TouchableOpacity, Linking } from "react-native";
 import { parse as parseRss } from "rss-to-json";
+import { colors } from "@util/variables";
+import { removeHtml } from "@util/format";
 import moment from "moment";
 
-const url: string = "https://mrboomdev.bearblog.dev/feed/?type=rss";
-
 function News() {
-	const [news, setNews] = useState([]);
-	
-	const loadNews = async () => {
-		const result = await parseRss(url);
-		setNews(result.items.sort((was, next) => {
-			return next.created - was.created;
-		}));
-	}
-	
-	useEffect(() => { loadNews() }, []);
+	const news = useSelector(state => state.news.value);
 	
 	return (
 		<View style={styles.screen}>
 			<FlatList data={news}
 			  ListHeaderComponent={Header}
+			  ListFooterComponent={<View style={{marginBottom: 50}} />}
 			  ItemSeparatorComponent={<View style={styles.separator} />}
-			  ListEmptyComponent={<Text>Loading...</Text>}
+			  ListEmptyComponent={Blank}
 			  renderItem={Item}/>
 		</View>
 	);
 }
 
-export function Item({item: {title, description, link, created}}) {
+function Item({item: {title, description, created}}) {
+	const options = getOptions(removeHtml(description, false));
+	
+	const onPress = () => {
+		if(options.link == null) return;
+		Linking.openURL(options.link);
+	}
+	
 	return (
-		<TouchableOpacity onPress={() => Linking.openURL(link)}>
-			<Text style={styles.title}>{title}</Text>
-			<Text style={styles.description}>{removeHtml(description)}</Text>
+		<TouchableOpacity onPress={onPress} style={options.pin ? styles.itemPinned : styles.item}>
 			<View style={styles.meta}>
-				<Text>{moment(created).fromNow()}</Text>
-				<Text>{link}</Text>
+				<Text style={styles.title}>{title}</Text>
+				{options.pin && <Text style={{...styles.littleText, ...styles.pinned}}>Pinned</Text>}
+				<Text style={styles.littleText}>{moment(created).fromNow()}</Text>
 			</View>
+			<Text style={styles.description}>{removeHtml(description)}</Text>
+			{options.link && <Text style={styles.link}>{options.link}</Text>}
 		</TouchableOpacity>
 	);
 }
@@ -47,26 +48,67 @@ function Header() {
 	);
 }
 
-function removeHtml(input: string): string {
-	let result: string = input.replace(/<div>/g, "");
-	result = result.replace(/<\/div>/g, "");
-	result = result.replace(/<p>/g, "");
-	result = result.replace(/<\/p>/g, "");
-	if(result.charAt(result.length - 1) == '\n')
-		result = result.substring(0, result.length - 1);
-	return result;
+function Blank() {
+	return (
+		<View style={styles.blank}>
+			<Text>Loading...</Text>
+		</View>
+	);
+}
+
+function getOptions(input: string) {
+	if(input.charAt(0) == "#") {
+		const end = input.indexOf("}") + 1;
+		return JSON.parse(input.substring(1, end));
+	}
+	
+	return { pin: false, link: null, tags: [] };
+}
+
+export async function getNews(callback: void) {
+	const url: string = "https://mrboomdev.bearblog.dev/feed/?type=rss";
+	
+	let result = await parseRss(url);
+	result = result.items.sort((was, next) => {
+		return next.created - was.created;
+	});
+		
+	let sortedNews = [];
+	const filteredNews = result.filter(next => {
+		if(getOptions(removeHtml(next.description, false)).pin) {
+			sortedNews.push(next);
+			return false;
+		}
+		return true;
+	});
+	
+	callback([...sortedNews, ...filteredNews]);
 }
 
 const styles = StyleSheet.create({
 	screen: {
-		padding: 25
+		width: "100%",
+		maxHeight: (Dimensions.get("screen").height - 60)
 	},
 	
 	header: {
 		color: "white",
 		fontSize: 24,
 		fontWeight: "500",
-		marginBottom: 20
+		marginTop: 25,
+		marginBottom: 20,
+		paddingHorizontal: 30
+	},
+	
+	item: {
+		paddingHorizontal: 30,
+		paddingVertical: 20
+	},
+	
+	itemPinned: {
+		backgroundColor: colors.surfaceLight,
+		paddingHorizontal: 30,
+		paddingVertical: 20
 	},
 	
 	title: {
@@ -78,22 +120,44 @@ const styles = StyleSheet.create({
 	
 	description: {
 		marginVertical: 2,
-		lineHeight: 24,
+		lineHeight: 26,
 		color: "#fff"
 	},
 	
 	meta: {
-		marginTop: 8,
 		flexDirection: "row",
-		gap: 25
+		alignItems: "center",
+		gap: 15
+	},
+	
+	littleText: {
+		color: "#ddd",
+		marginBottom: 4
+	},
+	
+	pinned: {
+		color: "#eee",
+		paddingHorizontal: 8,
+		paddingVertical: 3,
+		borderRadius: 5,
+		backgroundColor: "rgba(191, 112, 255, .6)"
+	},
+	
+	link: {
+		marginTop: 8
 	},
 	
 	separator: {
 		backgroundColor: "#ddd",
 		height: 1,
 		opacity: .1,
-		marginVertical: 15,
 		width: "100%"
+	},
+	
+	blank: {
+		flexGrow: 1,
+		justifyContent: "center",
+		alignItems: "center"
 	}
 });
 

@@ -1,20 +1,21 @@
 import { useRef, useEffect, useState, memo } from "react";
+import { useSelector } from "react-redux";
 import { ScrollView, View, Image, Text, StyleSheet, Modal } from "react-native";
 import { Button, Chips } from "@components";
 import { Gamemodes } from "@screens";
 import { sizes, colors } from "@util/variables";
-import GameNative from "../../GameNative";
+import GameNative from "@native";
 import Character from "./home/Character";
 import Missions from "./home/Missions";
 import Packs from "./home/Packs";
 
 function Home() {
 	const [gamemodesVisibility, setGamemodesVisbility] = useState(false);
-	const [currentGamemode, selectGamemode] = useState(0);
+	const currentGamemode = useSelector(state => state.gamemodes.value.current);
 	
 	return (
 		<View style={styles.home}>
-			<Gamemodes visible={gamemodesVisibility} onClose={() => setGamemodesVisbility(false)} onSelect={selectGamemode} />
+			<Gamemodes visible={gamemodesVisibility} onClose={() => setGamemodesVisbility(false)} />
 			<ScrollView 
 			  style={styles.overview}
 			  horizontal={true}
@@ -23,8 +24,9 @@ function Home() {
 				<View style={{...styles.card, width: 275}}>
 					<Image source={require("@static/banner/gamemode/banner.jpg")} style={styles.banner} />
 					<View style={styles.info}>
-						<Text style={styles.title}>Demo level</Text>
-						<Text style={styles.description}>Hello there! Welcome to the "ActionPlatformer"! (The name will be changed in the future ._.)</Text>
+						<Text style={styles.title}>{currentGamemode.name}</Text>
+						<Text style={styles.author}>Made by: {currentGamemode.author}</Text>
+						<Text style={styles.description}>{currentGamemode.description}</Text>
 					</View>
 					<View style={styles.actions}>
 						<Button label="Play!" onPress={() => GameNative.play("idk")} styleOuter={styles.button} />
@@ -79,12 +81,16 @@ const styles = StyleSheet.create({
 		color: "white"
 	},
 	
+	author: {
+		marginVertical: 6,
+		fontSize: 15
+	},
+	
 	description: {
 		fontSize: 15,
 		lineHeight: 22,
 		fontWeight: "400",
-		paddingTop: 12,
-		flexGrow: 1,
+		marginTop: 2,
 		color: "white"
 	},
 	

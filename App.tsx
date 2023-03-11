@@ -1,12 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { StatusBar, Pressable, StyleSheet, View, Text, BackHandler } from 'react-native';
-import { Header, Navigation, Pager } from "@components";
+import { Header, Navigation, Pager, Button } from "@components";
 import { Settings } from "@screens";
-import GameNative from "./src/GameNative";
+import GameNative from "@native";
 import { colors, sizes } from "@util/variables";
 import { NavItems } from "@data/HomeData";
+import { Provider, useDispatch } from "react-redux";
 import Home from "@screens/lobby/Home";
 import News from "@screens/lobby/News";
+import { store } from "@context/store";
+import { load as loadGamemodes } from "@context/gamemodes";
+import { load as loadSettings } from "@context/settings";
+import { load as loadNews } from "@context/news";
+import { getNews } from "@screens/lobby/News";
+import settingsPreset from "@data/SettingsData";
 
 const Wip = () => {
 	return (
@@ -19,23 +26,31 @@ const Wip = () => {
 			paddingRight: 25, 
 			paddingBottom: 50}}>
 			
-			<Text style={{color: "white", fontSize: 15}}>This page is currently under development.</Text>
+			<Text style={{color: "white", fontSize: 16, marginBottom: 20}}>This page is currently under development.</Text>
 		</View>
 	);
 }
 
-function App() {
+function Screen() {
 	const [playerData, setPlayerData] = useState({});
 	const [currentPage, setCurrentPage] = useState("home");
 	const [settingsVisibility, setSettingsVisibility] = useState(false);
+	const dispatch = useDispatch();
 	
 	useEffect(() => {
-		GameNative.getMyData(setPlayerData);
-		
-		BackHandler.addEventListener("hardwareBackPress", () => {
-			GameNative.requestClose();
-			return true;
+		GameNative.getKeys(settingsPreset, result => {
+			dispatch(loadSettings(result));
 		});
+		
+		GameNative.getGamemodes(result => {
+			dispatch(loadGamemodes(result));
+		});
+		
+		getNews(result => {
+			dispatch(loadNews(result));
+		});
+		
+		GameNative.getMyData(setPlayerData);
 	}, []);
 	
 	const actions = [
@@ -44,7 +59,6 @@ function App() {
 	
 	return (
 		<View style={styles.screen}>
-			<StatusBar hidden={true}/>
 			<Header player={playerData} actions={actions}/>
 			<View style={styles.dualContainer}>
 				<Navigation items={NavItems} onSelect={setCurrentPage}/>
@@ -60,23 +74,37 @@ function App() {
 			<Settings visible={settingsVisibility} onClose={() => setSettingsVisibility(false)} />
 		</View>
 	);
+}
+
+export default function App() {
+	useEffect(() => {
+		BackHandler.addEventListener("hardwareBackPress", () => {
+			GameNative.requestClose();
+			return true;
+		});
+	}, []);
+	
+	return (
+		<View style={{flex: 1}}>
+			<Provider store={store}>
+				<StatusBar hidden={true}/>
+				<Screen />
+			</Provider>
+		</View>
+	);
 };
 
 const styles = StyleSheet.create({
 	screen: {
-		width: "100%",
 		height: "100%",
-		display: "flex",
+		width: "100%",
+		flex: 1,
 		flexDirection: "column",
 		backgroundColor: colors.background
 	},
 	
 	dualContainer: {
-		width: "100%",
 		flexGrow: 1,
-		display: "flex",
-		flexDirection: "row"
+		flexDirection: "row",
 	}
 });
-
-export default App;

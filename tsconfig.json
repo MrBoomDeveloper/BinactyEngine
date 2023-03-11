@@ -6,7 +6,9 @@
 		"@screens/*": ["src/screens/*"],
 		"@data/*": ["src/data/*"],
 		"@util/*": ["src/util/*"],
-		"@static/*": ["src/static/*"]
+		"@static/*": ["src/static/*"],
+		"@context/*": ["src/context/*"],
+		"@native": ["src/GameNative.ts"]
 	},
 	"compilerOptions": {
 		"skipLibCheck": true

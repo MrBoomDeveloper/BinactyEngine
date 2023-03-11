@@ -1,16 +1,16 @@
 import { useEffect, useState, memo } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { ScrollView, View, Text, StyleSheet, TouchableOpacity, ImageBackground } from "react-native";
 import { Button, Header } from "@components";
 import Dialog from "./Dialog";
-import GameNative from "../../GameNative";
+import { setActive } from "@context/gamemodes";
 
 function Gamemodes({visible, onClose}) {
-	const [gamemodes, setGamemodes] = useState({});
-	useEffect(() => {
-		GameNative.getGamemodes(setGamemodes);
-	}, []);
-	
-	const onPress = () => {
+	const gamemodes = useSelector(state => state.gamemodes.value.list);
+	const dispatch = useDispatch();
+
+	const onPress = (item) => {
+		dispatch(setActive(item));
 		onClose();
 	}
 	
@@ -40,13 +40,15 @@ function Gamemodes({visible, onClose}) {
 	)
 }
 
-function Gamemode({name, author, onPress, isBig}) {
+function Gamemode(props) {
+	const {name, author, onPress, isBig} = props;
+	
 	const smallCardStyle = isBig ? {} : {
 		flexBasis: "49%"
 	}
 	
 	return (
-		<TouchableOpacity onPress={onPress} style={smallCardStyle}>
+		<TouchableOpacity onPress={() => onPress(props)} style={smallCardStyle}>
 			<ImageBackground
 			  source={require("@static/banner/gamemode/gamemode.jpg")}
 			  style={isBig ? styles.gamemodeBig : styles.gamemodeSmall}>
