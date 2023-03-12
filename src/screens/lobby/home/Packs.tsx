@@ -27,6 +27,7 @@ export default function Packs() {
 			
 			<Button
 			  styleOuter={styles.addButton}
+			  onPress={() => alert("This feature isn't done yet!")}
 			  label="Add More" />
 		</View>
 	);
