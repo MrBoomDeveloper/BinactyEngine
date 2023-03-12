@@ -41,7 +41,7 @@ function Setting({item, onUpdate}) {
 	);
 }
 
-function Controller({id, type, defaultValue, onUpdate}) {
+function Controller({id, type, max, defaultValue, onUpdate}) {
 	const [error, setError] = useState("");
 	
 	const onToggle = (newValue) => {
@@ -50,6 +50,16 @@ function Controller({id, type, defaultValue, onUpdate}) {
 	}
 	
 	const onChangeText = (newText) => {
+		if(newText.length > 10) {
+			setError("Too many characters!");
+			return;
+		}
+		
+		if(type == "number" && max != null && newText > max) {
+			setError("The value is too big!");
+			return;
+		}
+		
 		if(newText != "" && /^\d+$/.test(newText.toString())) {
 			setError("");
 			onUpdate(newText);

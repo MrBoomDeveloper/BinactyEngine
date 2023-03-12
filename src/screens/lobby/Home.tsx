@@ -29,7 +29,7 @@ function Home() {
 						<Text style={styles.description}>{currentGamemode.description}</Text>
 					</View>
 					<View style={styles.actions}>
-						<Button label="Play!" onPress={() => GameNative.play("idk")} styleOuter={styles.button} />
+						<Button label="Play!" onPress={() => GameNative.play(currentGamemode)} styleOuter={styles.button} />
 						<Button label="Change gamemode" style={styles.button} onPress={() => setGamemodesVisbility(true)} />
 					</View>
 				</View>

@@ -2,13 +2,15 @@
 	{
 		title: "Screen inset", id: "inset",
 		description: "Padding between screen border and ui elements.",
-		type: "number", initial: 50
+		type: "number", initial: 50, max: 250
 	}, {
 		title: "Music volume", id: "musicVolume",
-		type: "number", initial: 100
+		description: "Lets start the show!",
+		type: "number", initial: 100, max: 500
 	}, {
 		title: "Sounds volume", id: "soundsVolume",
-		type: "number", initial: 100
+		description: "All these loud scary noises!",
+		type: "number", initial: 100, max: 500
 	}, {
 		title: "Allow crashlytics", id: "crashlytics",
 		description: "This thing prompts the developer, when you found an error.",

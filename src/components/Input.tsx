@@ -27,9 +27,11 @@ export default function Input({error, onChangeText, style, ...props}) {
 			</Animated.View>
 			<TextInput ref={input}
 				style={styles.text}
+				textAlign="center"
 				onChangeText={onChangeText}
 				onFocus={() => setIsFocus(true)}
 				onBlur={() => setIsFocus(false)}
+				maxLength={25}
 				placeholder={String(props.placeholder || props.defaultValue)}
 				defaultValue={String(props.defaultValue)}
 				keyboardType={"number-pad"} />
