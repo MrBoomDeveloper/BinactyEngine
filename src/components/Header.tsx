@@ -6,11 +6,24 @@ import { sizes, colors } from "../util/variables";
 const avatars = {
 	klarrie: require("../static/avatar/premium.jpg")
 }
-
-interface playerDataBasic {
-	avatar: string,
-	nick: string,
-	level: number
+export default function Header({ title, values, actions, onClose, player}) {
+	return (
+		<View style={styles.header}>
+			{onClose && <Button styleOuter={styles.back} style={styles.backIcon} icon={require("@static/icon/back.png")} borderDisabled={true} rippleColor="rgba(255, 255, 255, .2)" onPress={onClose} />}
+			{title && <Text style={styles.title}>{title}</Text>}
+			{player && Profile(player)}
+			{values && <View style={styles.values}>{values.map(item => <Value {...item}/>)}</View>}
+			<View style={styles.actions}>
+				{actions && actions.map(item => (
+					<Button key={item.key}
+						onPress={item.onPress}
+						icon={item.icon}
+						borderDisabled={true}
+						rippleColor="rgba(255, 255, 255, .2)" />
+				))}
+			</View>
+		</View>
+	);
 }
 
 function Profile({nick, level, avatar}) {
@@ -27,21 +40,11 @@ function Profile({nick, level, avatar}) {
 	);
 }
 
-export default function Header({ title, actions, onClose, player}) {
+function Value({title, count}) {
 	return (
-		<View style={styles.header}>
-			{onClose && <Button styleOuter={styles.back} style={styles.backIcon} icon={require("@static/icon/back.png")} borderDisabled={true} rippleColor="rgba(255, 255, 255, .2)" onPress={onClose} />}
-			{title && <Text style={styles.title}>{title}</Text>}
-			{player && Profile(player)}
-			<View style={styles.actions}>
-				{actions && actions.map(item => (
-					<Button key={item.key}
-						onPress={item.onPress}
-						icon={item.icon}
-						borderDisabled={true}
-						rippleColor="rgba(255, 255, 255, .2)" />
-				))}
-			</View>
+		<View style={styles.value}>
+			<Text>{title}: </Text>
+			<Text>{count}</Text>
 		</View>
 	);
 }
@@ -91,7 +94,8 @@ const styles = StyleSheet.create({
 	
 	profile: {
 		display: "flex",
-		flexDirection: "row"
+		flexDirection: "row",
+		flexGrow: 1
 	},
 	
 	nicknameLabel: {
@@ -106,9 +110,19 @@ const styles = StyleSheet.create({
 		fontWeight: "500"
 	},
 	
+	values: {
+		flexDirection: "row",
+		gap: 25
+	},
+	
+	value: {
+		flexDirection: "row",
+		gap: 10
+	},
+	
 	actions: {
+		marginLeft: 50,
 		paddingRight: 20,
-		flexGrow: 1,
 		alignItems: "flex-end"
 	}
 });

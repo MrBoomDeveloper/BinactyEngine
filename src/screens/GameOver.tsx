@@ -1,58 +1,99 @@
 import { useState, useEffect, useRef } from "react";
-import { View, Text, StyleSheet, Animated, Share } from "react-native";
+import { View, Text, StyleSheet, Animated, Share, Easing } from "react-native";
 import { Button } from "@components";
 import { colors } from "@util/variables";
-import GameNative from "../GameNative";
+import GameNative from "@native";
 
 export default function GameOver() {
-	const animation = useRef(new Animated.Value(0)).current;
-	const buttonsAnimation = useRef(new Animated.Value(0)).current;
+	const [isLoaded, setIsLoaded] = useState(false);
+	const [balance, setBalance] = useState({});
+	const [stats, setStats]= useState({isWin: false});
+	const titlePopupAnimation = useRef(new Animated.Value(0)).current;
+	const titleScrollAnimation = useRef(new Animated.Value(0)).current;
+	const statsFadeAnimation = useRef(new Animated.Value(0)).current;
+	const buttonsFadeAnimation = useRef(new Animated.Value(0)).current;
 	
 	useEffect(() => {
-		Animated.spring(animation, {
+		async function getBalance() {
+			const coins = await GameNative.getKey("int", "coins");
+			const diamonds = await GameNative.getKey("int", "diamonds");
+			setStats(await GameNative.getStats());
+			setBalance({coins, diamonds});
+			setIsLoaded(true);
+		}
+		getBalance();
+	}, []);
+	
+	useEffect(() => {
+		if(!isLoaded) return;
+		Animated.spring(titlePopupAnimation, {
 			toValue: 1,
 			duration: 1000,
 			useNativeDriver: true
-		}).start();
-	}, [animation]);
+		}).start(() => {
+			Animated.timing(titleScrollAnimation, {
+				toValue: 1,
+				duration: 500,
+				easing: Easing.cubic,
+				useNativeDriver: true
+			}).start(() => {
+				Animated.timing(statsFadeAnimation, {
+					toValue: 1,
+					duration: 750,
+					useNativeDriver: true
+				}).start(() => {
+					Animated.timing(buttonsFadeAnimation, {
+						toValue: 1,
+						delay: 100,
+						duration: 750,
+						useNativeDriver: true
+					}).start();
+				});
+			});
+		});
+	}, [titlePopupAnimation, buttonsFadeAnimation, isLoaded]);
 	
-	useEffect(() => {
-		Animated.timing(buttonsAnimation, {
-			toValue: 1,
-			delay: 1000,
-			duration: 750,
-			useNativeDriver: true
-		}).start();
-	}, [buttonsAnimation]);
+	const titleScrollInterpolate = titleScrollAnimation.interpolate({
+		inputRange: [0, 1],
+		outputRange: ["0%", "-200%"]
+	});
+	
+	function close() {
+		if(!isLoaded) return;
+		if(stats.isWin) {
+			GameNative.setKey("int", "coins", String(balance.coins + 1));
+		}
+		GameNative.finish("GameOver");
+	}
 	
 	return (
 		<View style={styles.screen}>
-			<View style={styles.stats}>
-				<Text>     </Text>
-			</View>
+			<Animated.View style={{...styles.stats, opacity: statsFadeAnimation}}>
+				<Text>{stats.isWin ? "+1 Coin" : "You've got nothing."}</Text>
+			</Animated.View>
 			
-			<Animated.View style={{...styles.actions, opacity: buttonsAnimation}}>
-				<Button 
+			<Animated.View style={{...styles.actions, opacity: buttonsFadeAnimation}}>
+				<Button
 					styleOuter={styles.action}
 					labelStyle={styles.buttonLabel}
 					label="Share results"
 					onPress={() => {
 						Share.share({
-							message: "Hey, I just found out about a cool ActionPlatformer game! I recommend playing! https://MrBoomDev.ru/project?name=fnafm"
+							message: "Hey, I just found out about a cool ActionPlatformer game! I recommend playing! https://gamejolt.com/games/actionplatformer/670228"
 						});
 					}} />
 				<Button 
 					styleOuter={styles.action}
 					labelStyle={styles.buttonLabel}
 					label="Continue"
-					onPress={() => GameNative.finish("GameOver")}/>
+					onPress={() => close()}/>
 			</Animated.View>
 			
-			<View style={styles.titleHolder}>
+			<Animated.View style={{...styles.titleHolder, translateY: titleScrollInterpolate}}>
 				<Animated.Text style={{...styles.title, transform: [
-					{ scale: animation }
-				]}}>Game Over</Animated.Text>
-			</View>
+					{ scale: titlePopupAnimation }
+				]}}>{stats.isWin ? "You Win!" : "You Loose"}</Animated.Text>
+			</Animated.View>
 		</View>
 	);
 }

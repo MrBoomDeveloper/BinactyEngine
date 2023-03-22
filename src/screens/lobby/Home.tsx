@@ -61,6 +61,11 @@ function Home() {
 				<Missions />
 				<Packs />
 				
+				<View style={{width: 300}}>
+					<Text>This game uses some third-party resources so if you want, you can provide credits to original authors!</Text>
+					<Text selectable={true} style={{marginVertical: 8}}>Lobby theme:  https://youtu.be/S6FRfxU-4Q4</Text>
+				</View>
+				
 				<View style={{marginRight: 200}} />
 			</ScrollView>
 		</View>

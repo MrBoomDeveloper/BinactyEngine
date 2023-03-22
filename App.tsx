@@ -5,13 +5,14 @@ import { Settings } from "@screens";
 import GameNative from "@native";
 import { colors, sizes } from "@util/variables";
 import { NavItems } from "@data/HomeData";
-import { Provider, useDispatch } from "react-redux";
+import { Provider, useDispatch, useSelector } from "react-redux";
 import Home from "@screens/lobby/Home";
 import News from "@screens/lobby/News";
 import { store } from "@context/store";
 import { load as loadGamemodes } from "@context/gamemodes";
 import { load as loadSettings } from "@context/settings";
 import { load as loadNews } from "@context/news";
+import { setProfile, setMoney } from "@context/profile";
 import { getNews } from "@screens/lobby/News";
 import settingsPreset from "@data/SettingsData";
 
@@ -32,25 +33,24 @@ const Wip = () => {
 }
 
 function Screen() {
-	const [playerData, setPlayerData] = useState({});
 	const [currentPage, setCurrentPage] = useState("home");
 	const [settingsVisibility, setSettingsVisibility] = useState(false);
 	const dispatch = useDispatch();
+	const profile = useSelector(state => state.profile.value.me);
+	const money = useSelector(state => state.profile.value.money);
+	
+	async function getBalance() {
+		const coins = await GameNative.getKey("int", "coins");
+		const diamonds = await GameNative.getKey("int", "diamonds");
+		dispatch(setMoney({coins, diamonds}));
+	}
 	
 	useEffect(() => {
-		GameNative.getKeys(settingsPreset, result => {
-			dispatch(loadSettings(result));
-		});
-		
-		GameNative.getGamemodes(result => {
-			dispatch(loadGamemodes(result));
-		});
-		
-		getNews(result => {
-			dispatch(loadNews(result));
-		});
-		
-		GameNative.getMyData(setPlayerData);
+		GameNative.getKeys(settingsPreset, result => dispatch(loadSettings(result)));
+		GameNative.getGamemodes(result => dispatch(loadGamemodes(result)));
+		GameNative.getMyData(result => dispatch(setProfile(result)));
+		getNews(result => dispatch(loadNews(result)));
+		getBalance();
 	}, []);
 	
 	const actions = [
@@ -59,7 +59,7 @@ function Screen() {
 	
 	return (
 		<View style={styles.screen}>
-			<Header player={playerData} actions={actions}/>
+			<Header player={profile} values={money} actions={actions}/>
 			<View style={styles.dualContainer}>
 				<Navigation items={NavItems} onSelect={setCurrentPage}/>
 				<Pager select={currentPage}>
