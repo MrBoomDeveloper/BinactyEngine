@@ -46,7 +46,7 @@ function Controller({id, type, max, defaultValue, onUpdate}) {
 	
 	const onToggle = (newValue) => {
 		onUpdate(newValue);
-		GameNative.setKey(id, String(newValue), "boolean");
+		GameNative.setKey("boolean", id, String(newValue));
 	}
 	
 	const onChangeText = (newText) => {
@@ -63,7 +63,7 @@ function Controller({id, type, max, defaultValue, onUpdate}) {
 		if(newText != "" && /^\d+$/.test(newText.toString())) {
 			setError("");
 			onUpdate(newText);
-			GameNative.setKey(id, newText, "number");
+			GameNative.setKey("int", id, newText);
 		} else {
 			setError("Invalid value!");
 		}

@@ -35,7 +35,7 @@ export default function GameOver() {
 				toValue: 1,
 				duration: 500,
 				easing: Easing.cubic,
-				useNativeDriver: true
+				useNativeDriver: false
 			}).start(() => {
 				Animated.timing(statsFadeAnimation, {
 					toValue: 1,
@@ -55,7 +55,7 @@ export default function GameOver() {
 	
 	const titleScrollInterpolate = titleScrollAnimation.interpolate({
 		inputRange: [0, 1],
-		outputRange: ["0%", "-200%"]
+		outputRange: ["100%", "40%"]
 	});
 	
 	function close() {
@@ -89,10 +89,10 @@ export default function GameOver() {
 					onPress={() => close()}/>
 			</Animated.View>
 			
-			<Animated.View style={{...styles.titleHolder, translateY: titleScrollInterpolate}}>
+			<Animated.View style={{...styles.titleHolder, height: titleScrollInterpolate}}>
 				<Animated.Text style={{...styles.title, transform: [
 					{ scale: titlePopupAnimation }
-				]}}>{stats.isWin ? "You Win!" : "You Loose"}</Animated.Text>
+				]}}>{stats.isWin ? "You Win!" : "Game Over"}</Animated.Text>
 			</Animated.View>
 		</View>
 	);

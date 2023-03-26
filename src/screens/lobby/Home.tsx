@@ -87,6 +87,7 @@ const styles = StyleSheet.create({
 	
 	overview: {
 		paddingHorizontal: sizes.large,
+		paddingVertical: 10,
 		maxHeight: 450
 	},
 	
