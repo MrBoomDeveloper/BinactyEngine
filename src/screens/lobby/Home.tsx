@@ -36,13 +36,25 @@ function Home() {
 				<View style={mainCardStyle}>
 					<Image source={require("@static/banner/gamemode/banner.jpg")} style={styles.banner} />
 					<View style={styles.info}>
+					
 						<Text style={styles.title}>{currentGamemode.name}</Text>
 						<Text style={styles.author}>Made by: {currentGamemode.author}</Text>
 						<Text style={styles.description}>{currentGamemode.description}</Text>
+						
 					</View>
 					<View style={styles.actions}>
-						<Button label="Play!" onPress={play(false)} styleOuter={styles.button} />
-						<Button label="Change gamemode" style={styles.button} onPress={() => setGamemodesVisbility(true)} />
+					
+						<Button text="Change gamemode"
+							theme="brand"
+							onPress={() => setGamemodesVisbility(true)} />
+								
+						<Button text="Start Game!"
+							icon={require("@static/icon/play.png")}
+							theme="brand"
+							onPress={play(false)}
+							style={{marginTop: 5}}
+							fill={true} />
+							
 					</View>
 				</View>
 				
@@ -50,10 +62,16 @@ function Home() {
 					<Text style={[styles.title, styles.titleEditor]}>Editor Gamemodes</Text>
 					<FlatList
 					  ListEmptyComponent={Blank}/>
-					<Text>Selected map</Text>
+					<Text>Selected map:  FNaF 1</Text>
 					<View style={[styles.actions, styles.actionsLittle]}>
-						<Button label="Start Editor" styleOuter={styles.button} onPress={play(true)} />
-						<Button label="Create a new one" styleOuter={styles.button} onPress={() => alert("This functionality of the game is still in the development.")} />
+						<Button text="Start Editor"
+							theme="brand"
+							onPress={play(true)} />
+							
+						<Button text="Create a new one"
+							theme="brand"
+							style={{marginTop: 5, marginBottom: 6}}
+							onPress={() => alert("This functionality of the game is still in the development.")} />
 					</View>
 				</View>}
 				
@@ -62,8 +80,10 @@ function Home() {
 				<Packs />
 				
 				<View style={{width: 300}}>
-					<Text>This game uses some third-party resources so if you want, you can provide credits to original authors!</Text>
-					<Text selectable={true} style={{marginVertical: 8}}>Lobby theme:  https://youtu.be/S6FRfxU-4Q4</Text>
+					<Text style={{lineHeight: 20, marginBottom: 10}}>This game uses some third-party resources so if you want, you can provide credits to original authors!</Text>
+					<Text selectable={true} style={{lineHeight: 24}}>Lobby theme:  https://youtu.be/S6FRfxU-4Q4</Text>
+					<Text style={{lineHeight: 24}}>Match ambient: FNaF AR & FNaF 1</Text>
+					<Text selectable={true} style={{lineHeight: 24}}>Fonts & Icons: https://fonts.google.com</Text>
 				</View>
 				
 				<View style={{marginRight: 200}} />
@@ -151,10 +171,6 @@ const styles = StyleSheet.create({
 	actionsLittle: {
 		paddingHorizontal: 2,
 		paddingBottom: 0
-	},
-	
-	button: {
-		marginBottom: 5
 	},
 	
 	blankText: {

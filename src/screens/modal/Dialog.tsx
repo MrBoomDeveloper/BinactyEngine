@@ -6,8 +6,7 @@ export default function Dialog({visible, children, onClose}) {
 		<Modal onRequestClose={onClose}
 			animationType="slide"
 			transparent={true}
-			visible={visible}
-			statusBarTranslucent={true}>
+			visible={visible}>
 			
 			<View style={styles.holder}>
 				{children}

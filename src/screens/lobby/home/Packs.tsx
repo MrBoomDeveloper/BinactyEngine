@@ -21,14 +21,14 @@ export default function Packs() {
 	return (
 		<View style={styles.card}>
 			<SectionList style={styles.list}
-			  sections={packs}
-			  renderItem={Pack}
-			  renderSectionHeader={SectionHeader}/>
+				sections={packs}
+				renderItem={Pack}
+				renderSectionHeader={SectionHeader}/>
 			
-			<Button
-			  styleOuter={styles.addButton}
-			  onPress={() => alert("This feature isn't done yet!")}
-			  label="Add More" />
+			<Button text="Add More"
+				style={{margin: 15}}
+				onPress={() => alert("This feature isn't done yet!")}
+				theme="brand" />
 		</View>
 	);
 }

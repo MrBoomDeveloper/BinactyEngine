@@ -1,51 +1,97 @@
-import { Pressable, Text, Image, StyleSheet } from "react-native";
+import { Pressable, Text, Image } from "react-native";
 import { colors } from "../util/variables";
 
-export default function Button({label, labelStyle, icon, styleOuter, style, borderDisabled, rippleColor = colors.primary, ...props}) {
-	let ripple = { color: rippleColor };
-	
-	let imageStyle = styles.icon;
-	if(!label) {
-		imageStyle = {...imageStyle, margin: 5};
-		ripple.borderless = true;
-	}
-	
-	let pressableStyle = {...styles.buttonHolder, ...styleOuter};
-	if(borderDisabled) pressableStyle = {...pressableStyle, borderColor: "transparent"};
-	
+interface Button {
+	onPress: void,
+	theme: "brand" | "popup",
+	style: any,
+	text?: string,
+	fill?: boolean
+}
+
+export default function Button({text, icon, fill, theme, onPress, style, styleText}: Button) {
 	return (
-		<Pressable {...props}
-			style={pressableStyle}
-			android_ripple={ripple}>
+		<Pressable onPress={onPress}
+			hitSlop={25}
+			style={{
+				...containerStyle[theme][fill ? "fill" : "initial"],
+				width: (text ? null : 40),
+				...style
+			}}
+			android_ripple={{
+				color: fill ? (text ? ripple.fill : ripple[theme]) : ripple[theme],
+				borderless: !text,
+				foreground: true
+			}}>
 			
-			{icon && <Image source={icon} style={{...imageStyle, ...style}} />} 
-			{label && <Text style={{...styles.label, ...labelStyle}}>{label}</Text>}
+			{icon && <Image source={icon} style={{
+				width: text ? 30 : 25,
+				height: text ? 30 : 25
+			}} />}
+			{text && <Text style={{
+				...textStyle[theme][fill ? "fill" : "initial"],
+				marginRight: (icon ? 15 : 0),
+				...styleText
+			}}>{text}</Text>}
 			
 		</Pressable>
 	);
 }
 
-const styles = StyleSheet.create({
-	buttonHolder: {
-		backgroundColor: "rgba(232, 128, 255, .04)",
-		borderColor: colors.primary,
-		borderWidth: 1.5,
-		borderRadius: 5,
-		display: "flex",
-		justifyContent: "center"
+const containerInitial = {
+	borderRadius: 5,
+	flexDirection: "row",
+	justifyContent: "center",
+	alignItems: "center",
+	gap: 5,
+	padding: 5,
+	height: 40
+}
+
+const ripple = {
+	fill: "black",
+	brand: colors.primary,
+	popup: "white"
+}
+
+const containerStyle = {
+	brand: {
+		fill: {
+			...containerInitial,
+			backgroundColor: colors.primary
+		},
+		
+		initial: {
+			...containerInitial,
+			borderWidth: 2,
+			borderColor: colors.primary
+		}
 	},
 	
-	label: {
-		width: "100%",
-		color: colors.secondary,
-		padding: 10,
-		fontSize: 15,
-		fontWeight: "500",
-		textAlign: "center"
-	},
-	
-	icon: {
-		width: 25,
-		height: 25
+	popup: {
+		fill: {
+			...containerInitial,
+			backgroundColor: colors.surfaceLight,
+			borderWidth: 1,
+			borderColor: "rgba(200, 200, 200, .1)"
+		}
 	}
-});
+}
+
+const textStyle = {
+	brand: {
+		initial: {
+			color: colors.secondary,
+			fontSize: 16,
+			fontWeight: "500"
+		},
+		
+		fill: {
+			color: "black",
+			fontSize: 16,
+			fontWeight: "700",
+			textShadowColor: "rgba(250, 250, 250, .4)",
+			textShadowRadius: 5
+		}
+	}
+}

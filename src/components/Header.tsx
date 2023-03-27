@@ -9,17 +9,24 @@ const avatars = {
 export default function Header({ title, values, actions, onClose, player}) {
 	return (
 		<View style={styles.header}>
-			{onClose && <Button styleOuter={styles.back} style={styles.backIcon} icon={require("@static/icon/back.png")} borderDisabled={true} rippleColor="rgba(255, 255, 255, .2)" onPress={onClose} />}
+			{onClose && <Button
+				style={styles.back}
+				fill={true}
+				icon={require("@static/icon/back.png")}
+				theme="popup"
+				onPress={onClose} />}
+				
 			{title && <Text style={styles.title}>{title}</Text>}
 			{player && Profile(player)}
 			{values && <View style={styles.values}>{values.map(item => <Value {...item}/>)}</View>}
+			
 			<View style={styles.actions}>
 				{actions && actions.map(item => (
 					<Button key={item.key}
 						onPress={item.onPress}
+						theme="popup"
 						icon={item.icon}
-						borderDisabled={true}
-						rippleColor="rgba(255, 255, 255, .2)" />
+						fill={true} />
 				))}
 			</View>
 		</View>
@@ -60,14 +67,8 @@ const styles = StyleSheet.create({
 	},
 	
 	back: {
-		marginLeft: 5,
-		marginRight: 5,
-		padding: 2
-	},
-	
-	backIcon: {
-		width: 20,
-		height: 20
+		marginLeft: 15,
+		marginRight: 5
 	},
 	
 	title: {

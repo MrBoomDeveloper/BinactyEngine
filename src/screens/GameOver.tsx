@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { View, Text, StyleSheet, Animated, Share, Easing } from "react-native";
+import { View, Text, Image, StyleSheet, FlatList, Animated, Share, Easing } from "react-native";
 import { Button } from "@components";
 import { colors } from "@util/variables";
 import GameNative from "@native";
@@ -69,24 +69,26 @@ export default function GameOver() {
 	return (
 		<View style={styles.screen}>
 			<Animated.View style={{...styles.stats, opacity: statsFadeAnimation}}>
-				<Text>{stats.isWin ? "+1 Coin" : "You've got nothing."}</Text>
+				{/*<FlatList data={[]} renderItem={Stat}/>*/}
+				<Text style={styles.statText}>{stats.isWin ? "+1 Coin" : "Better luck next time..."}</Text>
 			</Animated.View>
 			
 			<Animated.View style={{...styles.actions, opacity: buttonsFadeAnimation}}>
-				<Button
-					styleOuter={styles.action}
-					labelStyle={styles.buttonLabel}
-					label="Share results"
+				<Button text="Share results"
+					style={styles.action}
+					styleText={styles.actionText}
+					theme="brand"
 					onPress={() => {
 						Share.share({
 							message: "Hey, I just found out about a cool ActionPlatformer game! I recommend playing! https://gamejolt.com/games/actionplatformer/670228"
 						});
 					}} />
-				<Button 
-					styleOuter={styles.action}
-					labelStyle={styles.buttonLabel}
-					label="Continue"
-					onPress={() => close()}/>
+				<Button text="Continue"
+					style={styles.action}
+					styleText={styles.actionText}
+					theme="brand"
+					fill={true}
+					onPress={() => close()} />
 			</Animated.View>
 			
 			<Animated.View style={{...styles.titleHolder, height: titleScrollInterpolate}}>
@@ -94,6 +96,16 @@ export default function GameOver() {
 					{ scale: titlePopupAnimation }
 				]}}>{stats.isWin ? "You Win!" : "Game Over"}</Animated.Text>
 			</Animated.View>
+		</View>
+	);
+}
+
+function Stat({title, count}) {
+	return (
+		<View style={{flexGrow: 1}}>
+			<Text style={{...styles.statText, flexGrow: 1}}>{title}</Text>
+			<Text style={{...styles.statText}}>{count}</Text>
+			<Image source={null} />
 		</View>
 	);
 }
@@ -113,16 +125,24 @@ const styles = StyleSheet.create({
 		flexGrow: 1
 	},
 	
+	statText: {
+		fontSize: 15,
+		color: "white"
+	},
+	
 	actions: {
-		display: "flex",
 		flexDirection: "row",
 		justifyContent: "center",
-		gap: 20
+		gap: 15
 	},
 	
 	action: {
-		width: 200,
-		height: 50
+		width: 180,
+		height: 45
+	},
+	
+	actionText: {
+		fontSize: 17
 	},
 	
 	titleHolder: {
@@ -139,9 +159,5 @@ const styles = StyleSheet.create({
 		fontSize: 100,
 		fontWeight: "600",
 		marginLeft: 100
-	},
-	
-	buttonLabel: {
-		fontSize: 18
 	}
 });
