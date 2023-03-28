@@ -9,13 +9,13 @@ import Character from "./home/Character";
 import Missions from "./home/Missions";
 import Packs from "./home/Packs";
 
-function Home() {
+function Home({controller}) {
 	const [gamemodesVisibility, setGamemodesVisbility] = useState(false);
 	const currentGamemode = useSelector(state => state.gamemodes.value.current);
 	
 	const play = (enableEditor: boolean): void => {
 		return function() {
-			GameNative.play({...currentGamemode, enableEditor});
+			controller.setScreen("loading", {target: "game", args: {...currentGamemode, enableEditor}});
 		}
 	}
 	

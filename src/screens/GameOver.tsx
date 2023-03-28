@@ -4,7 +4,7 @@ import { Button } from "@components";
 import { colors } from "@util/variables";
 import GameNative from "@native";
 
-export default function GameOver() {
+export default function GameOver({controller}) {
 	const [isLoaded, setIsLoaded] = useState(false);
 	const [balance, setBalance] = useState({});
 	const [stats, setStats]= useState({isWin: false});
@@ -63,7 +63,8 @@ export default function GameOver() {
 		if(stats.isWin) {
 			GameNative.setKey("int", "coins", String(balance.coins + 1));
 		}
-		GameNative.finish("GameOver");
+		controller.setScreen("loading", {target: "lobby"});
+		//GameNative.finish("GameOver");
 	}
 	
 	return (

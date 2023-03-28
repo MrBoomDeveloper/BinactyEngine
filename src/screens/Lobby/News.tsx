@@ -65,7 +65,7 @@ function getOptions(input: string) {
 	return { pin: false, link: null, tags: [] };
 }
 
-export async function getNews(callback: void) {
+export async function getNews() {
 	const url: string = "https://mrboomdev.bearblog.dev/feed/?type=rss";
 	
 	let result = await parseRss(url);
@@ -82,7 +82,7 @@ export async function getNews(callback: void) {
 		return true;
 	});
 	
-	callback([...sortedNews, ...filteredNews]);
+	return [...sortedNews, ...filteredNews];
 }
 
 const styles = StyleSheet.create({

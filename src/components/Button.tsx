@@ -51,7 +51,7 @@ const containerInitial = {
 const ripple = {
 	fill: "black",
 	brand: colors.primary,
-	popup: "white"
+	popup: "rgb(250, 250, 250, .8)"
 }
 
 const containerStyle = {

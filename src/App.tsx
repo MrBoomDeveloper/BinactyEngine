@@ -1,20 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, cloneElement, Children } from "react";
 import { StatusBar, Pressable, StyleSheet, View, Text, BackHandler } from 'react-native';
+import { Splash, Loading, Lobby, GameOver } from "@screens";
 import { Header, Navigation, Pager, Button } from "@components";
 import { Settings } from "@screens";
 import GameNative from "@native";
 import { colors, sizes } from "@util/variables";
 import { NavItems } from "@data/HomeData";
-import { Provider, useDispatch, useSelector } from "react-redux";
-import Home from "@screens/lobby/Home";
-import News from "@screens/lobby/News";
+import { Provider, useSelector } from "react-redux";
+import Home from "@screens/Lobby/Home";
+import News from "@screens/Lobby/News";
 import { store } from "@context/store";
-import { load as loadGamemodes } from "@context/gamemodes";
-import { load as loadSettings } from "@context/settings";
-import { load as loadNews } from "@context/news";
-import { setProfile, setMoney } from "@context/profile";
-import { getNews } from "@screens/lobby/News";
-import settingsPreset from "@data/SettingsData";
 
 const Wip = () => {
 	return (
@@ -32,26 +27,11 @@ const Wip = () => {
 	);
 }
 
-function Screen() {
+function Screen({controller}) {
 	const [currentPage, setCurrentPage] = useState("home");
 	const [settingsVisibility, setSettingsVisibility] = useState(false);
-	const dispatch = useDispatch();
 	const profile = useSelector(state => state.profile.value.me);
 	const money = useSelector(state => state.profile.value.money);
-	
-	async function getBalance() {
-		const coins = await GameNative.getKey("int", "coins");
-		const diamonds = await GameNative.getKey("int", "diamonds");
-		dispatch(setMoney({coins, diamonds}));
-	}
-	
-	useEffect(() => {
-		GameNative.getKeys(settingsPreset, result => dispatch(loadSettings(result)));
-		GameNative.getGamemodes(result => dispatch(loadGamemodes(result)));
-		GameNative.getMyData(result => dispatch(setProfile(result)));
-		getNews(result => dispatch(loadNews(result)));
-		getBalance();
-	}, []);
 	
 	const actions = [
 		{ key: "settings", icon: require("@static/icon/settings.png"), onPress() { setSettingsVisibility(true) } }
@@ -63,7 +43,7 @@ function Screen() {
 			<View style={styles.dualContainer}>
 				<Navigation items={NavItems} onSelect={setCurrentPage}/>
 				<Pager select={currentPage}>
-					<Home id="home"/>
+					<Home controller={controller} id="home"/>
 					<Wip id="skills" />
 					<Wip id="shop" />
 					<News id="logs"/>
@@ -87,12 +67,37 @@ export default function App() {
 	return (
 		<View style={{flex: 1}}>
 			<Provider store={store}>
-				<StatusBar hidden={true}/>
-				<Screen />
+				<StatusBar hidden={true} />
+				<Controller initial="splash">
+					<Splash name="splash" />
+					<Loading name="loading" />
+					<Screen name="lobby" />
+					<GameOver name="gameover" />
+				</Controller>
 			</Provider>
 		</View>
 	);
 };
+
+function Controller({children, initial}) {
+	const [currentScreen, setScreen] = useState({name: initial, args: {}});
+	
+	const controller = {
+		setScreen: (name, args) => {
+			setScreen({name, args});
+		}
+	}
+	
+	return (
+		<View style={{flex: 1}}>
+			{Children.toArray(children).map(child => {
+				if(child.props.name == currentScreen.name) {
+					return cloneElement(child, {controller, ...currentScreen.args})
+				}
+			})}
+		</View>
+	);
+}
 
 const styles = StyleSheet.create({
 	screen: {
