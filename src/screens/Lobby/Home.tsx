@@ -1,17 +1,27 @@
 import { useRef, useEffect, useState, memo } from "react";
-import { useSelector } from "react-redux";
-import { ScrollView, View, Image, Text, StyleSheet, Modal, FlatList } from "react-native";
+import { useSelector, useDispatch } from "react-redux";
+import { ScrollView, TouchableOpacity, View, Image, ImageBackground, Text, StyleSheet, SectionList, FlatList, Animated, Easing } from "react-native";
 import { Button, Chips } from "@components";
-import { Gamemodes } from "@screens";
 import { sizes, colors } from "@util/variables";
 import GameNative from "@native";
-import Character from "./home/Character";
-import Missions from "./home/Missions";
-import Packs from "./home/Packs";
+import Gamemodes from "./home/Gamemodes";
+import Editor from "./home/Editor";
 
 function Home({controller}) {
 	const [gamemodesVisibility, setGamemodesVisbility] = useState(false);
-	const currentGamemode = useSelector(state => state.gamemodes.value.current);
+	const [editorVisibility, setEditorVisbility] = useState(false);
+	const swipeAnimation = useRef(new Animated.Value(0)).current;
+	const touchYBegin = useRef(0);
+	const currentGamemode = useSelector(state => state.gamemodes.current);
+	
+	useEffect(() => {
+		Animated.timing(swipeAnimation, {
+			toValue: editorVisibility ? 2 : gamemodesVisibility ? 1 : 0,
+			duration: 350,
+			easing: Easing.cubic,
+			useNativeDriver: false
+		}).start();
+	}, [swipeAnimation, gamemodesVisibility, editorVisibility]);
 	
 	const play = (enableEditor: boolean): void => {
 		return function() {
@@ -19,163 +29,195 @@ function Home({controller}) {
 		}
 	}
 	
-	let mainCardStyle = {...styles.card, width: 275};
-	if(currentGamemode.id == "editor") {
-		mainCardStyle = {...mainCardStyle, ...styles.cardSharpLeft};
+	function handleTouch(e) {
+		touchYBegin.current = e.nativeEvent.locationY;
+		return true;
+	}
+	
+	function handleSwipe(e, hide) {
+		if(!hide && e.nativeEvent.locationY < touchYBegin.current - 50) {
+			setGamemodesVisbility(true);
+		} else if(hide && e.nativeEvent.locationY > touchYBegin.current + 50) {
+			setGamemodesVisbility(false);
+		}
 	}
 	
 	return (
-		<View style={styles.home}>
-			<Gamemodes visible={gamemodesVisibility} onClose={() => setGamemodesVisbility(false)} />
-			<ScrollView 
-			  style={styles.overview}
-			  horizontal={true}
-			  showsHorizontalScrollIndicator={false}
-			  overScrollMode="always">
+		<>
+			<Animated.View style={{justifyContent: "flex-end", bottom: swipeAnimation.interpolate({inputRange: [0, 1], outputRange: ["0%", "100%"]}), position: "absolute", height: "100%", width: "100%"}}>
+				<Image resizeMode="cover"
+					source={require("@static/banner/gamemode/banner_hd.jpg")}
+					style={styles.wallpaper} />
+				
+				<Image resizeMode="stretch"
+					style={styles.gamemodeInfoGradient}
+					source={require("@static/ui/gradientShadowLeftRight.png")} />
+					
+				<Image resizeMode="stretch"
+					style={styles.toggleGamemodesVisibilityGradient}
+					source={require("@static/ui/gradientShadowBottomTop.png")} />
 			
-				<View style={mainCardStyle}>
-					<Image source={require("@static/banner/gamemode/banner.jpg")} style={styles.banner} />
-					<View style={styles.info}>
+				<View style={styles.swipeHandler} onMoveShouldSetResponder={handleTouch} onResponderMove={handleSwipe}/>
+			
+				<View style={styles.gamemodeInfo}>
+					<View style={styles.swipeHandler} onMoveShouldSetResponder={handleTouch} onResponderMove={handleSwipe}/>
+					<Text style={styles.title}>{currentGamemode.name}</Text>
+					<View style={styles.aboutMatchRow}>
+						<Image style={{width: 18, height: 18}} source={require("@static/icon/time.png")} />
+						<Text style={styles.aboutMatchLabel}>6:00</Text>
 					
-						<Text style={styles.title}>{currentGamemode.name}</Text>
-						<Text style={styles.author}>Made by: {currentGamemode.author}</Text>
-						<Text style={styles.description}>{currentGamemode.description}</Text>
-						
+						<Image style={{width: 22, height: 22, marginLeft: 10}} source={require("@static/icon/groups.png")} />
+						<Text style={styles.aboutMatchLabel}>1 player</Text>
 					</View>
-					<View style={styles.actions}>
 					
-						<Button text="Change gamemode"
-							theme="brand"
-							onPress={() => setGamemodesVisbility(true)} />
-								
+					<Text style={{...styles.description, color: "white"}}>Made by:  {currentGamemode.author}</Text>
+					<Text style={{...styles.description, marginTop: -2}}>{currentGamemode.description}</Text>
+					
+					<View style={{marginTop: 10, flexDirection: "row", gap: 10}}>
 						<Button text="Start Game!"
+							style={{flexGrow: 1}}
 							icon={require("@static/icon/play.png")}
 							theme="brand"
 							onPress={play(false)}
-							style={{marginTop: 5}}
 							fill={true} />
-							
+					
+						<Button icon={require("@static/icon/edit.png")}
+							theme="brand"
+							onPress={() => setEditorVisbility(true)}
+							styleIcon={{width: 25, height: 25, marginHorizontal: 5}}
+							fill={true} />
+					</View>
+				</View>
+			
+				<View style={styles.cardHolder}>
+					<View style={styles.swipeHandler} onMoveShouldSetResponder={handleTouch} onResponderMove={handleSwipe}/>
+					<View style={styles.card}>
+						<Text style={styles.cardTitle}>Missions</Text>
+						<Text style={{marginTop: 15}}>Coming soon...</Text>
+					</View>
+				
+					<View style={styles.card}>
+						<Text style={styles.cardTitle}>Friends</Text>
+						<Text style={{marginTop: 15}}>you have no friends.</Text>
 					</View>
 				</View>
 				
-				{currentGamemode.id == "editor" && <View style={{...styles.card, ...styles.cardSharpRight}}>
-					<Text style={[styles.title, styles.titleEditor]}>Editor Gamemodes</Text>
-					<FlatList
-					  ListEmptyComponent={Blank}/>
-					<Text>Selected map:  FNaF 1</Text>
-					<View style={[styles.actions, styles.actionsLittle]}>
-						<Button text="Start Editor"
-							theme="brand"
-							onPress={play(true)} />
-							
-						<Button text="Create a new one"
-							theme="brand"
-							style={{marginTop: 5, marginBottom: 6}}
-							onPress={() => alert("This functionality of the game is still in the development.")} />
-					</View>
-				</View>}
+				<TouchableOpacity onPress={() => setGamemodesVisbility(true)} style={styles.showMoreGamemodes}>
+					<Image source={require("@static/icon/expand.png")} style={styles.moreGamemodesIcon}/>
+					<Text style={{color: "white"}}>Show more gamemodes</Text>
+				</TouchableOpacity>
+			</Animated.View>
+		
+			<Gamemodes swipeAnimation={swipeAnimation}
+				setGamemodesVisbility={setGamemodesVisbility}
+				setEditorVisbility={setEditorVisbility}
+				handleTouch={handleTouch}
+				handleSwipe={handleSwipe}/>
 				
-				<Character />
-				<Missions />
-				<Packs />
-				
-				<View style={{width: 300}}>
-					<Text style={{lineHeight: 20, marginBottom: 10}}>This game uses some third-party resources so if you want, you can provide credits to original authors!</Text>
-					<Text selectable={true} style={{lineHeight: 24}}>Lobby theme:  https://youtu.be/S6FRfxU-4Q4</Text>
-					<Text style={{lineHeight: 24}}>Match ambient: FNaF AR & FNaF 1</Text>
-					<Text selectable={true} style={{lineHeight: 24}}>Fonts & Icons: https://fonts.google.com</Text>
-				</View>
-				
-				<View style={{marginRight: 200}} />
-			</ScrollView>
-		</View>
-	);
-}
-
-function Blank() {
-	return (
-		<Text style={styles.blankText}>You didn't created any gamemode yet. Click the "Create a new one" button to begin!</Text>
+			<Editor swipeAnimation={swipeAnimation}
+				controller={controller}
+				setEditorVisbility={setEditorVisbility} />
+		</>
 	);
 }
 
 const styles = StyleSheet.create({
-	home: {
+	wallpaper: {
+		position: "absolute",
 		width: "100%",
+		height: "100%"
+	},
+	
+	gamemodeInfo: {
+		top: 0,
+		height: "100%",
+		width: 350,
+		position: "absolute",
+		padding: 50,
 		justifyContent: "center",
-		flexGrow: 1
+		gap: 10
 	},
 	
-	overview: {
-		paddingHorizontal: sizes.large,
-		paddingVertical: 10,
-		maxHeight: 450
-	},
-	
-	card: {
-		borderRadius: 12,
-		backgroundColor: "#190A29",
-		marginRight: 20
-	},
-	
-	cardSharpLeft: {
-		marginRight: 0,
-	},
-	
-	cardSharpRight: {
-		width: 250,
-		marginRight: 20,
-		paddingVertical: 16,
-		paddingHorizontal: 28
-	},
-	
-	banner: {
-		width: "100%",
-		height: 150,
-		borderTopLeftRadius: 12,
-		borderTopRightRadius: 12,
-		backgroundColor: "black"
-	},
-	
-	info: {
-		padding: sizes.large,
-		flexGrow: 1
+	gamemodeInfoGradient: {
+		position: "absolute",
+		width: "50%",
+		top: 0
 	},
 	
 	title: {
-		fontSize: 22,
-		fontWeight: "500",
-		color: "white"
+		color: "white",
+		fontSize: 28,
+		lineHeight: 40
 	},
 	
-	titleEditor: {
-		fontSize: 20
+	aboutMatchRow: {
+		flexDirection: "row",
+		alignItems: "center",
+		gap: 10
 	},
 	
-	author: {
-		marginVertical: 6,
-		fontSize: 15
+	aboutMatchLabel: {
+		color: colors.textSecond,
+		fontSize: 16
 	},
 	
 	description: {
-		fontSize: 15,
-		lineHeight: 22,
-		fontWeight: "400",
 		marginTop: 2,
-		color: "white"
+		lineHeight: 23,
+		fontSize: 15,
+		color: colors.textSecond
 	},
 	
-	actions: {
-		padding: sizes.large
+	cardHolder: {
+		position: "absolute",
+		justifyContent: "center",
+		height: "100%",
+		right: 0,
+		padding: 50,
+		gap: 10
 	},
 	
-	actionsLittle: {
-		paddingHorizontal: 2,
-		paddingBottom: 0
+	card: {
+		backgroundColor: "rgba(0, 0, 0, .4)",
+		alignItems: "center",
+		paddingVertical: 25,
+		width: 250,
+		borderRadius: 15
 	},
 	
-	blankText: {
-		lineHeight: 21,
-		marginVertical: 10
+	cardTitle: {
+		color: "white",
+		fontSize: 20,
+		fontWeight: "500"
+	},
+	
+	toggleGamemodesVisibilityGradient: {
+		position: "absolute",
+		height: "50%",
+		width: "100%",
+		opacity: 0.8,
+		bottom: 0
+	},
+	
+	showMoreGamemodes: {
+		width: "100%",
+		padding: 25,
+		justifyContent: "center",
+		alignItems: "center",
+		flexDirection: "row",
+		paddingLeft: 0
+	},
+	
+	moreGamemodesIcon: {
+		width: 35,
+		height: 35,
+		marginRight: 5
+	},
+	
+	swipeHandler: {
+		width: "100%",
+		height: "100%",
+		position: "absolute"
 	}
 });
 

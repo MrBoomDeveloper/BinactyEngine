@@ -22,8 +22,8 @@ export const profileSlice = createSlice({
 		
 		setMoney: (state, {payload}) => {
 			state.value.money = [
-				{ key: "coins", title: "Coins", count: payload.coins },
-				{ key: "diamonds", title: "Diamonds", count: payload.diamonds }
+				{ key: "coins", title: "Coins", count: payload.coins, icon: require("@static/icon/coin.png") },
+				{ key: "diamonds", title: "Diamonds", count: payload.diamonds, icon: require("@static/icon/diamond.png") }
 			];
 		}
 	}

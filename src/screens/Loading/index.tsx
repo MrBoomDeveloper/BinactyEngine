@@ -41,6 +41,9 @@ export default function Loading({controller, target, args}) {
 			new NativeEventEmitter(NativeModules.GameNative).addListener("GameOver", event => {
 				controller.setScreen("gameover");
 			});
+			new NativeEventEmitter(NativeModules.GameNative).addListener("ForceExit", event => {
+				loadStuff();
+			});
 			GameNative.play(args);
 		}
 	}, [target]);

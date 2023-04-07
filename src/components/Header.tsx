@@ -6,7 +6,7 @@ import { sizes, colors } from "../util/variables";
 const avatars = {
 	klarrie: require("../static/avatar/premium.jpg")
 }
-export default function Header({ title, values, actions, onClose, player}) {
+export default function Header({ title, values, actions, onClose, player, children}) {
 	return (
 		<View style={styles.header}>
 			{onClose && <Button
@@ -18,6 +18,7 @@ export default function Header({ title, values, actions, onClose, player}) {
 				
 			{title && <Text style={styles.title}>{title}</Text>}
 			{player && Profile(player)}
+			<View style={{flex: 1}}>{children}</View>
 			{values && <View style={styles.values}>{values.map(item => <Value {...item}/>)}</View>}
 			
 			<View style={styles.actions}>
@@ -47,11 +48,12 @@ function Profile({nick, level, avatar}) {
 	);
 }
 
-function Value({title, count}) {
+function Value({title, count, icon}) {
 	return (
 		<View style={styles.value}>
-			<Text>{title}: </Text>
-			<Text>{count}</Text>
+			<View style={styles.valueBackground} />
+			<Image style={{width: 25, height: 25}} source={icon} />
+			<Text style={{color: "white", fontSize: 16}}>{count}</Text>
 		</View>
 	);
 }
@@ -95,8 +97,7 @@ const styles = StyleSheet.create({
 	
 	profile: {
 		display: "flex",
-		flexDirection: "row",
-		flexGrow: 1
+		flexDirection: "row"
 	},
 	
 	nicknameLabel: {
@@ -113,12 +114,24 @@ const styles = StyleSheet.create({
 	
 	values: {
 		flexDirection: "row",
-		gap: 25
+		gap: 50
 	},
 	
 	value: {
 		flexDirection: "row",
+		alignItems: "center",
+		minWidth: 100,
 		gap: 10
+	},
+	
+	valueBackground: {
+		width: "100%",
+		height: "100%",
+		borderRadius: 10,
+		backgroundColor: "rgba(75, 75, 75, 0.1)",
+		borderWidth: 1,
+		borderColor: "rgba(200, 200, 200, .1)",
+		position: "absolute"
 	},
 	
 	actions: {

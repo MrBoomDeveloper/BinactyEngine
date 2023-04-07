@@ -1,30 +1,26 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const maker = {
-	name: "Map Editor",
-	author: "You",
-	description: "Create your own maps!",
-	key: "editor", id: "editor"
-}
-
 export const gamemodesSlice = createSlice({
 	name: "Gamemodes",
 	initialState: {
-		value: {
-			current: { },
-			list: []
-		}
+		current: { },
+		list: []
 	},
 	
 	reducers: {
 		setActive: (state, {payload}) => {
-			state.value.current = payload;
+			state.current = payload;
 		},
 		
 		load: (state, {payload}) => {
-			state.value.list = payload;
-			state.value.list.special = [maker, ...state.value.list.special];
-			state.value.current = state.value.list["special"][1];
+			state.list = payload;
+			state.list[1].data = [...state.list[1].data, {
+				name: "Create Gamemode",
+				description: "Turn your dreams into real!",
+				id: "create",
+				author: "You"
+			}];
+			state.current = payload[0].data[0];
 		}
 	}
 });

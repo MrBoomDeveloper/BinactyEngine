@@ -9,7 +9,7 @@ interface Button {
 	fill?: boolean
 }
 
-export default function Button({text, icon, fill, theme, onPress, style, styleText}: Button) {
+export default function Button({text, icon, fill, theme, rippleColor, onPress, style, styleText, styleIcon}: Button) {
 	return (
 		<Pressable onPress={onPress}
 			hitSlop={25}
@@ -19,15 +19,15 @@ export default function Button({text, icon, fill, theme, onPress, style, styleTe
 				...style
 			}}
 			android_ripple={{
-				color: fill ? (text ? ripple.fill : ripple[theme]) : ripple[theme],
+				color: rippleColor || (fill ? (text ? ripple.fill : ripple[theme]) : ripple[theme]),
 				borderless: !text,
 				foreground: true
 			}}>
 			
-			{icon && <Image source={icon} style={{
+			{icon && <Image source={icon} style={[{
 				width: text ? 30 : 25,
 				height: text ? 30 : 25
-			}} />}
+			}, styleIcon]} />}
 			{text && <Text style={{
 				...textStyle[theme][fill ? "fill" : "initial"],
 				marginRight: (icon ? 15 : 0),
@@ -79,6 +79,12 @@ const containerStyle = {
 }
 
 const textStyle = {
+	popup: {
+		initial: {
+			color: "white"
+		}
+	},
+	
 	brand: {
 		initial: {
 			color: colors.secondary,
