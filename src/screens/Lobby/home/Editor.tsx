@@ -1,15 +1,17 @@
 import { useSelector } from "react-redux";
 import { View, Text, Animated, StyleSheet, ScrollView } from "react-native";
-import { Button } from "@components";
+import { Button, Input } from "@components";
+import { colors } from "@util/variables";
 
 export default function Editor({swipeAnimation, controller, setEditorVisbility}) {
 	const currentGamemode = useSelector(state => state.gamemodes.current);
 	
 	return (
-		<Animated.View style={{bottom: swipeAnimation.interpolate({inputRange: [0, 1], outputRange: ["-200%", "-100%"]})}}>
+		<Animated.View style={{bottom: swipeAnimation.interpolate({inputRange: [0, 1], outputRange: ["-200%", "-100%"]}), backgroundColor: colors.background}}>
 			<ScrollView>
 				<Text style={styles.title}>{currentGamemode.name}</Text>
-				<View style={{flexDirection: "row", gap: 10, width: 300, marginTop: 15, padding: 50}}>
+				<Input defaultValue="text" placeholder="hint" />
+				<View style={{flexDirection: "row", gap: 10, width: 450, marginTop: 15, padding: 50}}>
 					<Button theme="brand" text="Save"
 						style={{flex: 1}}
 						onPress={() => setEditorVisbility(false)}/>

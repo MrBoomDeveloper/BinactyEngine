@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { useState, useEffect } from "react";
+import { View, Text, StyleSheet, BackHandler } from "react-native";
 import { Provider, useSelector } from "react-redux";
 import { Header, Navigation, Pager, Button } from "@components";
 import { Settings } from "@screens";
@@ -19,11 +19,18 @@ export default function Lobby({controller}) {
 		{ key: "settings", icon: require("@static/icon/settings.png"), onPress() { setSettingsVisibility(true) } }
 	];
 	
+	useEffect(() => {
+		BackHandler.addEventListener("hardwareBackPress", () => {
+			GameNative.requestClose();
+			return true;
+		});
+	}, []);
+	
 	return (
 		<View style={styles.screen}>
 			<Header player={profile} values={money} actions={actions}>
 				<View style={{flexDirection: "row", justifyContent: "center"}}>
-					<Button text="Manage Installed Packs  (1)"
+					<Button text="Manage Installed Packs"
 						onPress={() => GameNative.managePacks()}
 						theme="popup" fill={true}
 						style={{paddingHorizontal: 50}}

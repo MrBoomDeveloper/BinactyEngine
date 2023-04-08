@@ -3,44 +3,38 @@ import { Text, View, FlatList, Animated, StyleSheet, TouchableOpacity, Image, Se
 import { colors } from "@util/variables";
 import { setActive } from "@context/gamemodes";
 
-export default function Gamemodes({swipeAnimation, setGamemodesVisbility, setEditorVisibility, handleTouch, handleSwipe}) {
+export default function Gamemodes({swipeAnimation, setGamemodesVisbility, setEditorVisibility}) {
 	const allGamemodes = useSelector(state => state.gamemodes.list);
 	
 	return (
 		<Animated.View style={{bottom: swipeAnimation.interpolate({inputRange: [0, 1], outputRange: ["-100%", "0%"]}), position: "absolute", backgroundColor: colors.background, height: "100%", width: "100%"}}>
-			<View style={styles.swipeHandler} onMoveShouldSetResponder={handleTouch} onResponderMove={e => handleSwipe(e, true)}/>
-			<TouchableOpacity onPress={() => setGamemodesVisbility(false)} style={styles.showMoreGamemodes} onPressIn={handleTouch} onPressOut={e => handleSwipe(e, true)}>
+			<SectionList sections={allGamemodes}
+				keyExtractor={item => item.id}
+				renderItem={() => null}
+				ListHeaderComponent={<View style={{height: 25}} />}
+				ListFooterComponent={<View style={{height: 25}} />}
+				renderSectionHeader={item => (
+					<GamemodeCategory data={item.section} 
+						setGamemodesVisbility={setGamemodesVisbility} />
+				)}/>
+				
+			<TouchableOpacity onPress={() => setGamemodesVisbility(false)} style={styles.showMoreGamemodes}>
 				<Image source={require("@static/icon/expand.png")} style={{...styles.moreGamemodesIcon, transform: [{scaleY: -1}]}}/>
 				<Text style={{color: "white"}}>Go back to overview</Text>
 			</TouchableOpacity>
-			
-			<SectionList sections={allGamemodes}
-				keyExtractor={item => item.id}
-				onScrollBeginDrag={handleTouch}
-				onScrollEndDrag={e => handleSwipe(e, true)}
-				renderItem={() => null}
-				renderSectionHeader={item => (
-					<GamemodeCategory data={item.section} 
-						handleTouch={handleTouch}
-						setGamemodesVisbility={setGamemodesVisbility}
-						handleSwipe={handleSwipe} />
-				)}/>
 		</Animated.View>
 	);
 }
 
-function GamemodeCategory({data: {title, data}, handleTouch, handleSwipe, setGamemodesVisbility}) {
+function GamemodeCategory({data: {title, data}, setGamemodesVisbility}) {
 	const dispatch = useDispatch();
 	
 	return (
 		<>
 			<Text style={gmStyles.catTitle}>{title}</Text>
-			<View style={{...styles.swipeHandler}} onMoveShouldSetResponder={handleTouch} onResponderMove={e => handleSwipe(e, true)}/>
 			<FlatList data={data}
 				keyExtractor={item => item.id}
 				horizontal={true}
-				onScrollBeginDrag={handleTouch}
-				onScrollEndDrag={e => handleSwipe(e, true)}
 				showsHorizontalScrollIndicator={false}
 				ListHeaderComponent={<View style={{width: 25}} />}
 				ListFooterComponent={<View style={{width: 25}} />}
@@ -53,7 +47,7 @@ function GamemodeCategory({data: {title, data}, handleTouch, handleSwipe, setGam
 					
 					return (
 						<TouchableOpacity style={gmStyles.card} onPress={onPress}>
-							<Image style={gmStyles.banner} source={require("@static/banner/gamemode/banner_hd.jpg")} />
+							<Image style={gmStyles.banner} source={item.banner ? {uri: item.banner} : require("@static/banner/gamemode/banner_hd.jpg")} />
 							<Image style={gmStyles.shadowLeft} source={require("@static/ui/gradientShadowLeftRight.png")} />
 							<Image style={gmStyles.shadowBottom} source={require("@static/ui/gradientShadowBottomTop.png")} />
 							<Text style={{color: "white", fontWeight: "500", fontSize: 18, width: "30%", flexGrow: 1, margin: 15, lineHeight: 26}}>{item.name}</Text>
@@ -76,6 +70,7 @@ const styles = StyleSheet.create({
 	},
 	
 	showMoreGamemodes: {
+		position: "absolute",
 		width: "100%",
 		padding: 25,
 		justifyContent: "center",
@@ -88,12 +83,6 @@ const styles = StyleSheet.create({
 		width: 35,
 		height: 35,
 		marginRight: 5
-	},
-	
-	swipeHandler: {
-		width: "100%",
-		height: "100%",
-		position: "absolute"
 	}
 });
 
@@ -102,7 +91,8 @@ const gmStyles = StyleSheet.create({
 		color: "white",
 		fontWeight: "500",
 		fontSize: 22,
-		margin: 25
+		margin: 25,
+		marginBottom: 15
 	},
 	
 	card: {

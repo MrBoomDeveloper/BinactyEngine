@@ -27,8 +27,8 @@ export default function Splash({controller}) {
 				}),
 				Animated.timing(gradientAnimation, {
 					toValue: 0,
-					delay: 600,
-					duration: 1500,
+					delay: 200,
+					duration: 1250,
 					useNativeDriver: true
 				})
 			]).start(() => {

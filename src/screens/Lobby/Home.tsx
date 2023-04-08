@@ -46,7 +46,7 @@ function Home({controller}) {
 		<>
 			<Animated.View style={{justifyContent: "flex-end", bottom: swipeAnimation.interpolate({inputRange: [0, 1], outputRange: ["0%", "100%"]}), position: "absolute", height: "100%", width: "100%"}}>
 				<Image resizeMode="cover"
-					source={require("@static/banner/gamemode/banner_hd.jpg")}
+					source={currentGamemode.banner ? {uri: currentGamemode.banner} : require("@static/banner/gamemode/banner_hd.jpg")}
 					style={styles.wallpaper} />
 				
 				<Image resizeMode="stretch"
@@ -63,15 +63,15 @@ function Home({controller}) {
 					<View style={styles.swipeHandler} onMoveShouldSetResponder={handleTouch} onResponderMove={handleSwipe}/>
 					<Text style={styles.title}>{currentGamemode.name}</Text>
 					<View style={styles.aboutMatchRow}>
-						<Image style={{width: 18, height: 18}} source={require("@static/icon/time.png")} />
-						<Text style={styles.aboutMatchLabel}>6:00</Text>
+						{currentGamemode.time && <Image style={{width: 18, height: 18}} source={require("@static/icon/time.png")} />}
+						{currentGamemode.time && <Text style={styles.aboutMatchLabel}>{currentGamemode.time}</Text>}
 					
-						<Image style={{width: 22, height: 22, marginLeft: 10}} source={require("@static/icon/groups.png")} />
-						<Text style={styles.aboutMatchLabel}>1 player</Text>
+						<Image style={{width: 22, height: 22}} source={require("@static/icon/groups.png")} />
+						<Text style={styles.aboutMatchLabel}>{currentGamemode.maxPlayers > 1 ? `${currentGamemode.maxPlayers} players` : "1 player"}</Text>
 					</View>
 					
-					<Text style={{...styles.description, color: "white"}}>Made by:  {currentGamemode.author}</Text>
-					<Text style={{...styles.description, marginTop: -2}}>{currentGamemode.description}</Text>
+					<Text style={{...styles.description, color: "white"}}>Made by:  {currentGamemode.author || "Unknown"}</Text>
+					{currentGamemode.description && <Text style={{...styles.description, marginTop: -2}}>{currentGamemode.description}</Text>}
 					
 					<View style={{marginTop: 10, flexDirection: "row", gap: 10}}>
 						<Button text="Start Game!"
@@ -110,9 +110,7 @@ function Home({controller}) {
 		
 			<Gamemodes swipeAnimation={swipeAnimation}
 				setGamemodesVisbility={setGamemodesVisbility}
-				setEditorVisbility={setEditorVisbility}
-				handleTouch={handleTouch}
-				handleSwipe={handleSwipe}/>
+				setEditorVisbility={setEditorVisbility} />
 				
 			<Editor swipeAnimation={swipeAnimation}
 				controller={controller}
@@ -158,7 +156,8 @@ const styles = StyleSheet.create({
 	
 	aboutMatchLabel: {
 		color: colors.textSecond,
-		fontSize: 16
+		fontSize: 16,
+		marginRight: 10
 	},
 	
 	description: {

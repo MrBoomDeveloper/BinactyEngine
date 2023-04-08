@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { View, Animated, Text, TextInput, StyleSheet } from "react-native";
 import { colors } from "@util/variables";
 
-export default function Input({error, onChangeText, style, ...props}) {
+export default function Input({error, placeholder, onChangeText, style, ...props}) {
 	const animation = useRef(new Animated.Value(0));
 	const input = useRef();
 	const [isFocus, setIsFocus] = useState(false);
@@ -25,6 +25,7 @@ export default function Input({error, onChangeText, style, ...props}) {
 			<Animated.View style={{...styles.error, opacity: animation.current}}>
 				<Text style={styles.errorLabel}>{error}</Text>
 			</Animated.View>
+			
 			<TextInput ref={input}
 				style={styles.text}
 				textAlign="center"
@@ -32,7 +33,7 @@ export default function Input({error, onChangeText, style, ...props}) {
 				onFocus={() => setIsFocus(true)}
 				onBlur={() => setIsFocus(false)}
 				maxLength={25}
-				placeholder={String(props.placeholder || props.defaultValue)}
+				placeholder={String(placeholder || props.defaultValue)}
 				defaultValue={String(props.defaultValue)}
 				keyboardType={"number-pad"} />
 		</View>

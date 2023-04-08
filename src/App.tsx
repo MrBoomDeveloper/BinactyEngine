@@ -1,18 +1,11 @@
 import React, { useState, useEffect, cloneElement, Children } from "react";
-import { StatusBar, View,  BackHandler } from 'react-native';
+import { StatusBar, View } from 'react-native';
 import { Splash, Loading, Lobby, GameOver } from "@screens";
 import GameNative from "@native";
 import { Provider, useSelector } from "react-redux";
 import { store } from "@context/store";
 
 export default function App() {
-	useEffect(() => {
-		BackHandler.addEventListener("hardwareBackPress", () => {
-			GameNative.requestClose();
-			return true;
-		});
-	}, []);
-	
 	return (
 		<View style={{flex: 1}}>
 			<Provider store={store}>
