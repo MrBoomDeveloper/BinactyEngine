@@ -5,7 +5,7 @@ import { Button, Toggle, Input, Header } from "@components";
 import { sizes, colors } from "@util/variables";
 import Dialog from "./Dialog";
 import { update as updateSetting } from "@context/settings";
-import GameNative from "@native";
+import { GameNative, AppBridge } from "@native";
 
 function Settings({visible, onClose}) {
 	const settings = useSelector(state => state.settings.value);
@@ -20,8 +20,7 @@ function Settings({visible, onClose}) {
 	return (
 		<Dialog visible={visible} onClose={onClose}>
 			<Header title="Settings" onClose={onClose} />
-			<FlatList 
-			  data={settings}
+			<FlatList data={settings}
 			  ListHeaderComponent={<View style={{marginTop: 10}} />}
 			  ListFooterComponent={<View style={{marginBottom: 50}} />}
 			  renderItem={renderItem} />
@@ -64,6 +63,7 @@ function Controller({id, type, max, defaultValue, onUpdate}) {
 			setError("");
 			onUpdate(newText);
 			GameNative.setKey("int", id, newText);
+			if(id == "musicVolume") AppBridge.setVolume(Number(newText));
 		} else {
 			setError("Invalid value!");
 		}
@@ -82,6 +82,7 @@ function Controller({id, type, max, defaultValue, onUpdate}) {
 				<Input error={error}
 					onChangeText={onChangeText}
 					defaultValue={defaultValue}
+					type="number"
 					style={styles.input} />
 			);
 	}

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { View, Text, StyleSheet, BackHandler } from "react-native";
+import { View, Text, StyleSheet, BackHandler, NativeEventEmitter, NativeModules } from "react-native";
 import { Provider, useSelector } from "react-redux";
 import { Header, Navigation, Pager, Button } from "@components";
 import { Settings } from "@screens";
@@ -7,7 +7,7 @@ import Home from "@screens/Lobby/Home";
 import News from "@screens/Lobby/News";
 import { colors, sizes } from "@util/variables";
 import { NavItems } from "@data/HomeData";
-import GameNative from "@native";
+import GameNative, { PackBridge, AppBridge } from "@native";
 
 export default function Lobby({controller}) {
 	const [currentPage, setCurrentPage] = useState("home");
@@ -20,9 +20,14 @@ export default function Lobby({controller}) {
 	];
 	
 	useEffect(() => {
-		BackHandler.addEventListener("hardwareBackPress", () => {
+		BackHandler.addEventListener("hardwareBackPress", e => {
 			GameNative.requestClose();
 			return true;
+		});
+		
+		new NativeEventEmitter(PackBridge).addListener("reload", e => {
+			AppBridge.stopMusic();
+			controller.setScreen("loading", {target: "lobby"});
 		});
 	}, []);
 	
@@ -31,7 +36,7 @@ export default function Lobby({controller}) {
 			<Header player={profile} values={money} actions={actions}>
 				<View style={{flexDirection: "row", justifyContent: "center"}}>
 					<Button text="Manage Installed Packs"
-						onPress={() => GameNative.managePacks()}
+						onPress={() => PackBridge.managePacks()}
 						theme="popup" fill={true}
 						style={{paddingHorizontal: 50}}
 						rippleColor="rgba(250, 250, 250, .1)" />

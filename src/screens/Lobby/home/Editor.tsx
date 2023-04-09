@@ -10,7 +10,10 @@ export default function Editor({swipeAnimation, controller, setEditorVisbility})
 		<Animated.View style={{bottom: swipeAnimation.interpolate({inputRange: [0, 1], outputRange: ["-200%", "-100%"]}), backgroundColor: colors.background}}>
 			<ScrollView>
 				<Text style={styles.title}>{currentGamemode.name}</Text>
-				<Input defaultValue="text" placeholder="hint" />
+				<Input defaultValue="text"
+					type="text"
+					placeholder="hint" />
+				
 				<View style={{flexDirection: "row", gap: 10, width: 450, marginTop: 15, padding: 50}}>
 					<Button theme="brand" text="Save"
 						style={{flex: 1}}

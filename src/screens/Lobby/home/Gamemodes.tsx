@@ -2,6 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Text, View, FlatList, Animated, StyleSheet, TouchableOpacity, Image, SectionList } from "react-native";
 import { colors } from "@util/variables";
 import { setActive } from "@context/gamemodes";
+import { GameNative } from "@native";
 
 export default function Gamemodes({swipeAnimation, setGamemodesVisbility, setEditorVisibility}) {
 	const allGamemodes = useSelector(state => state.gamemodes.list);
@@ -26,7 +27,7 @@ export default function Gamemodes({swipeAnimation, setGamemodesVisbility, setEdi
 	);
 }
 
-function GamemodeCategory({data: {title, data}, setGamemodesVisbility}) {
+function GamemodeCategory({data: {title, id, data}, setGamemodesVisbility}) {
 	const dispatch = useDispatch();
 	
 	return (
@@ -42,6 +43,7 @@ function GamemodeCategory({data: {title, data}, setGamemodesVisbility}) {
 				renderItem={({item}) => {
 					function onPress() {
 						dispatch(setActive(item));
+						GameNative.setKey("string", "latestGamemode", JSON.stringify({row: id, item: item.id}));
 						setGamemodesVisbility(false);
 					}
 					

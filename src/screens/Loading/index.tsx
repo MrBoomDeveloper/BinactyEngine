@@ -4,7 +4,7 @@ import { View, Text, Image, NativeEventEmitter, NativeModules, StyleSheet } from
 import { loadGamemodes, loadSettings, loadMoney, loadProfile, loadNews } from "@context";
 import { getNews } from "@screens/Lobby/News";
 import settingsPreset from "@data/SettingsData";
-import GameNative from "@native";
+import { GameNative, AppBridge } from "@native";
 
 export default function Loading({controller, target, args}) {
 	const [loaded, setLoaded] = useState(0);
@@ -12,8 +12,8 @@ export default function Loading({controller, target, args}) {
 	
 	async function loadStuff() {
 		try {
-			GameNative.startMusic();
-			dispatch(loadGamemodes(await GameNative.getGamemodes()));
+			AppBridge.startMusic();
+			dispatch(loadGamemodes({list: await GameNative.getGamemodes(), latest: await GameNative.getKey("string", "latestGamemode")}));
 			setLoaded(15);
 			dispatch(loadSettings(await GameNative.getKeys(settingsPreset)));
 			setLoaded(30);
@@ -38,10 +38,10 @@ export default function Loading({controller, target, args}) {
 	useEffect(() => {
 		if(target == "lobby") loadStuff();
 		if(target == "game") {
-			new NativeEventEmitter(NativeModules.GameNative).addListener("GameOver", event => {
+			new NativeEventEmitter(GameNative).addListener("GameOver", e => {
 				controller.setScreen("gameover");
 			});
-			new NativeEventEmitter(NativeModules.GameNative).addListener("ForceExit", event => {
+			new NativeEventEmitter(GameNative).addListener("ForceExit", e => {
 				loadStuff();
 			});
 			GameNative.play(args);

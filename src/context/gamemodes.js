@@ -12,21 +12,30 @@ export const gamemodesSlice = createSlice({
 			state.current = payload;
 		},
 		
-		load: (state, {payload}) => {
-			state.list = payload;
+		load: (state, {payload: {list, latest}}) => {
+			state.list = list;
 			state.list.push({
 				title: "Other",
+				id: "723e7b6e-d6bd-11ed-afa1-0242ac120002",
 				data: [
 					{
 						name: "Create Gamemode",
 						description: "Turn your dreams into real!",
-						id: "create",
+						id: "723e7894-d6bd-11ed-afa1-0242ac120002",
 						author: "You",
 						banner: "asset:/packs/core/src/banner/epic.jpg"
 					}
 				]
 			});
-			state.current = payload[0].data[0];
+			try {
+				latest = JSON.parse(latest);
+				state.current = list
+					.find(item => item.id == latest.row).data
+					.find(item => item.id == latest.item);
+			} catch(e) {
+				console.error(e);
+				state.current = list[0].data[0];
+			}
 		}
 	}
 });
