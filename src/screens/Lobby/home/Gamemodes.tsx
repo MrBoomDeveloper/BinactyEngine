@@ -42,9 +42,19 @@ function GamemodeCategory({data: {title, id, data}, setGamemodesVisbility}) {
 				ItemSeparatorComponent={<View style={{width: 15}} />}
 				renderItem={({item}) => {
 					function onPress() {
-						dispatch(setActive(item));
-						GameNative.setKey("string", "latestGamemode", JSON.stringify({row: id, item: item.id}));
-						setGamemodesVisbility(false);
+						switch(item.id) {
+							case "8724e112-d6cc-11ed-afa1-0242ac120002":
+							case "723e7894-d6bd-11ed-afa1-0242ac120002": {
+								alert("Sorry, but this part of the game isn't done yet.");
+								break;
+							}
+							default: {
+								dispatch(setActive(item));
+								GameNative.setKey("string", "latestGamemode", JSON.stringify({row: id, item: item.id}));
+								setGamemodesVisbility(false);
+								break;
+							}
+						}
 					}
 					
 					return (

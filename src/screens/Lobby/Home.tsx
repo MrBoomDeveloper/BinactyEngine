@@ -25,7 +25,11 @@ function Home({controller}) {
 	
 	const play = (enableEditor: boolean): void => {
 		return function() {
-			controller.setScreen("loading", {target: "game", args: {...currentGamemode, enableEditor}});
+			controller.setScreen("loading", {target: "game", args: {
+				...currentGamemode,
+				enableEditor,
+				mapFile: currentGamemode.maps[0].file
+			}});
 		}
 	}
 	

@@ -19,11 +19,16 @@ export const gamemodesSlice = createSlice({
 				id: "723e7b6e-d6bd-11ed-afa1-0242ac120002",
 				data: [
 					{
-						name: "Create Gamemode",
+						name: "Create New Pack",
 						description: "Turn your dreams into real!",
 						id: "723e7894-d6bd-11ed-afa1-0242ac120002",
 						author: "You",
 						banner: "asset:/packs/core/src/banner/epic.jpg"
+					}, {
+						name: "Tutorial",
+						description: "Learn the basics of the game.",
+						id: "8724e112-d6cc-11ed-afa1-0242ac120002",
+						author: "MrBoomDev"
 					}
 				]
 			});
