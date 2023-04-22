@@ -2,17 +2,25 @@ import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { View, Text, Image, NativeEventEmitter, NativeModules, StyleSheet } from "react-native";
 import { loadGamemodes, loadSettings, loadMoney, loadProfile, loadNews } from "@context";
+import { Button } from "@components";
 import { getNews } from "@screens/Lobby/News";
 import settingsPreset from "@data/SettingsData";
 import { GameNative, AppBridge } from "@native";
 
 export default function Loading({controller, target, args}) {
 	const [loaded, setLoaded] = useState(0);
+	const [isSigned, setIsSigned] = useState(true);
 	const dispatch = useDispatch();
 	
 	async function loadStuff() {
 		try {
 			AppBridge.startMusic();
+			
+			/*if((await GameNative.getKey("boolean", "beta")) && !(await GameNative.isSigned())) {
+				setIsSigned(false);
+				return;
+			}*/
+			
 			dispatch(loadGamemodes({list: await GameNative.getGamemodes(), latest: await GameNative.getKey("string", "latestGamemode")}));
 			setLoaded(15);
 			dispatch(loadSettings(await GameNative.getKeys(settingsPreset)));
@@ -51,7 +59,19 @@ export default function Loading({controller, target, args}) {
 	return (
 		<View style={styles.screen}>
 			<Image style={styles.banner} resizeMode="cover" source={require("../../../android/assets/packs/fnaf/src/banner.png")} />
-			<Text style={styles.text}>Loading...  {loaded}%</Text>
+			{isSigned && <Text style={styles.text}>Loading...  {loaded}%</Text>}
+			{(!isSigned) && <View style={styles.loginOptions}>
+				<Button text="Sign in with Google"
+					icon={require("@static/icon/google.jpg")}
+					onPress={() => GameNative.signIn("google")}
+					styleIcon={{width: 22, height: 22, marginHorizontal: 5}}
+					theme="white" fill={true}/>
+					
+				<Button text="Continue as Guest"
+					style={{paddingHorizontal: 20}}
+					onPress={() => GameNative.signIn("guest")}
+					theme="white" fill={true}/>
+			</View>}
 		</View>
 	);
 }
@@ -73,5 +93,16 @@ const styles = StyleSheet.create({
 		fontSize: 25,
 		fontWeight: "500",
 		margin: 25
+	},
+	
+	loginOptions: {
+		position: "absolute",
+		left: 0,
+		bottom: 0,
+		width: "100%",
+		justifyContent: "center",
+		flexDirection: "row",
+		padding: 50,
+		gap: 15
 	}
 });

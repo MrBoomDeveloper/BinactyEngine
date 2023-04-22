@@ -3,7 +3,7 @@ import { colors } from "../util/variables";
 
 interface Button {
 	onPress: void,
-	theme: "brand" | "popup",
+	theme: "brand" | "popup" | "white",
 	style: any,
 	text?: string,
 	fill?: boolean
@@ -51,7 +51,8 @@ const containerInitial = {
 const ripple = {
 	fill: "black",
 	brand: colors.primary,
-	popup: "rgb(250, 250, 250, .8)"
+	popup: "rgb(250, 250, 250, .8)",
+	white: "black"
 }
 
 const containerStyle = {
@@ -74,6 +75,13 @@ const containerStyle = {
 			backgroundColor: colors.surfaceLight,
 			borderWidth: 1,
 			borderColor: "rgba(200, 200, 200, .1)"
+		}
+	},
+	
+	white: {
+		fill: {
+			...containerInitial,
+			backgroundColor: "white"
 		}
 	}
 }
@@ -98,6 +106,14 @@ const textStyle = {
 			fontWeight: "700",
 			textShadowColor: "rgba(250, 250, 250, .4)",
 			textShadowRadius: 5
+		}
+	},
+	
+	white: {
+		fill: {
+			color: "black",
+			fontSize: 16,
+			fontWeight: "500"
 		}
 	}
 }

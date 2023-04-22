@@ -27,5 +27,9 @@
 		title: "Disable Box2D Lights", id: "debugRaysDisable",
 		description: "Turn off all the lights in the game.",
 		type: "boolean", initial: false
+	}, {
+		title: "Beta Experience", id: "beta",
+		description: "Do not toggle this option! This may result to a game soft lock and worse!",
+		type: "boolean", initial: false
 	}
 ];
