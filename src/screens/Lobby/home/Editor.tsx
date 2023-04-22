@@ -22,7 +22,7 @@ export default function Editor({swipeAnimation, controller, setEditorVisbility})
 					<Button theme="brand" text="Open Editor"
 						style={{flex: 1}}
 						onPress={() => {
-							controller.setScreen("loading", {target: "game", args: {...currentGamemode, enableEditor: true}});
+							controller.setScreen("loading", {target: "game", args: {...currentGamemode, enableEditor: true, mapFile: currentGamemode.maps[0].file}});
 						}}/>
 				</View>
 			</ScrollView>
