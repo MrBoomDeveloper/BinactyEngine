@@ -16,16 +16,16 @@ export default function Loading({controller, target, args}) {
 		try {
 			AppBridge.startMusic();
 			
-			/*if((await GameNative.getKey("boolean", "beta")) && !(await GameNative.isSigned())) {
+			if((await GameNative.getKey("boolean", "beta")) && !(await AppBridge.isSignedIn())) {
 				setIsSigned(false);
 				return;
-			}*/
+			}
 			
 			dispatch(loadGamemodes({list: await GameNative.getGamemodes(), latest: await GameNative.getKey("string", "latestGamemode")}));
 			setLoaded(15);
 			dispatch(loadSettings(await GameNative.getKeys(settingsPreset)));
 			setLoaded(30);
-			dispatch(loadProfile(await GameNative.getMyData()));
+			dispatch(loadProfile(await AppBridge.getMyData()));
 			setLoaded(45);
 			dispatch(loadNews(await getNews()));
 			setLoaded(60);
@@ -49,11 +49,11 @@ export default function Loading({controller, target, args}) {
 			new NativeEventEmitter(GameNative).addListener("GameOver", e => {
 				controller.setScreen("gameover");
 			});
-			new NativeEventEmitter(GameNative).addListener("ForceExit", e => {
-				loadStuff();
-			});
 			GameNative.play(args);
 		}
+		new NativeEventEmitter(GameNative).addListener("ForceExit", e => {
+			loadStuff();
+		});
 	}, [target]);
 	
 	return (
@@ -61,15 +61,15 @@ export default function Loading({controller, target, args}) {
 			<Image style={styles.banner} resizeMode="cover" source={require("../../../android/assets/packs/fnaf/src/banner.png")} />
 			{isSigned && <Text style={styles.text}>Loading...  {loaded}%</Text>}
 			{(!isSigned) && <View style={styles.loginOptions}>
-				<Button text="Sign in with Google"
+				<Button text="Continue with Google"
 					icon={require("@static/icon/google.jpg")}
-					onPress={() => GameNative.signIn("google")}
+					onPress={() => AppBridge.signIn("google")}
 					styleIcon={{width: 22, height: 22, marginHorizontal: 5}}
 					theme="white" fill={true}/>
 					
 				<Button text="Continue as Guest"
 					style={{paddingHorizontal: 20}}
-					onPress={() => GameNative.signIn("guest")}
+					onPress={() => AppBridge.signIn("guest")}
 					theme="white" fill={true}/>
 			</View>}
 		</View>

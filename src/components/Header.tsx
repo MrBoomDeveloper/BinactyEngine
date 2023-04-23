@@ -1,4 +1,4 @@
-import React from "react";
+import { useMemo } from "react";
 import { StatusBar, StyleSheet, View, Image, Text } from "react-native";
 import { Button } from "@components";
 import { sizes, colors } from "../util/variables";
@@ -35,9 +35,17 @@ export default function Header({ title, values, actions, onClose, player, childr
 }
 
 function Profile({nick, level, avatar}) {
+	const avatarIcon = useMemo(() => {
+		if(avatar.includes("/")) {
+			return { uri: avatar };
+		} else {
+			return avatars[avatar];
+		}
+	}, [avatar]);
+	
 	return (
 		<View style={styles.profile}>
-			<Image style={styles.avatar} source={avatars[avatar]}/>
+			<Image style={styles.avatar} source={avatarIcon}/>
 			<View style={styles.stats}>
 				<Text style={styles.nicknameLabel}>{nick}</Text>
 				<View>
