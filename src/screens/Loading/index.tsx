@@ -23,21 +23,30 @@ export default function Loading({controller, target, args}) {
 			
 			dispatch(loadGamemodes({list: await GameNative.getGamemodes(), latest: await GameNative.getKey("string", "latestGamemode")}));
 			setLoaded(15);
+			
 			dispatch(loadSettings(await GameNative.getKeys(settingsPreset)));
 			setLoaded(30);
+			
 			dispatch(loadProfile(await AppBridge.getMyData()));
 			setLoaded(45);
-			dispatch(loadNews(await getNews()));
-			setLoaded(60);
+			
 			const coins = await GameNative.getKey("int", "coins");
-			setLoaded(75);
+			setLoaded(60);
+			
 			const diamonds = await GameNative.getKey("int", "diamonds");
-			setLoaded(90);
+			setLoaded(75);
+			
 			dispatch(loadMoney({coins, diamonds}));
+			setLoaded(90);
+			
+			setTimeout(() => controller.setScreen("lobby"), 2500);
+			
+			dispatch(loadNews(await getNews()));
 			setLoaded(100);
+			
 			controller.setScreen("lobby");
 		} catch(e) {
-			alert(e);
+			console.error(e);
 			setLoaded(100);
 			controller.setScreen("lobby");
 		}
@@ -45,13 +54,16 @@ export default function Loading({controller, target, args}) {
 	
 	useEffect(() => {
 		if(target == "lobby") loadStuff();
+		
 		if(target == "game") {
 			new NativeEventEmitter(GameNative).addListener("GameOver", e => {
 				controller.setScreen("gameover");
 			});
 			GameNative.play(args);
 		}
+		
 		new NativeEventEmitter(GameNative).addListener("ForceExit", e => {
+			AppBridge.stopMusic();
 			loadStuff();
 		});
 	}, [target]);

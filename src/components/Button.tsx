@@ -1,18 +1,20 @@
 import { Pressable, Text, Image } from "react-native";
 import { colors } from "../util/variables";
 
-interface Button {
+interface ButtonArguments {
 	onPress: void,
 	theme: "brand" | "popup" | "white",
-	style: any,
 	text?: string,
-	fill?: boolean
+	fill?: boolean,
+	hitbox?: number,
+	rippleColor?: string,
+	overlayInner?: boolean
 }
 
-export default function Button({text, icon, fill, theme, rippleColor, onPress, style, styleText, styleIcon}: Button) {
+export default function Button({text, children, icon, fill, theme, rippleColor, onPress, style, styleText, styleIcon, overlayInner, hitbox = 25}: ButtonArguments) {
 	return (
 		<Pressable onPress={onPress}
-			hitSlop={25}
+			hitSlop={hitbox}
 			style={{
 				...containerStyle[theme][fill ? "fill" : "initial"],
 				width: (text ? null : 40),
@@ -20,7 +22,7 @@ export default function Button({text, icon, fill, theme, rippleColor, onPress, s
 			}}
 			android_ripple={{
 				color: rippleColor || (fill ? (text ? ripple.fill : ripple[theme]) : ripple[theme]),
-				borderless: !text,
+				borderless: (overlayInner != null ? !overlayInner : !text),
 				foreground: true
 			}}>
 			
@@ -34,6 +36,7 @@ export default function Button({text, icon, fill, theme, rippleColor, onPress, s
 				...styleText
 			}}>{text}</Text>}
 			
+			{children}
 		</Pressable>
 	);
 }

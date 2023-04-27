@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { View, Text, StyleSheet, BackHandler, NativeEventEmitter, NativeModules } from "react-native";
 import { Provider, useSelector } from "react-redux";
 import { Header, Navigation, Pager, Button } from "@components";
@@ -7,6 +7,8 @@ import Home from "@screens/Lobby/Home";
 import News from "@screens/Lobby/News";
 import { colors, sizes } from "@util/variables";
 import { NavItems } from "@data/HomeData";
+import Character from "./character/Character";
+import About from "./about/About";
 import GameNative, { PackBridge, AppBridge } from "@native";
 
 export default function Lobby({controller}) {
@@ -14,6 +16,9 @@ export default function Lobby({controller}) {
 	const [settingsVisibility, setSettingsVisibility] = useState(false);
 	const profile = useSelector(state => state.profile.value.me);
 	const money = useSelector(state => state.profile.value.money);
+	
+	const settings = useSelector(state => state.settings.value);
+	const isBeta = useMemo(() => settings.find(({id}) => id == "beta").initial, [settings]);
 	
 	const actions = [
 		{ key: "settings", icon: require("@static/icon/settings.png"), onPress() { setSettingsVisibility(true) } }
@@ -47,10 +52,11 @@ export default function Lobby({controller}) {
 				<Navigation items={NavItems} onSelect={setCurrentPage}/>
 				<Pager select={currentPage}>
 					<Home controller={controller} id="home"/>
+					{isBeta ? <Character id="character" /> : <Wip id="character" />}
 					<Wip id="skills" />
 					<Wip id="shop" />
 					<News id="logs"/>
-					<Wip id="about" />
+					{isBeta ? <About id="about" /> : <Wip id="about" />}
 				</Pager>
 			</View>
 			

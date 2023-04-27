@@ -9,7 +9,7 @@ export default function Splash({controller}) {
 		Animated.parallel([
 			Animated.timing(logoAnimation, {
 				toValue: 1,
-				duration: 1000,
+				duration: 750,
 				useNativeDriver: true
 			}),
 			Animated.timing(gradientAnimation, {
@@ -22,6 +22,7 @@ export default function Splash({controller}) {
 			Animated.parallel([
 				Animated.timing(logoAnimation, {
 					toValue: 0,
+					delay: 250,
 					duration: 1250,
 					useNativeDriver: true
 				}),
