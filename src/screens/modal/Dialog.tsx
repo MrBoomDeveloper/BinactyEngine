@@ -19,6 +19,7 @@ export default function Dialog({visible, children, onClose}) {
 const styles = StyleSheet.create({
 	holder: {
 		height: "100%",
+		width: "100%",
 		backgroundColor: colors.background
 	}
 });

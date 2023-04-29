@@ -1,10 +1,11 @@
+import { memo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Text, View, FlatList, Animated, StyleSheet, TouchableOpacity, Image, SectionList } from "react-native";
 import { colors } from "@util/variables";
 import { setActive } from "@context/gamemodes";
 import { GameNative } from "@native";
 
-export default function Gamemodes({swipeAnimation, setGamemodesVisbility, setEditorVisibility}) {
+function Gamemodes({swipeAnimation, setCurrentScreen}) {
 	const allGamemodes = useSelector(state => state.gamemodes.list);
 	
 	return (
@@ -16,10 +17,10 @@ export default function Gamemodes({swipeAnimation, setGamemodesVisbility, setEdi
 				ListFooterComponent={<View style={{height: 25}} />}
 				renderSectionHeader={item => (
 					<GamemodeCategory data={item.section} 
-						setGamemodesVisbility={setGamemodesVisbility} />
+						setCurrentScreen={setCurrentScreen} />
 				)}/>
 				
-			<TouchableOpacity onPress={() => setGamemodesVisbility(false)} style={styles.showMoreGamemodes}>
+			<TouchableOpacity onPress={() => setCurrentScreen("home")} style={styles.showMoreGamemodes}>
 				<Image source={require("@static/icon/expand.png")} style={{...styles.moreGamemodesIcon, transform: [{scaleY: -1}]}}/>
 				<Text style={{color: "white"}}>Go back to overview</Text>
 			</TouchableOpacity>
@@ -27,7 +28,7 @@ export default function Gamemodes({swipeAnimation, setGamemodesVisbility, setEdi
 	);
 }
 
-function GamemodeCategory({data: {title, id, data}, setGamemodesVisbility}) {
+function GamemodeCategory({data: {title, id, data}, setCurrentScreen}) {
 	const dispatch = useDispatch();
 	
 	return (
@@ -51,7 +52,7 @@ function GamemodeCategory({data: {title, id, data}, setGamemodesVisbility}) {
 							default: {
 								dispatch(setActive(item));
 								GameNative.setKey("string", "latestGamemode", JSON.stringify({row: id, item: item.id}));
-								setGamemodesVisbility(false);
+								setCurrentScreen("home");
 								break;
 							}
 						}
@@ -139,3 +140,5 @@ const gmStyles = StyleSheet.create({
 		overflow: "hidden"
 	}
 });
+
+export default memo(Gamemodes);

@@ -30,14 +30,17 @@ export default function Navigation({items, onSelect}) {
 	
 	return (
 		<View style={styles.holder}>
-			<ScrollView style={styles.navigation}>
-				{items.map(data => (
-					<NavigationItem 
-						isSelected={select == data.label} 
-						onSelect={onSelectItem} {...data}>
-					</NavigationItem>
-				))}
-			</ScrollView>
+			<View style={styles.navigationWrapper}>
+				<ScrollView style={styles.scroll}>
+					{items.map(data => (
+						<NavigationItem 
+							isSelected={select == data.label} 
+							onSelect={onSelectItem} {...data}>
+						</NavigationItem>
+					))}
+					<View style={{height: 60}} />
+				</ScrollView>
+			</View>
 		</View>
 	);
 }
@@ -49,9 +52,14 @@ const styles = StyleSheet.create({
 		backgroundColor: colors.surfaceLight
 	},
 	
-	navigation: {
+	navigationWrapper: {
 		maxHeight: 500,
-		paddingTop: sizes.big,
+		flexGrow: 1
+	},
+	
+	scroll: {
+		paddingVertical: sizes.big,
+		marginBottom: 55,
 		paddingRight: sizes.big
 	},
 	

@@ -23,6 +23,7 @@ function Settings({visible, onClose}) {
 			<FlatList data={settings}
 			  ListHeaderComponent={<View style={{marginTop: 10}} />}
 			  ListFooterComponent={<View style={{marginBottom: 50}} />}
+			  style={{width: "100%"}}
 			  renderItem={renderItem} />
 		</Dialog>
 	);
@@ -31,9 +32,11 @@ function Settings({visible, onClose}) {
 function Setting({item, onUpdate}) {
 	return (
 		<View style={styles.setting}>
-			<View style={styles.info}>
-				<Text style={styles.title}>{item.title}</Text>
-				{item.description && <Text style={styles.description}>{item.description}</Text>}
+			<View style={styles.infoWrapper}>
+				<View style={styles.info}>
+					<Text style={styles.title}>{item.title}</Text>
+					{item.description && <Text style={styles.description}>{item.description}</Text>}
+				</View>
 			</View>
 			<Controller {...item} onUpdate={onUpdate} defaultValue={item.initial} />
 		</View>
@@ -90,7 +93,6 @@ function Controller({id, type, max, defaultValue, onUpdate}) {
 
 const styles = StyleSheet.create({
 	setting: {
-		display: "flex",
 		alignItems: "center",
 		paddingRight: 15,
 		flexDirection: "row",
@@ -98,14 +100,18 @@ const styles = StyleSheet.create({
 		marginTop: 10,
 		marginBottom: 0,
 		gap: 25,
+		flexGrow: 1,
 		backgroundColor: colors.surfaceLight
 	},
 	
 	info: {
 		padding: 15,
-		display: "flex",
-		flexGrow: 1,
+		maxWidth: "75%",
 		gap: 8
+	},
+	
+	infoWrapper: {
+		flexGrow: 1
 	},
 	
 	title: {
@@ -114,7 +120,8 @@ const styles = StyleSheet.create({
 	},
 	
 	description: {
-		fontSize: 13
+		fontSize: 13,
+		lineHeight: 22
 	},
 	
 	input: {

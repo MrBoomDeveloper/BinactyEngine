@@ -1,9 +1,10 @@
+import { memo } from "react";
 import { useSelector } from "react-redux";
 import { View, Text, Animated, StyleSheet, ScrollView } from "react-native";
 import { Button, Input } from "@components";
 import { colors } from "@util/variables";
 
-export default function Editor({swipeAnimation, controller, setEditorVisbility}) {
+function Editor({swipeAnimation, controller, setCurrentScreen}) {
 	const currentGamemode = useSelector(state => state.gamemodes.current);
 	
 	return (
@@ -17,7 +18,7 @@ export default function Editor({swipeAnimation, controller, setEditorVisbility})
 				<View style={{flexDirection: "row", gap: 10, width: 450, marginTop: 15, padding: 50}}>
 					<Button theme="brand" text="Save"
 						style={{flex: 1}}
-						onPress={() => setEditorVisbility(false)}/>
+						onPress={() => setCurrentScreen("home")}/>
 					
 					<Button theme="brand" text="Open Editor"
 						style={{flex: 1}}
@@ -39,3 +40,5 @@ const styles = StyleSheet.create({
 		paddingBottom: 0
 	}
 });
+
+export default memo(Editor);

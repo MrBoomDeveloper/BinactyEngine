@@ -16,8 +16,9 @@ export default function Button({text, children, icon, fill, theme, rippleColor, 
 		<Pressable onPress={onPress}
 			hitSlop={hitbox}
 			style={{
+				...containerInitial,
 				...containerStyle[theme][fill ? "fill" : "initial"],
-				width: (text ? null : 40),
+				width: (text ? null : 35),
 				...style
 			}}
 			android_ripple={{
@@ -27,10 +28,11 @@ export default function Button({text, children, icon, fill, theme, rippleColor, 
 			}}>
 			
 			{icon && <Image source={icon} style={[{
-				width: text ? 30 : 25,
-				height: text ? 30 : 25
+				width: text ? 25 : 20,
+				height: text ? 25 : 20
 			}, styleIcon]} />}
 			{text && <Text style={{
+				...textInitial,
 				...textStyle[theme][fill ? "fill" : "initial"],
 				marginRight: (icon ? 15 : 0),
 				...styleText
@@ -48,7 +50,7 @@ const containerInitial = {
 	alignItems: "center",
 	gap: 5,
 	padding: 5,
-	height: 40
+	height: 35
 }
 
 const ripple = {
@@ -61,12 +63,10 @@ const ripple = {
 const containerStyle = {
 	brand: {
 		fill: {
-			...containerInitial,
 			backgroundColor: colors.primary
 		},
 		
 		initial: {
-			...containerInitial,
 			borderWidth: 2,
 			borderColor: colors.primary
 		}
@@ -74,7 +74,6 @@ const containerStyle = {
 	
 	popup: {
 		fill: {
-			...containerInitial,
 			backgroundColor: colors.surfaceLight,
 			borderWidth: 1,
 			borderColor: "rgba(200, 200, 200, .1)"
@@ -83,10 +82,13 @@ const containerStyle = {
 	
 	white: {
 		fill: {
-			...containerInitial,
 			backgroundColor: "white"
 		}
 	}
+}
+
+const textInitial = {
+	fontSize: 15
 }
 
 const textStyle = {
@@ -99,13 +101,11 @@ const textStyle = {
 	brand: {
 		initial: {
 			color: colors.secondary,
-			fontSize: 16,
 			fontWeight: "500"
 		},
 		
 		fill: {
 			color: "black",
-			fontSize: 16,
 			fontWeight: "700",
 			textShadowColor: "rgba(250, 250, 250, .4)",
 			textShadowRadius: 5
@@ -115,7 +115,6 @@ const textStyle = {
 	white: {
 		fill: {
 			color: "black",
-			fontSize: 16,
 			fontWeight: "500"
 		}
 	}

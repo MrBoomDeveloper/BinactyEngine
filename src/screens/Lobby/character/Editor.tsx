@@ -34,7 +34,7 @@ export default function Editor() {
 				</View>
 			</View>
 			
-			<View>
+			<View style={{flexGrow: 1}}>
 				<Text>CharacterPreview.tsx isn't done yet!</Text>
 				<Character width={100} height={100} />
 			</View>
@@ -53,13 +53,14 @@ function Item({item: {name}}) {
 
 const styles = StyleSheet.create({
 	screen: {
-		flexDirection: "row",
-		height: "100%"
+		flexDirection: "row"
 	},
 	
 	editor: {
 		padding: 25,
-		height: "100%"
+		flexGrow: 1,
+		height: "100%",
+		overflow: "hidden"
 	},
 	
 	title: {
