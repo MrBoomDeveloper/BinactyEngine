@@ -15,7 +15,6 @@ function NavigationItem({icon, label, id, onSelect, isSelected}) {
 		<TouchableOpacity onPress={() => onSelect(label, id)} style={style}>
 			<Image style={styles.itemIcon} 
 				source={iconSource}/>
-			<Text style={isSelected ? styles.itemLabel : {...styles.itemLabel, ...styles.itemLabelActive}}>{label}</Text>
 		</TouchableOpacity>
 	);
 }
@@ -70,7 +69,6 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		marginLeft: StatusBar.currentHeight,
 		padding: sizes.medium,
-		paddingRight: 25,
 		borderRadius: 10
 	},
 	
@@ -85,18 +83,7 @@ const styles = StyleSheet.create({
 	},
 	
 	itemIcon: {
-		marginRight: sizes.medium,
 		width: 23,
 		height: 23
-	},
-	
-	itemLabel: {
-		color: "white",
-		fontSize: 15,
-		fontWeight: "500"
-	},
-	
-	itemLabelActive: {
-		fontWeight: "400"
 	}
 });

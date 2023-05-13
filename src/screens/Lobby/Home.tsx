@@ -75,7 +75,8 @@ function Home({controller}) {
 					<View style={styles.swipeHandler} onMoveShouldSetResponder={handleTouch} onResponderMove={handleSwipe}/>
 					<View style={styles.gamemodeInfo}>
 						<View style={styles.swipeHandler} onMoveShouldSetResponder={handleTouch} onResponderMove={handleSwipe}/>
-						<Text style={styles.title}>{currentGamemode.name}</Text>
+						<Text style={styles.description}>Made by {currentGamemode.author || "Unknown"}</Text>
+						<Text style={{...styles.title, marginBottom: 4}}>{currentGamemode.name}</Text>
 						<View style={styles.aboutMatchRow}>
 							{currentGamemode.time && <Image style={{width: 18, height: 18}} source={require("@static/icon/time.png")} />}
 							{currentGamemode.time && <Text style={styles.aboutMatchLabel}>{currentGamemode.time}</Text>}
@@ -84,7 +85,6 @@ function Home({controller}) {
 							<Text style={styles.aboutMatchLabel}>{currentGamemode.maxPlayers > 1 ? `${currentGamemode.maxPlayers} players` : "1 player"}</Text>
 						</View>
 						
-						<Text style={{...styles.description, color: "white"}}>Made by:  {currentGamemode.author || "Unknown"}</Text>
 						{currentGamemode.description && <Text style={{...styles.description}}>{currentGamemode.description}</Text>}
 						
 						<View style={{marginTop: 10, flexDirection: "row", gap: 10}}>
