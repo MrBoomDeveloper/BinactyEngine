@@ -1,12 +1,38 @@
 import { useMemo } from "react";
-import { StatusBar, StyleSheet, View, Image, Text } from "react-native";
+import { StatusBar, StyleSheet, View, Image, Text, ImageSourcePropType } from "react-native";
 import { Button } from "@components";
 import { sizes, colors } from "../util/variables";
 
 const avatars = {
 	klarrie: require("../static/avatar/premium.jpg")
 }
-export default function Header({ title, values, actions, onClose, player, children}) {
+
+interface ValueElement {
+	title: string,
+	count: number,
+	icon: ImageSourcePropType
+}
+
+interface PlayerElement {
+	avatar: string,
+	nick: string,
+	level: number
+}
+
+interface HeaderElement {
+	actions: {
+		key: string,
+		icon: ImageSourcePropType
+		onPress: () => void
+	}[],
+	values?: ValueElement[],
+	children?: JSX.Element,
+	player?: PlayerElement,
+	onClose?: () => void,
+	title?: string
+}
+
+export default function Header({ title, values, actions, onClose, player, children}: HeaderElement) {
 	return (
 		<View style={styles.header}>
 			{onClose && <Button
@@ -22,11 +48,11 @@ export default function Header({ title, values, actions, onClose, player, childr
 			{values && <View style={styles.values}>{values.map(item => <Value {...item}/>)}</View>}
 			
 			<View style={styles.actions}>
-				{actions && actions.map(item => (
-					<Button key={item.key}
-						onPress={item.onPress}
+				{actions && actions.map(({key, onPress, icon}) => (
+					<Button key={key}
+						onPress={onPress}
 						theme="popup"
-						icon={item.icon}
+						icon={icon}
 						fill={true} />
 				))}
 			</View>
@@ -34,7 +60,7 @@ export default function Header({ title, values, actions, onClose, player, childr
 	);
 }
 
-function Profile({nick, level, avatar}) {
+function Profile({nick, level, avatar}: PlayerElement) {
 	const avatarIcon = useMemo(() => {
 		if(avatar.includes("/")) {
 			return { uri: avatar };
@@ -56,7 +82,7 @@ function Profile({nick, level, avatar}) {
 	);
 }
 
-function Value({title, count, icon}) {
+function Value({count, icon}: ValueElement) {
 	return (
 		<View style={styles.value}>
 			<View style={styles.valueBackground} />

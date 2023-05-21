@@ -1,11 +1,19 @@
 import { memo } from "react";
-import { Text, View, FlatList, StyleSheet } from "react-native";
+import { Text, View, FlatList, StyleSheet, ViewStyle, TextStyle } from "react-native";
 import { Button } from "@components";
 
-function MultiplayerCard({style, titleStyle, setCurrentScreen}) {
+interface MultiplaerCardElement {
+	style: ViewStyle,
+	titleStyle: TextStyle,
+	setCurrentScreen: (name: string) => void,
+	touchHandler: () => void
+}
+
+function MultiplayerCard({style, titleStyle, setCurrentScreen, touchHandler}: MultiplaerCardElement) {
 	return (
 		<View style={[style, styles.card]}>
 			<Text style={titleStyle}>Multiplayer</Text>
+			<View style={styles.swipeHandler} onMoveShouldSetResponder={e => touchHandler(e, false)} onResponderMove={e => touchHandler(e, false)}/>
 			<FlatList data={[]} keyExtractor={item => item.id}
 				ListEmptyComponent={<Text style={{marginTop: 16, fontSize: 15}}>you have no friends.</Text>} />
 			
@@ -37,6 +45,12 @@ const styles = StyleSheet.create({
 	card: {
 		paddingHorizontal: 25,
 		paddingBottom: 20
+	},
+
+	swipeHandler: {
+		width: "100%",
+		height: "100%",
+		position: "absolute"
 	}
 });
 

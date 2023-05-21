@@ -1,9 +1,8 @@
 import { useRef, useEffect, useState, memo } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { ScrollView, TouchableOpacity, View, Image, ImageBackground, Text, StyleSheet, SectionList, FlatList, Animated, Easing } from "react-native";
-import { Button, Chips } from "@components";
-import { sizes, colors } from "@util/variables";
-import GameNative from "@native";
+import { useSelector } from "react-redux";
+import { TouchableOpacity, View, Image, Text, StyleSheet, Animated, Easing, GestureResponderEvent } from "react-native";
+import { Button } from "@components";
+import { colors } from "@util/variables";
 import Gamemodes from "./home/Gamemodes";
 import Editor from "./home/Editor";
 import Multiplayer from "./home/Multiplayer";
@@ -16,6 +15,7 @@ function getSwipeAnimationPosition(page: string): number {
 		case "editor": return 2;
 		case "multiplayer": return 3;
 	}
+	return 0;
 }
 
 function Home({controller}) {
@@ -33,7 +33,7 @@ function Home({controller}) {
 		}).start();
 	}, [swipeAnimation, currentScreen]);
 	
-	const play = (enableEditor: boolean): void => {
+	const play = (enableEditor: boolean): () => void => {
 		return function() {
 			controller.setScreen("loading", {target: "game", args: {
 				...currentGamemode,
@@ -43,12 +43,12 @@ function Home({controller}) {
 		}
 	}
 	
-	function handleTouch(e) {
+	function handleTouch(e: GestureResponderEvent) {
 		touchYBegin.current = e.nativeEvent.locationY;
 		return true;
 	}
 	
-	function handleSwipe(e, hide) {
+	function handleSwipe(e: GestureResponderEvent, hide: boolean) {
 		if(!hide && e.nativeEvent.locationY < touchYBegin.current - 50) {
 			setCurrentScreen("gamemodes");
 		} else if(hide && e.nativeEvent.locationY > touchYBegin.current + 50) {
@@ -72,21 +72,21 @@ function Home({controller}) {
 					source={require("@static/ui/gradientShadowBottomTop.png")} />
 				
 				<View style={styles.ui}>
-					<View style={styles.swipeHandler} onMoveShouldSetResponder={handleTouch} onResponderMove={handleSwipe}/>
+					<View style={styles.swipeHandler} onMoveShouldSetResponder={handleTouch} onResponderMove={e => handleSwipe(e, false)}/>
 					<View style={styles.gamemodeInfo}>
-						<View style={styles.swipeHandler} onMoveShouldSetResponder={handleTouch} onResponderMove={handleSwipe}/>
 						<Text style={styles.description}>Made by {currentGamemode.author || "Unknown"}</Text>
 						<Text style={{...styles.title, marginBottom: 4}}>{currentGamemode.name}</Text>
 						<View style={styles.aboutMatchRow}>
-							{currentGamemode.time && <Image style={{width: 18, height: 18}} source={require("@static/icon/time.png")} />}
+							{currentGamemode.time && <Image style={{width: 16, height: 16}} source={require("@static/icon/time.png")} />}
 							{currentGamemode.time && <Text style={styles.aboutMatchLabel}>{currentGamemode.time}</Text>}
 							
-							<Image style={{width: 22, height: 22}} source={require("@static/icon/groups.png")} />
+							<Image style={{width: 20, height: 20}} source={require("@static/icon/groups.png")} />
 							<Text style={styles.aboutMatchLabel}>{currentGamemode.maxPlayers > 1 ? `${currentGamemode.maxPlayers} players` : "1 player"}</Text>
 						</View>
 						
-						{currentGamemode.description && <Text style={{...styles.description}}>{currentGamemode.description}</Text>}
-						
+						{currentGamemode.description && <Text style={{...styles.description, marginVertical: 6}}>{currentGamemode.description}</Text>}
+						<View style={styles.swipeHandler} onMoveShouldSetResponder={handleTouch} onResponderMove={e => handleSwipe(e, false)}/>
+
 						<View style={{marginTop: 10, flexDirection: "row", gap: 10}}>
 							<Button text="Start Game!" hitbox={0}
 								style={{flexGrow: 1}}
@@ -102,23 +102,18 @@ function Home({controller}) {
 					</View>
 					
 					<View style={{flexGrow: 1}}>
-						<View style={styles.swipeHandler} onMoveShouldSetResponder={handleTouch} onResponderMove={handleSwipe}/>
+						<View style={styles.swipeHandler} onMoveShouldSetResponder={e => handleTouch(e)} onResponderMove={e => handleSwipe(e, false)}/>
 					</View>
 					
 					<View style={styles.cardHolder}>
-						<View style={styles.swipeHandler} onMoveShouldSetResponder={handleTouch} onResponderMove={handleSwipe}/>
-						<View style={styles.card}>
-							<Text style={styles.cardTitle}>Missions</Text>
-							<Text style={{marginTop: 16, fontSize: 15}}>Coming soon...</Text>
-						</View>
-						
-						<MultiplayerCard style={styles.card} titleStyle={styles.cardTitle} setCurrentScreen={setCurrentScreen} />
+						<View style={styles.swipeHandler} onMoveShouldSetResponder={e => handleTouch(e)} onResponderMove={e => handleSwipe(e, false)}/>
+						<MultiplayerCard style={styles.card} titleStyle={styles.cardTitle} setCurrentScreen={setCurrentScreen} touchHandler={handleTouch} />
 					</View>
 				</View>
 				
 				<TouchableOpacity onPress={() => setCurrentScreen("gamemodes")} style={styles.showMoreGamemodes}>
 					<Image source={require("@static/icon/expand.png")} style={styles.moreGamemodesIcon}/>
-					<Text style={{color: "white"}}>Swipe to see more Game Modes</Text>
+					<Text style={{color: "white"}}>Press to see more Game Modes</Text>
 				</TouchableOpacity>
 			</Animated.View>
 		
@@ -130,7 +125,6 @@ function Home({controller}) {
 				setCurrentScreen={setCurrentScreen} />
 			
 			<Multiplayer swipeAnimation={swipeAnimation}
-				controller={controller}
 				setCurrentScreen={setCurrentScreen} />
 		</>
 	);
@@ -150,14 +144,14 @@ const styles = StyleSheet.create({
 		width: "100%",
 		height: "100%",
 		flexDirection: "row",
-		padding: 50
+		padding: 40
 	},
 	
 	gamemodeInfo: {
 		height: "100%",
-		width: 250,
+		width: 225,
 		justifyContent: "center",
-		gap: 6
+		paddingBottom: 60
 	},
 	
 	gamemodeInfoGradient: {
@@ -168,8 +162,9 @@ const styles = StyleSheet.create({
 	
 	title: {
 		color: "white",
-		fontSize: 28,
-		lineHeight: 40
+		fontSize: 24,
+		lineHeight: 40,
+		paddingVertical: 1,
 	},
 	
 	aboutMatchRow: {
@@ -180,13 +175,13 @@ const styles = StyleSheet.create({
 	
 	aboutMatchLabel: {
 		color: colors.textSecond,
-		fontSize: 16,
+		fontSize: 14,
 		marginRight: 10
 	},
 	
 	description: {
 		lineHeight: 24,
-		fontSize: 15,
+		fontSize: 14,
 		color: colors.textSecond
 	},
 	
@@ -221,11 +216,11 @@ const styles = StyleSheet.create({
 	
 	showMoreGamemodes: {
 		width: "100%",
-		padding: 25,
+		paddingBottom: 45,	
 		justifyContent: "center",
 		alignItems: "center",
 		flexDirection: "row",
-		paddingLeft: 0
+		paddingRight: 45
 	},
 	
 	moreGamemodesIcon: {

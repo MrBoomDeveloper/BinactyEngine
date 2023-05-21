@@ -2,7 +2,13 @@ import { useState, useEffect, useRef } from "react";
 import { View, Animated, Text, TextInput, StyleSheet } from "react-native";
 import { colors } from "@util/variables";
 
-export default function Input({error, placeholder, type, onChangeText, style, ...props}) {
+interface InputElement {
+	placeholder?: string | number,
+	maxLength?: number,
+	error?: string
+}
+
+export default function Input({error, placeholder, maxLength, type, onChangeText, style, ...props}: InputElement) {
 	const animation = useRef(new Animated.Value(0));
 	const input = useRef();
 	const [isFocus, setIsFocus] = useState(false);
@@ -32,7 +38,7 @@ export default function Input({error, placeholder, type, onChangeText, style, ..
 				onChangeText={onChangeText}
 				onFocus={() => setIsFocus(true)}
 				onBlur={() => setIsFocus(false)}
-				maxLength={25}
+				maxLength={maxLength || 25}
 				placeholder={String(placeholder || props.defaultValue)}
 				defaultValue={String(props.defaultValue)}
 				keyboardType={types[type]} />
@@ -54,7 +60,8 @@ const styles = StyleSheet.create({
 		height: 45,
 		minWidth: 75,
 		position: "relative",
-		borderWidth: 1
+		borderWidth: 1,
+		overflow: "hidden"
 	},
 	
 	text: {

@@ -1,6 +1,6 @@
 import { memo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Text, View, FlatList, Animated, StyleSheet, TouchableOpacity, Image, SectionList } from "react-native";
+import { Text, View, FlatList, Animated, StyleSheet, TouchableOpacity, Image, SectionList, ImageSourcePropType } from "react-native";
 import { colors } from "@util/variables";
 import { setActive } from "@context/gamemodes";
 import { GameNative } from "@native";
@@ -14,7 +14,7 @@ function Gamemodes({swipeAnimation, setCurrentScreen}) {
 				keyExtractor={item => item.id}
 				renderItem={() => null}
 				ListHeaderComponent={<View style={{height: 25}} />}
-				ListFooterComponent={<View style={{height: 25}} />}
+				ListFooterComponent={<View style={{height: 100}} />}
 				renderSectionHeader={item => (
 					<GamemodeCategory data={item.section} 
 						setCurrentScreen={setCurrentScreen} />
@@ -28,7 +28,21 @@ function Gamemodes({swipeAnimation, setCurrentScreen}) {
 	);
 }
 
-function GamemodeCategory({data: {title, id, data}, setCurrentScreen}) {
+interface GamemodeCategoryElement {
+	setCurrentScreen: (page: string) => void,
+	data: {
+		title: string,
+		id: string,
+		data: {
+			id: string,
+			name: string,
+			author: string,
+			banner: ImageSourcePropType
+		}[]
+	}
+}
+
+function GamemodeCategory({data: {title, id, data}, setCurrentScreen}: GamemodeCategoryElement) {
 	const dispatch = useDispatch();
 	
 	return (
@@ -63,8 +77,10 @@ function GamemodeCategory({data: {title, id, data}, setCurrentScreen}) {
 							<Image style={gmStyles.banner} source={item.banner ? {uri: item.banner} : require("@static/banner/gamemode/banner_hd.jpg")} />
 							<Image style={gmStyles.shadowLeft} source={require("@static/ui/gradientShadowLeftRight.png")} />
 							<Image style={gmStyles.shadowBottom} source={require("@static/ui/gradientShadowBottomTop.png")} />
-							<Text style={{color: "white", fontWeight: "500", fontSize: 18, width: "30%", flexGrow: 1, margin: 15, lineHeight: 26}}>{item.name}</Text>
-							<Text style={{color: "white", textShadowColor: "black", textShadowRadius: 3, fontSize: 15, width: "30%", margin: 15, lineHeight: 20}}>Made by:  {item.author}</Text>
+							<View style={{padding: 12, flexGrow: 1}}>
+								<Text style={gmStyles.title}>{item.name}</Text>
+								<Text style={gmStyles.author}>Made by:  {item.author}</Text>
+							</View>
 						</TouchableOpacity>
 					);
 				}}
@@ -85,11 +101,11 @@ const styles = StyleSheet.create({
 	showMoreGamemodes: {
 		position: "absolute",
 		width: "100%",
-		padding: 25,
+		paddingTop: 15,
 		justifyContent: "center",
 		alignItems: "center",
 		flexDirection: "row",
-		paddingLeft: 0
+		paddingRight: 25
 	},
 	
 	moreGamemodesIcon: {
@@ -103,14 +119,14 @@ const gmStyles = StyleSheet.create({
 	catTitle: {
 		color: "white",
 		fontWeight: "500",
-		fontSize: 22,
+		fontSize: 20,
 		margin: 25,
 		marginBottom: 15
 	},
 	
 	card: {
-		width: 300,
-		height: 150
+		width: 200,
+		aspectRatio: 16 / 9
 	},
 	
 	banner: {
@@ -120,6 +136,26 @@ const gmStyles = StyleSheet.create({
 		position: "absolute",
 		borderRadius: 10,
 		overflow: "hidden"
+	},
+
+	title: {
+		color: "white",
+		textShadowColor: "black",
+		textShadowRadius: 3,
+		fontWeight: "500", 
+		fontSize: 16,
+		maxWidth: 100,
+		flexGrow: 1,
+		lineHeight: 24
+	},
+
+	author: {
+		color: "white", 
+		textShadowColor: "black",
+		textShadowRadius: 3,
+		fontSize: 13,
+		maxWidth: 100,
+		lineHeight: 18
 	},
 	
 	shadowLeft: {

@@ -1,9 +1,14 @@
-import { Pressable, Text, Image } from "react-native";
+import { Pressable, Text, Image, ImageSourcePropType, ViewStyle, TextStyle, ImageStyle } from "react-native";
 import { colors } from "../util/variables";
 
 interface ButtonArguments {
-	onPress: void,
+	onPress: () => void,
 	theme: "brand" | "popup" | "white",
+	children?: JSX.Element,
+	style?: ViewStyle,
+	styleText: TextStyle,
+	styleIcon?: ImageStyle,
+	icon?: ImageSourcePropType,
 	text?: string,
 	fill?: boolean,
 	hitbox?: number,
@@ -88,7 +93,7 @@ const containerStyle = {
 }
 
 const textInitial = {
-	fontSize: 15
+	fontSize: 14
 }
 
 const textStyle = {
