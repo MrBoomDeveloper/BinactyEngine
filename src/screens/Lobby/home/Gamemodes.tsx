@@ -1,7 +1,7 @@
 import { memo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Text, View, FlatList, Animated, StyleSheet, TouchableOpacity, Image, SectionList, ImageSourcePropType } from "react-native";
-import { colors } from "@util/variables";
+import { colors } from "@util/variables.json";
 import { setActive } from "@context/gamemodes";
 import { GameNative } from "@native";
 

@@ -1,19 +1,19 @@
 {
 	"extends": "@tsconfig/react-native/tsconfig.json",
-	"baseUrl": ".",
-	"paths": {
-		"@components/*": ["src/components/*"],
-		"@screens/*": ["src/screens/*"],
-		"@data/*": ["src/data/*"],
-		"@util/*": ["src/util/*"],
-		"@static/*": ["src/static/*"],
-		"@context/*": ["src/context/*"],
-		"@native": ["src/GameNative.ts"]
-	},
-
 	"compilerOptions": {
-		"skipLibCheck": true
-	},
-
-	"include": ["**/*.ts", "**/*.tsx"]
+		"skipLibCheck": true,
+		"allowJs": true,
+		"jsx": "react-native",
+		"resolveJsonModule": true,
+		"baseUrl": "./src",
+		"paths": {
+			"@components/*": ["components/*"],
+			"@screens/*": ["screens/*"],
+			"@data/*": ["data/*"],
+			"@util/*": ["util/*"],
+			"@static/*": ["static/*"],
+			"@context/*": ["context/*"],
+			"@native": ["GameNative.ts"]
+		}
+	}
 }

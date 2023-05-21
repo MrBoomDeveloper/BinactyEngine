@@ -1,8 +1,8 @@
 import { useRef, useEffect, useState, memo } from "react";
 import { useSelector } from "react-redux";
 import { TouchableOpacity, View, Image, Text, StyleSheet, Animated, Easing, GestureResponderEvent } from "react-native";
-import { Button } from "@components";
-import { colors } from "@util/variables";
+import Button from "@components/Button";
+import { colors } from "@util/variables.json";
 import Gamemodes from "./home/Gamemodes";
 import Editor from "./home/Editor";
 import Multiplayer from "./home/Multiplayer";
