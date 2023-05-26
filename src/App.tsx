@@ -1,11 +1,25 @@
-import React, { useState, useEffect, cloneElement, Children } from "react";
+import React, { useState, cloneElement, Children } from "react";
 import { StatusBar, View } from 'react-native';
 import { Splash, Loading, Lobby, GameOver } from "@screens";
-import GameNative from "@native";
-import { Provider, useSelector } from "react-redux";
+import Lobby2 from "@screens/Lobby/Lobby2";
+import { Provider  } from "react-redux";
 import { store } from "@context/store";
 
+// Enables a fully rewritten lobby!
+const isDevBuild: boolean = false;
+
 export default function App() {
+	if(isDevBuild) {
+		return (
+			<View style={{flex: 1}}>
+			<Provider store={store}>
+				<StatusBar hidden={true} />
+				<Lobby2 />
+			</Provider>
+		</View>
+		);
+	}
+
 	return (
 		<View style={{flex: 1}}>
 			<Provider store={store}>

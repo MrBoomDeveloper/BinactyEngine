@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { View, Text, Image, NativeEventEmitter, NativeModules, StyleSheet } from "react-native";
+import { useDispatch } from "react-redux";
+import { View, Text, Image, NativeEventEmitter, StyleSheet } from "react-native";
 import { loadGamemodes, loadSettings, loadMoney, loadProfile, loadNews } from "@context";
 import { Button } from "@components";
 import { getNews } from "@screens/Lobby/News";

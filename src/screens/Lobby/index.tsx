@@ -1,11 +1,11 @@
 import { useState, useEffect, useMemo } from "react";
-import { View, Text, StyleSheet, BackHandler, NativeEventEmitter, NativeModules } from "react-native";
-import { Provider, useSelector } from "react-redux";
+import { View, Text, StyleSheet, BackHandler, NativeEventEmitter } from "react-native";
+import { useSelector } from "react-redux";
 import { Header, Navigation, Pager, Button } from "@components";
 import { Settings } from "@screens";
 import Home from "@screens/Lobby/Home";
 import News from "@screens/Lobby/News";
-import { colors, sizes } from "@util/variables";
+import { colors } from "@util/variables";
 import { NavItems } from "@data/HomeData";
 import Character from "./character/Character";
 import About from "./about/About";

@@ -6,7 +6,7 @@ interface ButtonArguments {
 	theme: "brand" | "popup" | "white",
 	children?: JSX.Element,
 	style?: ViewStyle,
-	styleText: TextStyle,
+	styleText?: TextStyle,
 	styleIcon?: ImageStyle,
 	icon?: ImageSourcePropType,
 	text?: string,

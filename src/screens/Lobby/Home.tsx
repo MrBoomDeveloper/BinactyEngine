@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, memo } from "react";
+import { useRef, useEffect, useState, memo, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { TouchableOpacity, View, Image, Text, StyleSheet, Animated, Easing, GestureResponderEvent } from "react-native";
 import Button from "@components/Button";
@@ -7,6 +7,7 @@ import Gamemodes from "./home/Gamemodes";
 import Editor from "./home/Editor";
 import Multiplayer from "./home/Multiplayer";
 import MultiplayerCard from "./home/cards/Multiplayer";
+import { Lobby } from "./Lobby2";
 
 function getSwipeAnimationPosition(page: string): number {
 	switch(page) {
@@ -23,6 +24,9 @@ function Home({controller}) {
 	const swipeAnimation = useRef(new Animated.Value(0)).current;
 	const touchYBegin = useRef(0);
 	const currentGamemode = useSelector(state => state.gamemodes.current);
+
+	const settings = useSelector(state => state.settings.value);
+	const isBeta: boolean = useMemo(() => settings.find(({id}) => id == "beta").initial, [settings]);
 	
 	useEffect(() => {
 		Animated.timing(swipeAnimation, {
@@ -99,6 +103,13 @@ function Home({controller}) {
 								onPress={() => setCurrentScreen("editor")}
 								styleIcon={{marginHorizontal: 5}} />
 						</View>
+
+						{isBeta && <Button text="Super Secret New Lobby" theme="brand"
+							fill={true} style={{marginTop: 10}}
+							onPress={() => {
+								controller.setScreen("lobby2");
+							}
+						} />}
 					</View>
 					
 					<View style={{flexGrow: 1}}>
@@ -163,7 +174,7 @@ const styles = StyleSheet.create({
 	title: {
 		color: "white",
 		fontSize: 24,
-		lineHeight: 40,
+		lineHeight: 36,
 		paddingVertical: 1,
 	},
 	
