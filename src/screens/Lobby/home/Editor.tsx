@@ -3,8 +3,13 @@ import { useSelector } from "react-redux";
 import { View, Text, Animated, StyleSheet, ScrollView } from "react-native";
 import { Button, Input } from "@components";
 import { colors } from "@util/variables";
+import { SetScreenProps } from "App";
 
-function Editor({swipeAnimation, controller, setCurrentScreen}) {
+interface EditorProps {
+	setScreen: SetScreenProps
+}
+
+function Editor({swipeAnimation, setScreen, setCurrentScreen}: EditorProps) {
 	const currentGamemode = useSelector(state => state.gamemodes.current);
 	
 	return (
@@ -33,7 +38,7 @@ function Editor({swipeAnimation, controller, setCurrentScreen}) {
 					<Button theme="brand" text="Edit Map"
 						style={{flex: 1}}
 						onPress={() => {
-							controller.setScreen("loading", {target: "game", args: {...currentGamemode, enableEditor: true, mapFile: currentGamemode.maps[0].file}});
+							setScreen("loading", {target: "game", args: {...currentGamemode, enableEditor: true, mapFile: currentGamemode.maps[0].file}});
 						}}/>
 				</View>
 			</ScrollView>

@@ -7,7 +7,7 @@ import Gamemodes from "./home/Gamemodes";
 import Editor from "./home/Editor";
 import Multiplayer from "./home/Multiplayer";
 import MultiplayerCard from "./home/cards/Multiplayer";
-import { Lobby } from "./Lobby2";
+import { SetScreenProps } from "App";
 
 function getSwipeAnimationPosition(page: string): number {
 	switch(page) {
@@ -19,7 +19,11 @@ function getSwipeAnimationPosition(page: string): number {
 	return 0;
 }
 
-function Home({controller}) {
+interface HomeProps {
+	setScreen: SetScreenProps
+}
+
+function Home({setScreen}: HomeProps) {
 	const [currentScreen, setCurrentScreen] = useState("home");
 	const swipeAnimation = useRef(new Animated.Value(0)).current;
 	const touchYBegin = useRef(0);
@@ -39,7 +43,7 @@ function Home({controller}) {
 	
 	const play = (enableEditor: boolean): () => void => {
 		return function() {
-			controller.setScreen("loading", {target: "game", args: {
+			setScreen("loading", {target: "game", args: {
 				...currentGamemode,
 				enableEditor,
 				mapFile: currentGamemode.maps[0].file
@@ -107,7 +111,7 @@ function Home({controller}) {
 						{isBeta && <Button text="Super Secret New Lobby" theme="brand"
 							fill={true} style={{marginTop: 10}}
 							onPress={() => {
-								controller.setScreen("lobby2");
+								setScreen("lobby2");
 							}
 						} />}
 					</View>
@@ -132,7 +136,7 @@ function Home({controller}) {
 				setCurrentScreen={setCurrentScreen} />
 			
 			<Editor swipeAnimation={swipeAnimation}
-				controller={controller}
+				setScreen={setScreen}
 				setCurrentScreen={setCurrentScreen} />
 			
 			<Multiplayer swipeAnimation={swipeAnimation}

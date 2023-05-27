@@ -1,6 +1,6 @@
 import Button from "@components/Button";
-import { ViewStyle } from "react-native";
-import { Alert, Image, StyleSheet, Text, View } from "react-native";
+import { Alert, Image, StyleSheet, Text, View, ViewStyle } from "react-native";
+import { size } from "@data/constants.json";
 
 const profile: ProfileProps = {
     name: "MrBoomDev"
@@ -43,7 +43,8 @@ const styles = StyleSheet.create({
     layout: {
         flexDirection: "row",
         alignItems: "center",
-        padding: 15
+        padding: 15,
+        paddingHorizontal: size.inlineScreenPadding
     },
 
     profileLayout: {

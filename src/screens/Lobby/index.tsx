@@ -10,8 +10,13 @@ import { NavItems } from "@data/HomeData";
 import Character from "./character/Character";
 import About from "./about/About";
 import GameNative, { PackBridge, AppBridge } from "@native";
+import { SetScreenProps } from "App";
 
-export default function Lobby({controller}) {
+interface LobbyProps {
+	setScreen: SetScreenProps
+}
+
+export default function Lobby({setScreen}: LobbyProps) {
 	const [currentPage, setCurrentPage] = useState("home");
 	const [settingsVisibility, setSettingsVisibility] = useState(false);
 	const profile = useSelector(state => state.profile.value.me);
@@ -25,14 +30,14 @@ export default function Lobby({controller}) {
 	];
 	
 	useEffect(() => {
-		BackHandler.addEventListener("hardwareBackPress", e => {
+		BackHandler.addEventListener("hardwareBackPress", () => {
 			GameNative.requestClose();
 			return true;
 		});
 		
 		new NativeEventEmitter(PackBridge).addListener("reload", e => {
 			AppBridge.stopMusic();
-			controller.setScreen("loading", {target: "lobby"});
+			setScreen("loading", {target: "lobby"});
 		});
 	}, []);
 	
@@ -51,7 +56,7 @@ export default function Lobby({controller}) {
 			<View style={styles.dualContainer}>
 				<Navigation items={NavItems} onSelect={setCurrentPage}/>
 				<Pager select={currentPage}>
-					<Home controller={controller} id="home"/>
+					<Home setScreen={setScreen} id="home"/>
 					{isBeta ? <Character id="character" /> : <Wip id="character" />}
 					<Wip id="skills" />
 					<Wip id="shop" />

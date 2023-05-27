@@ -4,10 +4,17 @@ import { View, Text, Image, NativeEventEmitter, StyleSheet } from "react-native"
 import { loadGamemodes, loadSettings, loadMoney, loadProfile, loadNews } from "@context";
 import { Button } from "@components";
 import { getNews } from "@screens/Lobby/News";
-import settingsPreset from "@data/SettingsData";
+import settingsPreset from "@data/SettingsData.json";
 import { GameNative, AppBridge } from "@native";
+import { SetScreenProps } from "App";
 
-export default function Loading({controller, target, args}) {
+interface LoadingProps {
+	setScreen: SetScreenProps,
+	target: string,
+	args: any
+}
+
+export default function Loading({setScreen, target, args}: LoadingProps) {
 	const [loaded, setLoaded] = useState(0);
 	const [isSigned, setIsSigned] = useState(true);
 	const dispatch = useDispatch();
@@ -39,16 +46,16 @@ export default function Loading({controller, target, args}) {
 			dispatch(loadMoney({coins, diamonds}));
 			setLoaded(90);
 			
-			setTimeout(() => controller.setScreen("lobby"), 2500);
+			setTimeout(() => setScreen("lobby"), 2500);
 			
 			dispatch(loadNews(await getNews()));
 			setLoaded(100);
 			
-			controller.setScreen("lobby");
+			setScreen("lobby");
 		} catch(e) {
 			console.error(e);
 			setLoaded(100);
-			controller.setScreen("lobby");
+			setScreen("lobby");
 		}
 	}
 	
@@ -57,7 +64,7 @@ export default function Loading({controller, target, args}) {
 		
 		if(target == "game") {
 			new NativeEventEmitter(GameNative).addListener("GameOver", e => {
-				controller.setScreen("gameover");
+				setScreen("gameover");
 			});
 			GameNative.play(args);
 		}

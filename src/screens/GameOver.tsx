@@ -3,8 +3,13 @@ import { View, Text, Image, StyleSheet, FlatList, Animated, Share, Easing } from
 import { Button } from "@components";
 import { colors } from "@util/variables";
 import GameNative from "@native";
+import { SetScreenProps } from "App";
 
-export default function GameOver({controller}) {
+interface GameOverProps {
+	setScreen: SetScreenProps
+}
+
+export default function GameOver({setScreen}: GameOverProps) {
 	const [isLoaded, setIsLoaded] = useState(false);
 	const [balance, setBalance] = useState({});
 	const [stats, setStats]= useState({isWin: false});
@@ -63,8 +68,7 @@ export default function GameOver({controller}) {
 		if(stats.isWin) {
 			GameNative.setKey("int", "coins", String(balance.coins + 1));
 		}
-		controller.setScreen("loading", {target: "lobby"});
-		//GameNative.finish("GameOver");
+		setScreen("loading", {target: "lobby"});
 	}
 	
 	return (

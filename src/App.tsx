@@ -1,56 +1,55 @@
-import React, { useState, cloneElement, Children } from "react";
-import { StatusBar, View } from 'react-native';
-import { Splash, Loading, Lobby, GameOver } from "@screens";
+import { createElement, useState } from "react";
+import { StatusBar } from 'react-native';
+import Splash from "@screens/Splash";
 import Lobby2 from "@screens/Lobby/Lobby2";
 import { Provider  } from "react-redux";
 import { store } from "@context/store";
-
-// Enables a fully rewritten lobby!
-const isDevBuild: boolean = false;
+import { useMap } from "@util/hooks";
+import Loading from '@screens/Loading';
+import Lobby from '@screens/Lobby';
+import GameOver from '@screens/GameOver';
 
 export default function App() {
-	if(isDevBuild) {
-		return (
-			<View style={{flex: 1}}>
-			<Provider store={store}>
-				<StatusBar hidden={true} />
-				<Lobby2 />
-			</Provider>
-		</View>
-		);
-	}
-
 	return (
-		<View style={{flex: 1}}>
-			<Provider store={store}>
-				<StatusBar hidden={true} />
-				<Controller initial="splash">
-					<Splash name="splash" />
-					<Loading name="loading" />
-					<Lobby name="lobby" />
-					<GameOver name="gameover" />
-				</Controller>
-			</Provider>
-		</View>
+		<Provider store={store}>
+			<StatusBar hidden={true} />
+			<Controller initial="splash" items={[
+				{ name: "splash", element: Splash },
+				{ name: "loading", element: Loading },
+				{ name: "lobby", element: Lobby },
+				{ name: "lobby2", element: Lobby2 },
+				{ name: "gameover", element: GameOver }
+			]} />
+		</Provider>
 	);
 };
 
-function Controller({children, initial}) {
-	const [currentScreen, setCurrentScreen] = useState({name: initial, args: {}});
-	
-	const controller = {
-		setScreen: (name, args) => {
-			setCurrentScreen({name, args});
-		}
-	}
-	
-	return (
-		<View style={{flex: 1}}>
-			{Children.toArray(children).map(child => {
-				if(child.props.name == currentScreen.name) {
-					return cloneElement(child, {controller, ...currentScreen.args})
-				}
-			})}
-		</View>
-	);
+interface ControllerProps {
+	initial: string,
+	items: {
+		name: string,
+		element: any
+	}[]
+}
+
+export type SetScreenProps = (name: string, props?: ObjectMap) => void;
+
+interface ObjectMap {
+	[key: string]: any
+}
+
+function Controller({initial, items}: ControllerProps) {
+	const [current, setCurrent] = useState(initial);
+	const [allProps, setAllProps] = useState(new Map());
+
+	const found = items.find(item => item.name == current)?.element || items[0] || null;
+
+	return createElement(found, {
+		setScreen: (name: string, props?: SetScreenProps) => {
+			setCurrent(name);
+			const newMap = new Map(allProps);
+			newMap.set("__" + name + "_props", props);
+			setAllProps(newMap);
+		}, ...allProps.get("__" + current + "_props")
+	});
 }

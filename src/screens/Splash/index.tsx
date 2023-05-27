@@ -1,7 +1,12 @@
 import { useRef, useEffect } from "react";
 import { View, Image, Animated, StyleSheet } from "react-native";
+import type { SetScreenProps } from "../../App";
 
-export default function Splash({controller}) {
+interface SplashProps {
+	setScreen: SetScreenProps
+}
+
+export default function Splash({setScreen}: SplashProps) {
 	const logoAnimation = useRef(new Animated.Value(0)).current;
 	const gradientAnimation = useRef(new Animated.Value(0)).current;
 	
@@ -33,7 +38,7 @@ export default function Splash({controller}) {
 					useNativeDriver: true
 				})
 			]).start(() => {
-				controller.setScreen("loading", {target: "lobby"});
+				setScreen("loading", {target: "lobby"});
 			});
 		});
 	}, []);

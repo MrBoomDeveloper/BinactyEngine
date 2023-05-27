@@ -1,36 +1,48 @@
-import { Dimensions, FlatList, StyleSheet, Text, View } from "react-native";
-import { colors } from "@util/variables.json";
+import { Dimensions, ScrollView, StyleSheet, View } from "react-native";
+import { color } from "@data/constants.json";
 import Header from "@components/layout/Header";
+import Home from "./pages/Home";
+import { useRef, useState } from "react";
 
 export default function Lobby2() {
+    const [isScrollEnabled, setScrollEnabled] = useState(true);
+    const scrollView = useRef<ScrollView>(null);
+
     return (
         <View style={styles.screen}>
             <Header style={{position: "absolute", zIndex: 999}} />
-            <FlatList data={"1234567890".split("")}
-                ListHeaderComponent={GamemodeOverview}
-                pagingEnabled={true}
-                keyExtractor={item => item}
-                renderItem={item => {
-                    return (
-                        <Placeholder2 />
-                    );
-                }} />
+
+            <ScrollView horizontal pagingEnabled
+                scrollEnabled={isScrollEnabled}
+                ref={scrollView}
+                style={styles.pagesLayout}>
+                
+                <Home setScrollEnabled={setScrollEnabled} />
+                <Placeholder />
+                <Placeholder3 />
+                <Placeholder />
+                <Placeholder3 />
+                <Placeholder />
+            </ScrollView>
         </View>
     );
 }
 
-function GamemodeOverview() {
-    return (
-        <Placeholder />
-    );
-}
-
-const Placeholder = () => (<View style={{height: Dimensions.get("window").height, flexGrow: 1, backgroundColor: "red"}} />);
-const Placeholder2 = () => (<View style={{height: 100, width: 100, margin: 10, backgroundColor: "green"}} />);
+const Placeholder = () => (<View style={[styles.pageLayout, {backgroundColor: "red"}]} />);
+const Placeholder3 = () => (<View style={[styles.pageLayout, {backgroundColor: "blue"}]} />);
 
 const styles = StyleSheet.create({
     screen: {
-        backgroundColor: colors.background,
+        backgroundColor: color.purpleBackground,
         flex: 1
+    },
+
+    pagesLayout: {
+        height: Dimensions.get("window").height
+    },
+
+    pageLayout: {
+        height: "100%",
+        width: Dimensions.get("screen").width
     }
 });
