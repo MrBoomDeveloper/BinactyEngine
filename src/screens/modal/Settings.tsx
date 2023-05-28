@@ -66,7 +66,6 @@ function Controller({id, type, max, defaultValue, onUpdate}) {
 			setError("");
 			onUpdate(newText);
 			GameNative.setKey("int", id, newText);
-			if(id == "musicVolume") AppBridge.setVolume(Number(newText));
 		} else {
 			setError("Invalid value!");
 		}

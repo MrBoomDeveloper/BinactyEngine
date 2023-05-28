@@ -109,7 +109,7 @@ function Home({setScreen}: HomeProps) {
 						</View>
 
 						{isBeta && <Button text="Super Secret New Lobby" theme="brand"
-							fill={true} style={{marginTop: 10}}
+							fill={true} style={{marginTop: 10}} hitbox={0}
 							onPress={() => {
 								setScreen("lobby2");
 							}

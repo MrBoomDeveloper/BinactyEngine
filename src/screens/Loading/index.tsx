@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { View, Text, Image, NativeEventEmitter, StyleSheet } from "react-native";
-import { loadGamemodes, loadSettings, loadMoney, loadProfile, loadNews } from "@context";
-import { Button } from "@components";
+import { load as loadGamemodes } from "@context/gamemodes";
+import { load as loadNews } from "@context/news";
+import { setMoney as loadMoney, setProfile as loadProfile } from "@context/profile";
+import { load as loadSettings } from "@context/settings";
+import Button from "@components/Button";
 import { getNews } from "@screens/Lobby/News";
 import settingsPreset from "@data/SettingsData.json";
 import { GameNative, AppBridge } from "@native";
@@ -22,6 +25,7 @@ export default function Loading({setScreen, target, args}: LoadingProps) {
 	async function loadStuff() {
 		try {
 			AppBridge.startMusic();
+			AppBridge.setVolume(100);
 			
 			if((await GameNative.getKey("boolean", "beta")) && !(await AppBridge.isSignedIn())) {
 				setIsSigned(false);
@@ -66,11 +70,12 @@ export default function Loading({setScreen, target, args}: LoadingProps) {
 			new NativeEventEmitter(GameNative).addListener("GameOver", e => {
 				setScreen("gameover");
 			});
+			
 			GameNative.play(args);
 		}
 		
 		new NativeEventEmitter(GameNative).addListener("ForceExit", e => {
-			AppBridge.stopMusic();
+			setScreen("loading", {target: "lobby"});
 			loadStuff();
 		});
 	}, [target]);

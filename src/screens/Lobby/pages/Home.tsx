@@ -103,7 +103,7 @@ function Overview({gamemode, setScreen}: OverviewProps) {
                                 mapFile: map
                             }});
                         }} />
-							
+					
 					<Button icon={require("@static/icon/edit.png")}
 						theme="brand" fill={true} rippleColor="black"
                         hitbox={0} overlayInner={true}

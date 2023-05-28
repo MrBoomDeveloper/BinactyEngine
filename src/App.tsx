@@ -46,10 +46,10 @@ function Controller({initial, items}: ControllerProps) {
 
 	return createElement(found, {
 		setScreen: (name: string, props?: SetScreenProps) => {
-			setCurrent(name);
 			const newMap = new Map(allProps);
 			newMap.set("__" + name + "_props", props);
 			setAllProps(newMap);
+			if(name != current) setCurrent(name);
 		}, ...allProps.get("__" + current + "_props")
 	});
 }

@@ -2,7 +2,7 @@ import { Dimensions, ScrollView, StyleSheet, View } from "react-native";
 import { color } from "@data/constants.json";
 import Header from "@components/layout/Header";
 import Home from "./pages/Home";
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { ObjectMap, SetScreenProps } from "App";
 import Creative from "./pages/Creative";
 
