@@ -33,7 +33,6 @@ export default function GameOver({setScreen}: GameOverProps) {
 		if(!isLoaded) return;
 		Animated.spring(titlePopupAnimation, {
 			toValue: 1,
-			duration: 1000,
 			useNativeDriver: true
 		}).start(() => {
 			Animated.timing(titleScrollAnimation, {

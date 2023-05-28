@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
 	},
 	
 	logo: {
-		width: 450
+		width: 400
 	},
 	
 	gradient: {

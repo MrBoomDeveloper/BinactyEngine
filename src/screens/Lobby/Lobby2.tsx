@@ -2,10 +2,21 @@ import { Dimensions, ScrollView, StyleSheet, View } from "react-native";
 import { color } from "@data/constants.json";
 import Header from "@components/layout/Header";
 import Home from "./pages/Home";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { ObjectMap, SetScreenProps } from "App";
+import Creative from "./pages/Creative";
 
-export default function Lobby2() {
-    const [isScrollEnabled, setScrollEnabled] = useState(true);
+const pageIndexes: ObjectMap = {
+    home: 0,
+    character: 1,
+    creative: 2
+}
+
+interface LobbyProps {
+    setScreen: SetScreenProps
+}
+
+export default function Lobby2({setScreen}: LobbyProps) {
     const scrollView = useRef<ScrollView>(null);
 
     return (
@@ -13,23 +24,22 @@ export default function Lobby2() {
             <Header style={{position: "absolute", zIndex: 999}} />
 
             <ScrollView horizontal pagingEnabled
-                scrollEnabled={isScrollEnabled}
+                showsHorizontalScrollIndicator={false}
                 ref={scrollView}
                 style={styles.pagesLayout}>
                 
-                <Home setScrollEnabled={setScrollEnabled} />
+                <Home setScreen={setScreen} />
+                <Placeholder3 />
+                <Creative setScreen={setScreen} />
                 <Placeholder />
                 <Placeholder3 />
-                <Placeholder />
-                <Placeholder3 />
-                <Placeholder />
             </ScrollView>
         </View>
     );
 }
 
-const Placeholder = () => (<View style={[styles.pageLayout, {backgroundColor: "red"}]} />);
-const Placeholder3 = () => (<View style={[styles.pageLayout, {backgroundColor: "blue"}]} />);
+const Placeholder = () => (<View style={[styles.pageLayout, {backgroundColor: "#ff000016"}]} />);
+const Placeholder3 = () => (<View style={[styles.pageLayout, {backgroundColor: "#0000ff1f"}]} />);
 
 const styles = StyleSheet.create({
     screen: {
@@ -38,7 +48,7 @@ const styles = StyleSheet.create({
     },
 
     pagesLayout: {
-        height: Dimensions.get("window").height
+        height: Dimensions.get("window").height,
     },
 
     pageLayout: {

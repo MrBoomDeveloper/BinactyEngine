@@ -34,7 +34,7 @@ interface ControllerProps {
 
 export type SetScreenProps = (name: string, props?: ObjectMap) => void;
 
-interface ObjectMap {
+export interface ObjectMap {
 	[key: string]: any
 }
 

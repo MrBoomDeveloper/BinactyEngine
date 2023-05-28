@@ -20,7 +20,10 @@ export default function Header({style}: HeaderProps) {
             </View>
 
             <View style={styles.actionsLayout}>
-                <Button theme="popup" fill={true} icon={require("@static/icon/settings.png")} onPress={() => Alert.alert("soon")} />
+                <Button theme="popup" fill={true}
+                    overlayInner={true}
+                    icon={require("@static/icon/settings.png")} 
+                    onPress={() => Alert.alert("soon")} />
             </View>
         </View>
     )
@@ -55,8 +58,8 @@ const styles = StyleSheet.create({
     },
 
     profileAvatar: {
-        height: 45,
-        width: 45,
+        height: 40,
+        width: 40,
         borderColor: "black",
         borderWidth: 1
     },
