@@ -1,4 +1,4 @@
-import { View, Text, SectionList, StyleSheet, Dimensions, Image, FlatList, TouchableOpacity } from "react-native";
+import { View, Text, SectionList, StyleSheet, Dimensions, Image, FlatList, TouchableOpacity, Alert, Linking, Share } from "react-native";
 import { useRef, useEffect } from "react";
 import { size } from "@data/constants.json";
 import { useAppDispatch, useAppSelector } from "@util/hooks";
@@ -55,19 +55,47 @@ interface GamemodeItemProps extends GamemodesItem {
     gamemode: GamemodesItem
 }
 
-function GamemodeItem({name, banner, author, isCompact, gamemode}: GamemodeItemProps) {
+function GamemodeItem({name, banner, bannerBinary, isCompact, id, gamemode}: GamemodeItemProps) {
     const dispatch = useAppDispatch();
 
     return (
         <TouchableOpacity onPress={() => {
+            if(id.startsWith("__ad")) {
+                switch(id.substring(5)) {
+                    case "discord":
+                        const url = "https://discord.com/invite/uCUp8TSCvw";
+                        if(!Linking.canOpenURL(url)) {
+                            Alert.alert("Can't open link", "It looks, that your browser app doesnt isn't ok right now, but you can try sharing this link somewhere! " + url, [{
+                                text: "Share link",
+                                onPress: () => Share.share({
+                                    message: "Check out the BoomTeam Discord Server! " + url
+                                })
+                            }]);
+                            return;
+                        }
+                        
+                        Linking.openURL(url);
+                        break;
+                    
+                    case "new_pack":
+                        Alert.alert("not yet.");
+                        break;
+                    
+                    case "tutorial":
+                        Alert.alert("still under development");
+                        break;
+                }
+                return;
+            }
+
             dispatch(setActive(gamemode));
         }}>
 
             <View style={[styles.gamemodeLayout, isCompact && styles.gamemodeCompactLayout]}>
-                <Image source={{uri: banner || "asset:/packs/core/src/banner/epic.jpg"}}
+                <Image source={bannerBinary || {uri: banner || "asset:/packs/official/src/images/banner.jpg"}}
                     style={styles.gamemodeBanner} />
                 
-                <Text>{name}</Text>
+                {!isCompact && <Text>{name}</Text>}
             </View>
 
         </TouchableOpacity>
@@ -80,15 +108,17 @@ interface OverviewProps {
 }
 
 function Overview({gamemode, setScreen}: OverviewProps) {
+    const { bannerBinary, banner, author, name, description } = gamemode;
+
     return (
         <View style={styles.overviewLayout}>
-            <Image source={{uri: gamemode.banner || "asset:/packs/core/src/banner/epic.jpg"}} style={styles.overviewWallpaper} />
+            <Image source={bannerBinary || {uri: banner || "asset:/packs/official/src/images/banner.jpg"}} style={styles.overviewWallpaper} />
             <Shadow />
 
             <View style={styles.overviewInfoLayout}>
-                <Text style={styles.overviewInfoDescriptionLabel}>Made by:  {gamemode.author}</Text>
-                <Text style={styles.overviewInfoTitleLabel}>{gamemode.name}</Text>
-                <Text style={styles.overviewInfoDescriptionLabel}>{gamemode.description}</Text>
+                <Text style={styles.overviewInfoDescriptionLabel}>Made by:  {author}</Text>
+                <Text style={styles.overviewInfoTitleLabel}>{name}</Text>
+                {description && <Text style={styles.overviewInfoDescriptionLabel}>{description}</Text>}
                 <View style={styles.overviewActionsLayout}>
 
                     <Button text="Start Game!" hitbox={0}

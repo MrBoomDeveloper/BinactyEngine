@@ -56,6 +56,8 @@ export default function Loading({setScreen, target, args}: LoadingProps) {
 			setLoaded(100);
 			
 			setScreen("lobby");
+			AppBridge.startMusic();
+			AppBridge.setVolume(100);
 		} catch(e) {
 			console.error(e);
 			setLoaded(100);
@@ -71,6 +73,7 @@ export default function Loading({setScreen, target, args}: LoadingProps) {
 				setScreen("gameover");
 			});
 			
+			AppBridge.stopMusic();
 			GameNative.play(args);
 		}
 		
@@ -82,7 +85,7 @@ export default function Loading({setScreen, target, args}: LoadingProps) {
 	
 	return (
 		<View style={styles.screen}>
-			<Image style={styles.banner} resizeMode="cover" source={require("../../../android/assets/packs/fnaf/src/banner.png")} />
+			<Image style={styles.banner} resizeMode="cover" source={require("../../../android/assets/packs/official/src/images/banner.jpg")} />
 			{isSigned && <Text style={styles.text}>Loading...  {loaded}%</Text>}
 			{(!isSigned) && <View style={styles.loginOptions}>
 				<Button text="Continue with Google"

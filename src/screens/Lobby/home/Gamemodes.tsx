@@ -74,7 +74,7 @@ function GamemodeCategory({data: {title, id, data}, setCurrentScreen}: GamemodeC
 					
 					return (
 						<TouchableOpacity style={gmStyles.card} onPress={onPress}>
-							<Image style={gmStyles.banner} source={item.banner ? {uri: item.banner} : require("@static/banner/gamemode/banner_hd.jpg")} />
+							<Image style={gmStyles.banner} source={{uri: item.banner || "asset:/packs/official/src/images/banner.jpg"}} />
 							<Image style={gmStyles.shadowLeft} source={require("@static/ui/gradientShadowLeftRight.png")} />
 							<Image style={gmStyles.shadowBottom} source={require("@static/ui/gradientShadowBottomTop.png")} />
 							<View style={{padding: 12, flexGrow: 1}}>

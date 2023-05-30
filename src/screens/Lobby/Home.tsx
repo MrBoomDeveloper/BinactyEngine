@@ -68,7 +68,7 @@ function Home({setScreen}: HomeProps) {
 		<>
 			<Animated.View style={{justifyContent: "flex-end", bottom: swipeAnimation.interpolate({inputRange: [0, 1], outputRange: ["0%", "100%"]}), position: "absolute", height: "100%", width: "100%"}}>
 				<Image resizeMode="cover"
-					source={currentGamemode.banner ? {uri: currentGamemode.banner} : require("@static/banner/gamemode/banner_hd.jpg")}
+					source={{uri: currentGamemode.banner || "asset:/packs/official/src/images/banner.jpg"}}
 					style={styles.wallpaper} />
 				
 				<Image resizeMode="stretch"

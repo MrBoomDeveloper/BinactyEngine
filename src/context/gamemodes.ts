@@ -8,12 +8,13 @@ export interface GamemodesState {
 
 export interface GamemodesItem {
 	name: string,
-	description: string,
+	description?: string,
 	id: string,
 	author: string,
 	maps?: any[],
 	row?: string,
 	banner?: string,
+	bannerBinary?: number,
 	isCompact?: boolean
 }
 
@@ -56,24 +57,26 @@ export const gamemodesSlice = createSlice({
 			state.list = list;
 			state.list = [{
 				title: "Other", isCompact: true,
-				id: "723e7b6e-d6bd-11ed-afa1-0242ac120002",
+				id: "__ad_section",
 				data: [
 					{
 						name: "Create a New Pack",
 						description: "Turn your dreams into real!",
-						id: "723e7894-d6bd-11ed-afa1-0242ac120002",
+						id: "__ad_new_pack",
 						author: "You",
-						banner: "asset:/packs/core/src/banner/epic.jpg"
-					}, {
-						name: "Tutorial",
-						description: "Learn the basics of the game.",
-						id: "8724e112-d6cc-11ed-afa1-0242ac120002",
-						author: "MrBoomDev"
+						bannerBinary: require("@static/banner/ad/create_pack.png")
 					}, {
 						name: "Join Discord",
 						description: "Join our Discord Server to see all the news!",
-						id: "723e7894-d6bd-11ed-afa1-0242ac120003",
-						author: "None"
+						id: "__ad_discord",
+						author: "None",
+						bannerBinary: require("@static/banner/ad/discord.png")
+					}, {
+						name: "Tutorial",
+						description: "Learn the basics of the game.",
+						id: "__ad_tutorial",
+						author: "MrBoomDev",
+						bannerBinary: require("@static/banner/ad/tutorial.png")
 					}
 				]
 			}, ...list];
