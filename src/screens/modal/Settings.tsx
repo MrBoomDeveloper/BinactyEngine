@@ -46,12 +46,12 @@ function Setting({item, onUpdate}) {
 function Controller({id, type, max, defaultValue, onUpdate}) {
 	const [error, setError] = useState("");
 	
-	const onToggle = (newValue) => {
+	const onToggle = (newValue: boolean) => {
 		onUpdate(newValue);
 		GameNative.setKey("boolean", id, String(newValue));
 	}
 	
-	const onChangeText = (newText) => {
+	const onChangeText = (newText: string) => {
 		if(newText.length > 10) {
 			setError("Too many characters!");
 			return;
@@ -65,6 +65,9 @@ function Controller({id, type, max, defaultValue, onUpdate}) {
 		if(newText != "" && /^\d+$/.test(newText.toString())) {
 			setError("");
 			onUpdate(newText);
+			if(type == "number" && id == "musicVolume") {
+				AppBridge.setVolume(parseFloat(newText));
+			}
 			GameNative.setKey("int", id, newText);
 		} else {
 			setError("Invalid value!");
@@ -73,20 +76,25 @@ function Controller({id, type, max, defaultValue, onUpdate}) {
 	
 	
 	switch(type) {
-		case "boolean":
-			return (
-				<Toggle onToggle={onToggle}
-					defaultValue={defaultValue}
-					style={{ marginRight: 8 }}/>
-			);
-		case "number":
-			return (
-				<Input error={error}
-					onChangeText={onChangeText}
-					defaultValue={defaultValue}
-					type="number"
-					style={styles.input} />
-			);
+		case "boolean": return (
+			<Toggle onToggle={onToggle}
+				defaultValue={defaultValue}
+				style={{ marginRight: 8 }}/>
+		);
+
+		case "number": return (
+			<Input error={error}
+				onChangeText={onChangeText}
+				defaultValue={defaultValue}
+				type="number"
+				style={styles.input} />
+		);
+
+		default: return (
+			<View>
+				<Text>Unknown setting type: {type}</Text>
+			</View>
+		);
 	}
 }
 

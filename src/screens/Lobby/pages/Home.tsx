@@ -119,8 +119,8 @@ function Overview({gamemode, setScreen}: OverviewProps) {
                 <Text style={styles.overviewInfoDescriptionLabel}>Made by:  {author}</Text>
                 <Text style={styles.overviewInfoTitleLabel}>{name}</Text>
                 {description && <Text style={styles.overviewInfoDescriptionLabel}>{description}</Text>}
-                <View style={styles.overviewActionsLayout}>
 
+                {(gamemode.maps != null || gamemode.entry != null) && <View style={styles.overviewActionsLayout}>
                     <Button text="Start Game!" hitbox={0}
 						style={{flexGrow: 1}}
 						icon={require("@static/icon/play.png")}
@@ -146,8 +146,8 @@ function Overview({gamemode, setScreen}: OverviewProps) {
                             }});
                         }}
 						styleIcon={{marginHorizontal: 5}} />
+                </View>}
 
-                </View>
             </View>
         </View>
     );

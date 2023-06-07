@@ -17,15 +17,28 @@ interface LoadingProps {
 	args: any
 }
 
+let isGameStarted = false;
+
 export default function Loading({setScreen, target, args}: LoadingProps) {
 	const [loaded, setLoaded] = useState(0);
 	const [isSigned, setIsSigned] = useState(true);
+	const [isProcessing, setIsProcessing] = useState(false);
 	const dispatch = useDispatch();
+
+	function login(method: string) {
+		if(isProcessing) return;
+		try {
+			setIsProcessing(true);
+			AppBridge.signIn(method);
+		} catch(e) {
+			setIsProcessing(false);
+			console.error(e);
+		}
+	}
 	
 	async function loadStuff() {
 		try {
 			AppBridge.startMusic();
-			AppBridge.setVolume(100);
 			
 			if((await GameNative.getKey("boolean", "beta")) && !(await AppBridge.isSignedIn())) {
 				setIsSigned(false);
@@ -57,7 +70,6 @@ export default function Loading({setScreen, target, args}: LoadingProps) {
 			
 			setScreen("lobby");
 			AppBridge.startMusic();
-			AppBridge.setVolume(100);
 		} catch(e) {
 			console.error(e);
 			setLoaded(100);
@@ -69,41 +81,75 @@ export default function Loading({setScreen, target, args}: LoadingProps) {
 		if(target == "lobby") loadStuff();
 		
 		if(target == "game") {
+			if(isGameStarted) {
+				loadStuff();
+				isGameStarted = false;
+				return;
+			}
+
 			new NativeEventEmitter(GameNative).addListener("GameOver", e => {
 				setScreen("gameover");
+				isGameStarted = false;
 			});
 			
 			AppBridge.stopMusic();
 			GameNative.play(args);
+			isGameStarted = true;
 		}
 		
 		new NativeEventEmitter(GameNative).addListener("ForceExit", e => {
 			setScreen("loading", {target: "lobby"});
 			loadStuff();
+			isGameStarted = false;
 		});
 	}, [target]);
 	
 	return (
 		<View style={styles.screen}>
 			<Image style={styles.banner} resizeMode="cover" source={require("../../../android/assets/packs/official/src/images/banner.jpg")} />
+			<Shadow />
 			{isSigned && <Text style={styles.text}>Loading...  {loaded}%</Text>}
-			{(!isSigned) && <View style={styles.loginOptions}>
+			{(!isSigned) && <View style={[styles.loginOptions, {opacity: (isProcessing ? 0.5 : 1)}]}>
 				<Button text="Continue with Google"
 					icon={require("@static/icon/google.jpg")}
-					onPress={() => AppBridge.signIn("google")}
 					styleIcon={{width: 22, height: 22, marginHorizontal: 5}}
+					onPress={() => login("google")} 
 					theme="white" fill={true}/>
 					
 				<Button text="Continue as Guest"
 					style={{paddingHorizontal: 20}}
-					onPress={() => AppBridge.signIn("guest")}
+					onPress={() => login("guest")} 
+					theme="white" fill={true} />
+
+				<Button text="Continue by Nickname"
+					style={{paddingHorizontal: 20}}
+					onPress={() => login("name")}
 					theme="white" fill={true}/>
 			</View>}
 		</View>
 	);
 }
 
+function Shadow() {
+    return (
+        <>
+            <Image resizeMode="stretch"
+				style={styles.shadowBottom}
+				source={require("@static/ui/gradientShadowBottomTop.png")} />
+        </>
+    );
+}
+
 const styles = StyleSheet.create({
+	shadowBottom: {
+		position: "absolute",
+		bottom: 0,
+		left: 0,
+		width: "100%",
+		height: 200,
+		opacity: 0.75
+	},
+
 	screen: {
 		flex: 1,
 		justifyContent: "flex-end"
@@ -130,6 +176,6 @@ const styles = StyleSheet.create({
 		justifyContent: "center",
 		flexDirection: "row",
 		padding: 50,
-		gap: 15
+		gap: 10
 	}
 });

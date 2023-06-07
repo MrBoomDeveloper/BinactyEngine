@@ -1,12 +1,13 @@
-import { memo } from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 
-function Profile() {
-	
+export function ProfileDrawer() {
+	return (
+        <View>
+            
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({
 	
 });
-
-export default memo(Profile);
