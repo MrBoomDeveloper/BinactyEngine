@@ -1,44 +1,59 @@
 import Button from "@components/Button";
-import { Alert, Image, StyleSheet, Text, View, ViewStyle } from "react-native";
+import { Alert, Image, StyleSheet, Text, TouchableOpacity, View, ViewStyle, ImageSourcePropType } from "react-native";
 import { size } from "@data/constants.json";
-
-const profile: ProfileProps = {
-    name: "MrBoomDev"
-}
+import Navigation, { NavigationProps } from "@components/layout/Navigation";
 
 interface HeaderProps {
-    style?: ViewStyle
+    onProfilePress: () => void,
+    style?: ViewStyle,
+    actions?: Action[],
+    navigation?: NavigationProps
 }
 
-export default function Header({style}: HeaderProps) {
+interface ProfileProps {
+    name: string,
+    onPress?: () => void
+}
+
+interface Action {
+    id: string,
+    icon: ImageSourcePropType,
+    onPress: () => void
+}
+
+export default function Header({style, onProfilePress, navigation, actions}: HeaderProps) {
     return (
         <View style={[styles.layout, style]}>
-            <Profile {...profile} />
+            <Profile name="MrBoomDev" onPress={onProfilePress} />
 
-            <View style={styles.navigationLayout}>
-                <Text>Center</Text>
-            </View>
+            {navigation && <View style={styles.navigationLayout}>
+                <Navigation {...navigation} />
+            </View>}
 
-            <View style={styles.actionsLayout}>
-                <Button theme="popup" fill={true}
-                    overlayInner={true}
-                    icon={require("@static/icon/settings.png")} 
-                    onPress={() => Alert.alert("soon")} />
-            </View>
+            {(!navigation) && <View style={{flexGrow: 1}} />}
+
+            {actions && <View style={styles.actionsLayout}>
+                {actions.map(item =>
+                    <Button theme="popup" fill={true}
+                        hitbox={0}
+                        key={item.id}
+                        overlayInner={true}
+                        icon={item.icon}
+                        onPress={item.onPress} />
+                )}
+            </View>}
         </View>
     )
 }
 
-interface ProfileProps {
-    name: string
-}
-
-function Profile({name}: ProfileProps) {
+export function Profile({name, onPress}: ProfileProps) {
     return (
-        <View style={styles.profileLayout}>
-            <Image source={require("@static/avatar/premium.jpg")} style={styles.profileAvatar} />
-            <Text style={styles.profileName}>{name}</Text>
-        </View>
+        <TouchableOpacity onPress={() => onPress && onPress()}>
+            <View style={styles.profileLayout}>
+                <Image source={require("@static/avatar/premium.jpg")} style={styles.profileAvatar} />
+                <Text style={styles.profileName}>{name}</Text>
+            </View>
+        </TouchableOpacity>
     );
 }
 
@@ -67,7 +82,6 @@ const styles = StyleSheet.create({
     profileName: {
         color: "white",
         fontSize: 15,
-        fontWeight: "500",
         marginBottom: 4
     },
 
@@ -81,6 +95,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "flex-end",
         flexDirection: "row",
-        width: 100
+        width: 100,
+        gap: 8
     }
 });

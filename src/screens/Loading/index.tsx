@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Reducer, ReducerAction, useEffect, useReducer, useState } from "react";
 import { useDispatch } from "react-redux";
 import { View, Text, Image, NativeEventEmitter, StyleSheet } from "react-native";
 import { load as loadGamemodes } from "@context/gamemodes";
@@ -8,7 +8,7 @@ import { load as loadSettings } from "@context/settings";
 import Button from "@components/Button";
 import { getNews } from "@screens/Lobby/News";
 import settingsPreset from "@data/SettingsData.json";
-import { GameNative, AppBridge } from "@native";
+import { GameNative, AppBridge, PackBridge } from "@native";
 import { SetScreenProps } from "App";
 
 interface LoadingProps {
@@ -20,16 +20,18 @@ interface LoadingProps {
 let isGameStarted = false;
 
 export default function Loading({setScreen, target, args}: LoadingProps) {
-	const [loaded, setLoaded] = useState(0);
+	const [loaded, setLoaded] = useState({progress: 0, task: "account"});
 	const [isSigned, setIsSigned] = useState(true);
 	const [isProcessing, setIsProcessing] = useState(false);
 	const dispatch = useDispatch();
 
-	function login(method: string) {
+	async function login(method: string) {
 		if(isProcessing) return;
 		try {
 			setIsProcessing(true);
-			AppBridge.signIn(method);
+			await AppBridge.signIn(method);
+			setIsSigned(true);
+			loadStuff();
 		} catch(e) {
 			setIsProcessing(false);
 			console.error(e);
@@ -44,35 +46,39 @@ export default function Loading({setScreen, target, args}: LoadingProps) {
 				setIsSigned(false);
 				return;
 			}
+			setLoaded({progress: 10, task: "gamemodes"});
 			
 			dispatch(loadGamemodes({list: await GameNative.getGamemodes(), latest: await GameNative.getKey("string", "latestGamemode")}));
-			setLoaded(15);
+			setLoaded({progress: 20, task: "settings"});
 			
 			dispatch(loadSettings(await GameNative.getKeys(settingsPreset)));
-			setLoaded(30);
+			setLoaded({progress: 30, task: "profile"});
 			
 			dispatch(loadProfile(await AppBridge.getMyData()));
-			setLoaded(45);
+			setLoaded({progress: 40, task: "money"});
 			
 			const coins = await GameNative.getKey("int", "coins");
-			setLoaded(60);
+			setLoaded({progress: 50, task: "money"});
 			
 			const diamonds = await GameNative.getKey("int", "diamonds");
-			setLoaded(75);
+			setLoaded({progress: 60, task: "money"});
 			
 			dispatch(loadMoney({coins, diamonds}));
-			setLoaded(90);
+			setLoaded({progress: 70, task: "packs"});
 			
+			await PackBridge.getPacks();
+			setLoaded({progress: 80, task: "news"});
+
 			setTimeout(() => setScreen("lobby"), 2500);
-			
+
 			dispatch(loadNews(await getNews()));
-			setLoaded(100);
+			setLoaded({progress: 90, task: "lobby"});
 			
 			setScreen("lobby");
 			AppBridge.startMusic();
 		} catch(e) {
 			console.error(e);
-			setLoaded(100);
+			setLoaded({progress: 90, task: "lobby"});
 			setScreen("lobby");
 		}
 	}
@@ -108,9 +114,13 @@ export default function Loading({setScreen, target, args}: LoadingProps) {
 		<View style={styles.screen}>
 			<Image style={styles.banner} resizeMode="cover" source={require("../../../android/assets/packs/official/src/images/banner.jpg")} />
 			<Shadow />
-			{isSigned && <Text style={styles.text}>Loading...  {loaded}%</Text>}
+			{isSigned && (<>
+				<Text style={styles.text}>Loading {loaded.task} {loaded.progress}%</Text>
+				<View style={[styles.progressBar, {width: loaded.progress + "%"}]} />
+			</>)}
+
 			{(!isSigned) && <View style={[styles.loginOptions, {opacity: (isProcessing ? 0.5 : 1)}]}>
-				<Button text="Continue with Google"
+				{/* <Button text="Continue with Google"
 					icon={require("@static/icon/google.jpg")}
 					styleIcon={{width: 22, height: 22, marginHorizontal: 5}}
 					onPress={() => login("google")} 
@@ -119,7 +129,7 @@ export default function Loading({setScreen, target, args}: LoadingProps) {
 				<Button text="Continue as Guest"
 					style={{paddingHorizontal: 20}}
 					onPress={() => login("guest")} 
-					theme="white" fill={true} />
+					theme="white" fill={true} /> */}
 
 				<Button text="Continue by Nickname"
 					style={{paddingHorizontal: 20}}
@@ -141,6 +151,12 @@ function Shadow() {
 }
 
 const styles = StyleSheet.create({
+	progressBar: {
+		backgroundColor: "white",
+		height: 8,
+		width: "100%"
+	},
+
 	shadowBottom: {
 		position: "absolute",
 		bottom: 0,
@@ -165,7 +181,8 @@ const styles = StyleSheet.create({
 		color: "white",
 		fontSize: 25,
 		fontWeight: "500",
-		margin: 25
+		margin: 25,
+		marginBottom: 10
 	},
 	
 	loginOptions: {
@@ -175,7 +192,7 @@ const styles = StyleSheet.create({
 		width: "100%",
 		justifyContent: "center",
 		flexDirection: "row",
-		padding: 50,
+		padding: 35,
 		gap: 10
 	}
 });

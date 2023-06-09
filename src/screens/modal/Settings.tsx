@@ -1,11 +1,87 @@
-import { useState, useEffect, memo } from "react";
+import { useState, useEffect, memo, useRef, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { View, Text, FlatList, StyleSheet } from "react-native";
-import { Button, Toggle, Input, Header } from "@components";
+import { View, Text, FlatList, StyleSheet, Animated, Pressable, Dimensions } from "react-native";
+import { Header } from "@components";
 import { sizes, colors } from "@util/variables";
 import Dialog from "./Dialog";
 import { update as updateSetting } from "@context/settings";
 import { GameNative, AppBridge } from "@native";
+import Button from "@components/Button";
+import Toggle from "@components/Toggle";
+import Input from "@components/Input";
+import * as constants from "@data/constants.json";
+
+interface SettingsDrawerProps {
+    isOpened: boolean,
+    onClose: () => void
+}
+
+interface SettingsDrawerMenuProps {
+    isOpened: boolean
+}
+
+export function SettingsDrawer({isOpened, onClose}: SettingsDrawerProps) {
+	const opacityAnimation = useRef(new Animated.Value(0)).current;
+
+    useEffect(() => {
+        Animated.timing(opacityAnimation, {
+            duration: 150,
+            toValue: isOpened ? 1 : 0,
+            useNativeDriver: true
+        }).start();
+    }, [opacityAnimation, isOpened]);
+
+	return (
+        <Animated.View style={[styles.layout, {opacity: opacityAnimation}]} pointerEvents={isOpened ? "auto" : "none"}>
+            <SettingsDrawerMenu isOpened={isOpened} />
+            <Pressable onPress={e => onClose()} style={{width: "100%", height: "100%", position: "absolute", right: 300}} />
+        </Animated.View>
+    );
+}
+
+function SettingsDrawerMenu({isOpened}: SettingsDrawerMenuProps) {
+    const slideAnimation = useRef(new Animated.Value(0)).current;
+
+    useEffect(() => {
+        Animated.timing(slideAnimation, {
+            useNativeDriver: false,
+            duration: 150,
+            toValue: isOpened ? Dimensions.get("screen").width - 250 : Dimensions.get("screen").width
+        }).start();
+    }, [isOpened, slideAnimation]);
+
+	const settings = useMemo(() => {
+		return [
+			{
+				title: "Alabama", id: "1",
+				data: [
+					{
+						title: "sgsdgdh", id: "2"
+					}
+				]
+			}
+		]
+	}, []);
+
+    return (
+        <Animated.SectionList sections={settings}
+			keyExtractor={item => item.id}
+			renderItem={({item}) => {
+				return (
+					<View>
+						<Text>{item.title}</Text>
+					</View>
+				);
+			}}
+			style={[styles.menuLayout, {transform: [{translateX: slideAnimation}]}]} />
+    );
+}
+
+
+
+      ////////////////
+      ///DEPRECATED///    |  |  |  |  |
+      ////////////////   \/ \/ \/ \/ \/
 
 function Settings({visible, onClose}) {
 	const settings = useSelector(state => state.settings.value);
@@ -99,6 +175,27 @@ function Controller({id, type, max, defaultValue, onUpdate}) {
 }
 
 const styles = StyleSheet.create({
+	layout: {
+        backgroundColor: "rgba(0, 0, 0, .75)",
+        position: "absolute",
+        left: 0,
+        top: 0,
+        width: "100%",
+        height: "100%",
+        zIndex: 999
+    },
+
+	menuLayout: {
+        width: 250,
+        height: "100%",
+        backgroundColor: constants.color.purpleBackground
+    },
+
+
+
+
+
+
 	setting: {
 		alignItems: "center",
 		paddingRight: 15,

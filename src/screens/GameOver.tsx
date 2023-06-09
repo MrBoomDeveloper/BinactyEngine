@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { View, Text, Image, StyleSheet, FlatList, Animated, Share, Easing } from "react-native";
-import { Button } from "@components";
-import { colors } from "@util/variables";
+import Button from "@components/Button";
+import { colors } from "@util/variables.json";
 import GameNative from "@native";
 import { SetScreenProps } from "App";
 
@@ -9,9 +9,14 @@ interface GameOverProps {
 	setScreen: SetScreenProps
 }
 
+interface StatProps {
+	title: string,
+	count: number
+}
+
 export default function GameOver({setScreen}: GameOverProps) {
 	const [isLoaded, setIsLoaded] = useState(false);
-	const [balance, setBalance] = useState({});
+	const [balance, setBalance] = useState({coins: 0, diamonds: 0});
 	const [stats, setStats]= useState({isWin: false});
 	const titlePopupAnimation = useRef(new Animated.Value(0)).current;
 	const titleScrollAnimation = useRef(new Animated.Value(0)).current;
@@ -80,7 +85,6 @@ export default function GameOver({setScreen}: GameOverProps) {
 			<Animated.View style={{...styles.actions, opacity: buttonsFadeAnimation}}>
 				<Button text="Share results"
 					style={styles.action}
-					styleText={styles.actionText}
 					theme="brand"
 					onPress={() => {
 						Share.share({
@@ -89,7 +93,6 @@ export default function GameOver({setScreen}: GameOverProps) {
 					}} />
 				<Button text="Continue"
 					style={styles.action}
-					styleText={styles.actionText}
 					theme="brand"
 					fill={true}
 					onPress={() => close()} />
@@ -104,12 +107,11 @@ export default function GameOver({setScreen}: GameOverProps) {
 	);
 }
 
-function Stat({title, count}) {
+function Stat({title, count}: StatProps) {
 	return (
 		<View style={{flexGrow: 1}}>
 			<Text style={{...styles.statText, flexGrow: 1}}>{title}</Text>
 			<Text style={{...styles.statText}}>{count}</Text>
-			<Image source={null} />
 		</View>
 	);
 }
@@ -118,6 +120,7 @@ const styles = StyleSheet.create({
 	screen: {
 		height: "100%",
 		padding: 50,
+		paddingBottom: 25,
 		display: "flex",
 		backgroundColor: colors.background
 	},
@@ -141,12 +144,8 @@ const styles = StyleSheet.create({
 	},
 	
 	action: {
-		width: 180,
-		height: 45
-	},
-	
-	actionText: {
-		fontSize: 17
+		width: 150,
+		height: 42
 	},
 	
 	titleHolder: {
@@ -160,7 +159,7 @@ const styles = StyleSheet.create({
 	
 	title: {
 		color: "white",
-		fontSize: 100,
+		fontSize: 75,
 		fontWeight: "600",
 		marginLeft: 100
 	}

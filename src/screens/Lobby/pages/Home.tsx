@@ -118,7 +118,7 @@ function Overview({gamemode, setScreen}: OverviewProps) {
             <View style={styles.overviewInfoLayout}>
                 <Text style={styles.overviewInfoDescriptionLabel}>Made by:  {author}</Text>
                 <Text style={styles.overviewInfoTitleLabel}>{name}</Text>
-                {description && <Text style={styles.overviewInfoDescriptionLabel}>{description}</Text>}
+                {description && <Text numberOfLines={3} style={styles.overviewInfoDescriptionLabel}>{description}</Text>}
 
                 {(gamemode.maps != null || gamemode.entry != null) && <View style={styles.overviewActionsLayout}>
                     <Button text="Start Game!" hitbox={0}
@@ -225,7 +225,8 @@ const styles = StyleSheet.create({
 
     overviewInfoDescriptionLabel: {
         color: "#d7cbe4",
-        lineHeight: 20
+        lineHeight: 20,
+        width: "85%"
     },
 
     overviewActionsLayout: {

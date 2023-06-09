@@ -2,9 +2,12 @@ import { Dimensions, ScrollView, StyleSheet, View } from "react-native";
 import { color } from "@data/constants.json";
 import Header from "@components/layout/Header";
 import Home from "./pages/Home";
-import { useRef } from "react";
+import { useRef, useState, useMemo, useReducer } from "react";
 import { ObjectMap, SetScreenProps } from "App";
 import Creative from "./pages/Creative";
+import { ProfileDrawer } from "@screens/modal/Profile";
+import { NavigationProps } from "@components/layout/Navigation";
+import { SettingsDrawer } from "@screens/modal/Settings";
 
 const pageIndexes: ObjectMap = {
     home: 0,
@@ -17,23 +20,63 @@ interface LobbyProps {
 }
 
 export default function Lobby2({setScreen}: LobbyProps) {
+    const [isProfileOpened, setProfileOpened] = useState(false);
+    const [isSettingsOpened, setSettingsOpened] = useState(false);
     const scrollView = useRef<ScrollView>(null);
+
+    const [pages, dispatchPages] = useReducer(pagesReducer, {
+        current: "home",
+        tabs: [
+            { title: "Home", id: "home" },
+            { title: "Character", id: "character" },
+            { title: "Skills", id: "skills" },
+            { title: "Creative", id: "creative" }
+        ],
+
+        onTabSelected(page, index) {
+            scrollView.current?.scrollTo({x: Dimensions.get("screen").width * index, y: 0});
+            dispatchPages({current: page.id})
+        }
+    });
+
+    const actions = useMemo(() => {
+        return [
+            {
+                id: "news",
+                icon: require("@static/icon/news.png"),
+                onPress: () => setSettingsOpened(true)
+            }, {
+                id: "settings",
+                icon: require("@static/icon/settings.png"),
+                onPress: () => setSettingsOpened(true)
+            }
+        ]
+    }, []);
+
+    function pagesReducer(state: NavigationProps, action: NavigationProps) {
+        return {...state, ...action};
+    }
 
     return (
         <View style={styles.screen}>
-            <Header style={{position: "absolute", zIndex: 999}} />
+            <Header navigation={pages} actions={actions}
+                style={{position: "absolute", zIndex: 999}}
+                onProfilePress={() => setProfileOpened(true)} />
 
             <ScrollView horizontal pagingEnabled
+                scrollEnabled={false}
                 showsHorizontalScrollIndicator={false}
                 ref={scrollView}
                 style={styles.pagesLayout}>
                 
                 <Home setScreen={setScreen} />
                 <Placeholder3 />
-                <Creative setScreen={setScreen} />
                 <Placeholder />
-                <Placeholder3 />
+                <Creative setScreen={setScreen} />
             </ScrollView>
+
+            <ProfileDrawer isOpened={isProfileOpened} onClose={() => setProfileOpened(false)} />
+            <SettingsDrawer isOpened={isSettingsOpened} onClose={() => setSettingsOpened(false)} />
         </View>
     );
 }

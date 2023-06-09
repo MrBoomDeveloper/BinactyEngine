@@ -59,18 +59,20 @@ export default function Splash({setScreen}: SplashProps) {
 
 const styles = StyleSheet.create({
 	screen: {
-		justifyContent: "center",
-		alignItems: "center",
 		flex: 1
 	},
 	
 	logoContainer: {
 		position: "absolute",
-		flex: 1
+		height: "100%",
+		width: "100%",
+		justifyContent: "center",
+		alignItems: "center",
 	},
 	
 	logo: {
-		width: 400
+		width: 450,
+		maxWidth: "50%"
 	},
 	
 	gradient: {
