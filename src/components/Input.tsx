@@ -1,16 +1,21 @@
 import { useState, useEffect, useRef } from "react";
-import { View, Animated, Text, TextInput, StyleSheet } from "react-native";
-import { colors } from "@util/variables";
+import { View, Animated, Text, TextInput, StyleSheet, ViewStyle } from "react-native";
+import { colors } from "@util/variables.json";
+import { ObjectMap } from "App";
 
 interface InputElement {
 	placeholder?: string | number,
 	maxLength?: number,
-	error?: string
+	error?: string,
+	type?: "string" | "number",
+	onChangeText?: (text: string) => void,
+	style?: ViewStyle,
+	defaultValue?: string | number
 }
 
-export default function Input({error, placeholder, maxLength, type, onChangeText, style, ...props}: InputElement) {
+export default function Input({error, placeholder = "Enter text...", maxLength, type = "string", onChangeText, style, defaultValue}: InputElement) {
 	const animation = useRef(new Animated.Value(0));
-	const input = useRef();
+	const input = useRef<TextInput>(null);
 	const [isFocus, setIsFocus] = useState(false);
 	
 	useEffect(() => {
@@ -25,7 +30,7 @@ export default function Input({error, placeholder, maxLength, type, onChangeText
 		animation.current = new Animated.Value(error == "" ? 0 : 1);
 	}, [error]);
 	
-	const borderColor = isFocus ? colors.primary : "rgba(250, 250, 250, .1)";
+	const borderColor = (error != "") ? "red" : isFocus ? colors.primary : "rgba(250, 250, 250, .1)";
 	return (
 		<View style={{...styles.holder, ...style, borderColor}}>
 			<Animated.View style={{...styles.error, opacity: animation.current}}>
@@ -39,14 +44,15 @@ export default function Input({error, placeholder, maxLength, type, onChangeText
 				onFocus={() => setIsFocus(true)}
 				onBlur={() => setIsFocus(false)}
 				maxLength={maxLength || 25}
-				placeholder={String(placeholder || props.defaultValue)}
-				defaultValue={String(props.defaultValue)}
+				placeholder={error == "" ? String(placeholder || defaultValue) : error}
+				placeholderTextColor={error == "" ? "#877e8b" : "red"}
+				defaultValue={String(defaultValue)}
 				keyboardType={types[type]} />
 		</View>
 	);
 }
 
-const types = {
+const types: ObjectMap = {
 	number: "number-pad",
 	text: "default"
 }

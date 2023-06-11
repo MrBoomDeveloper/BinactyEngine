@@ -1,8 +1,14 @@
 import { useState, useRef, useEffect } from "react";
-import { View, Animated, Pressable, StyleSheet } from "react-native";
-import { colors } from "@util/variables";
+import { View, Animated, Pressable, StyleSheet, ViewStyle } from "react-native";
+import { colors } from "@util/variables.json";
 
-export default function Toggle({defaultValue, onToggle, style}) {
+interface ToggleProps {
+	defaultValue?: boolean,
+	onToggle?: (isActive: boolean) => void,
+	style?: ViewStyle
+}
+
+export default function Toggle({defaultValue, onToggle, style}: ToggleProps) {
 	const [isActive, setActive] = useState(defaultValue);
 	const animation = useRef(new Animated.Value(3));
 
@@ -19,7 +25,7 @@ export default function Toggle({defaultValue, onToggle, style}) {
 	}, [isActive]);
 	
 	const onPress = () => {
-		onToggle(!isActive);
+		onToggle && onToggle(!isActive);
 		setActive(!isActive);
 	}
 	

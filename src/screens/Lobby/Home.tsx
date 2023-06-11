@@ -29,8 +29,8 @@ function Home({setScreen}: HomeProps) {
 	const touchYBegin = useRef(0);
 	const currentGamemode = useSelector(state => state.gamemodes.current);
 
-	const settings = useSelector(state => state.settings.value);
-	const isBeta: boolean = useMemo(() => settings.find(({id}) => id == "beta").initial, [settings]);
+	const settings = useSelector(state => state.settings.old);
+	const isBeta: boolean = useMemo(() => settings.find(({id}) => id == "beta")?.initial, [settings]);
 	
 	useEffect(() => {
 		Animated.timing(swipeAnimation, {

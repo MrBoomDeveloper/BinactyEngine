@@ -38,7 +38,10 @@ function Section({title, data, isCompact, id}: GamemodesCategory) {
             {!isCompact && <View style={styles.sectionHeaderLayout}>
                 <Text style={styles.sectionHeaderTitleLabel}>{title}</Text>
             </View>}
+            
             <FlatList data={data} horizontal
+                ListHeaderComponent={<View style={{width: size.inlineScreenPadding}} />}
+                ListFooterComponent={<View style={{width: size.inlineScreenPadding}} />}
                 showsHorizontalScrollIndicator={false}
                 renderItem={({item}) => {
                     return (
@@ -237,7 +240,6 @@ const styles = StyleSheet.create({
     },
 
     sectionLayout: {
-        paddingHorizontal: size.inlineScreenPadding,
         marginBottom: 10
     },
 
@@ -248,7 +250,8 @@ const styles = StyleSheet.create({
     },
 
     sectionHeaderLayout: {
-        paddingVertical: 15
+        paddingVertical: 15,
+        paddingHorizontal: size.inlineScreenPadding
     },
 
     gamemodeCompactLayout: {

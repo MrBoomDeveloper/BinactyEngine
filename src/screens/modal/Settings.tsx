@@ -1,15 +1,15 @@
-import { useState, useEffect, memo, useRef, useMemo } from "react";
+import { useState, useEffect, memo, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { View, Text, FlatList, StyleSheet, Animated, Pressable, Dimensions } from "react-native";
-import { Header } from "@components";
-import { sizes, colors } from "@util/variables";
+import { View, Text, FlatList, StyleSheet, Animated, Pressable, Dimensions, BackHandler } from "react-native";
+import Header from "@components/Header";
+import { colors } from "@util/variables.json";
 import Dialog from "./Dialog";
-import { update as updateSetting } from "@context/settings";
+import { SettingsCategory, SettingsItem, update as updateSetting } from "@context/settings";
 import { GameNative, AppBridge } from "@native";
-import Button from "@components/Button";
 import Toggle from "@components/Toggle";
 import Input from "@components/Input";
 import * as constants from "@data/constants.json";
+import { useAppDispatch, useAppSelector } from "@util/hooks";
 
 interface SettingsDrawerProps {
     isOpened: boolean,
@@ -23,6 +23,15 @@ interface SettingsDrawerMenuProps {
 export function SettingsDrawer({isOpened, onClose}: SettingsDrawerProps) {
 	const opacityAnimation = useRef(new Animated.Value(0)).current;
 
+	useEffect(() => {
+		const handler = BackHandler.addEventListener("hardwareBackPress", () => {
+			if(isOpened) onClose();
+			return isOpened;
+		});
+
+		return () => handler.remove();
+	}, [isOpened]);
+
     useEffect(() => {
         Animated.timing(opacityAnimation, {
             duration: 150,
@@ -34,47 +43,83 @@ export function SettingsDrawer({isOpened, onClose}: SettingsDrawerProps) {
 	return (
         <Animated.View style={[styles.layout, {opacity: opacityAnimation}]} pointerEvents={isOpened ? "auto" : "none"}>
             <SettingsDrawerMenu isOpened={isOpened} />
-            <Pressable onPress={e => onClose()} style={{width: "100%", height: "100%", position: "absolute", right: 300}} />
+            <Pressable onPressIn={e => onClose()} style={{width: "100%", height: "100%", position: "absolute", right: 300}} />
         </Animated.View>
     );
 }
 
 function SettingsDrawerMenu({isOpened}: SettingsDrawerMenuProps) {
     const slideAnimation = useRef(new Animated.Value(0)).current;
+	const settings: SettingsCategory[] = useAppSelector(state => state.settings.list);
 
     useEffect(() => {
         Animated.timing(slideAnimation, {
             useNativeDriver: false,
             duration: 150,
-            toValue: isOpened ? Dimensions.get("screen").width - 250 : Dimensions.get("screen").width
+            toValue: isOpened ? Dimensions.get("screen").width - 350 : Dimensions.get("screen").width
         }).start();
     }, [isOpened, slideAnimation]);
-
-	const settings = useMemo(() => {
-		return [
-			{
-				title: "Alabama", id: "1",
-				data: [
-					{
-						title: "sgsdgdh", id: "2"
-					}
-				]
-			}
-		]
-	}, []);
 
     return (
         <Animated.SectionList sections={settings}
 			keyExtractor={item => item.id}
-			renderItem={({item}) => {
-				return (
-					<View>
-						<Text>{item.title}</Text>
-					</View>
-				);
-			}}
+			ListFooterComponent={<View style={{height: 25}} />}
+			renderSectionHeader={({section}) => <SettingsCategoryHeader {...section} />}
+			renderItem={({item}) => <Setting {...item} />}
 			style={[styles.menuLayout, {transform: [{translateX: slideAnimation}]}]} />
     );
+}
+
+function SettingsCategoryHeader({title}: SettingsCategory) {
+	return (
+		<View style={styles.categoryHeaderLayout}>
+			<Text style={styles.categoryHeaderTitle}>{title}</Text>
+		</View>
+	)
+}
+
+function Setting({title, description, type, restart, value, id}: SettingsItem) {
+	const [error, setError] = useState("");
+	const dispatch = useAppDispatch();
+
+	return (
+		<View style={styles.settingLayout}>
+			<View style={styles.settingInfo}>
+				<Text style={styles.settingTitle}>{title}</Text>
+				{description && <Text style={styles.settingDescription}>{description}</Text>}
+			</View>
+
+			<View style={styles.settinAction}>
+				{type == "boolean" && (
+					<Toggle defaultValue={value as boolean}
+						onToggle={newValue => {
+							dispatch(updateSetting({id, newValue, type}));
+							if(restart) AppBridge.restart();
+						}} />
+				)}
+
+				{type == "number" && (
+					<Input defaultValue={value as number}
+						type="number"
+						error={error}
+						style={{width: 75}}
+						maxLength={4}
+						onChangeText={newValue => {
+							if(newValue.length == 0) {
+								setError("Empty!");
+								return;
+							}
+							
+							if(id == "musicVolume") {
+								AppBridge.setVolume(parseFloat(newValue));
+							}
+
+							dispatch(updateSetting({id, newValue, type}));
+						}} />
+				)}
+			</View>
+		</View>
+	)
 }
 
 
@@ -84,12 +129,12 @@ function SettingsDrawerMenu({isOpened}: SettingsDrawerMenuProps) {
       ////////////////   \/ \/ \/ \/ \/
 
 function Settings({visible, onClose}) {
-	const settings = useSelector(state => state.settings.value);
+	const settings = useSelector(state => state.settings.old);
 	const dispatch = useDispatch();
 	
 	const renderItem = ({item, index}) => {
-		return <Setting item={item} onUpdate={(newValue) => {
-			dispatch(updateSetting({index, newValue}));
+		return <SettingOld item={item} onUpdate={(newValue) => {
+			dispatch(updateSetting({index, newValue, type: item.type, id: item.id}));
 		}} />
 	}
 	
@@ -105,7 +150,7 @@ function Settings({visible, onClose}) {
 	);
 }
 
-function Setting({item, onUpdate}) {
+function SettingOld({item, onUpdate}) {
 	return (
 		<View style={styles.setting}>
 			<View style={styles.infoWrapper}>
@@ -186,10 +231,55 @@ const styles = StyleSheet.create({
     },
 
 	menuLayout: {
-        width: 250,
+        width: 350,
         height: "100%",
         backgroundColor: constants.color.purpleBackground
     },
+
+	categoryHeaderLayout: {
+		padding: 15,
+		paddingHorizontal: 20,
+		backgroundColor: "rgba(0, 0, 0, .2)",
+		marginBottom: 5
+	},
+
+	categoryHeaderTitle: {
+		color: "white",
+		fontSize: 20,
+		fontWeight: "500"
+	},
+
+	settingLayout: {
+		paddingHorizontal: 16,
+		paddingVertical: 12,
+		backgroundColor: constants.color.surfaceLight,
+		marginLeft: 12,
+		marginRight: constants.size.inlineScreenPadding,
+		marginBottom: 8,
+		borderRadius: 8,
+		flexDirection: "row"
+	},
+
+	settingInfo: {
+		maxWidth: 150
+	},
+
+	settingTitle: {
+		color: "white",
+		fontSize: 16,
+		lineHeight: 24
+	},
+
+	settingDescription: {
+		marginTop: 4,
+		lineHeight: 24
+	},
+
+	settinAction: {
+		flexGrow: 1,
+		justifyContent: "center",
+		alignItems: "flex-end"
+	},
 
 
 

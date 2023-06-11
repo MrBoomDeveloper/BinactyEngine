@@ -1,19 +1,14 @@
-import { Dimensions, ScrollView, StyleSheet, View } from "react-native";
+import { BackHandler, Dimensions, ScrollView, StyleSheet, View } from "react-native";
 import { color } from "@data/constants.json";
 import Header from "@components/layout/Header";
 import Home from "./pages/Home";
-import { useRef, useState, useMemo, useReducer } from "react";
-import { ObjectMap, SetScreenProps } from "App";
+import { useRef, useState, useMemo, useReducer, useEffect } from "react";
+import { SetScreenProps } from "App";
 import Creative from "./pages/Creative";
 import { ProfileDrawer } from "@screens/modal/Profile";
 import { NavigationProps } from "@components/layout/Navigation";
 import { SettingsDrawer } from "@screens/modal/Settings";
-
-const pageIndexes: ObjectMap = {
-    home: 0,
-    character: 1,
-    creative: 2
-}
+import { AppBridge } from "@native";
 
 interface LobbyProps {
     setScreen: SetScreenProps
@@ -23,6 +18,15 @@ export default function Lobby2({setScreen}: LobbyProps) {
     const [isProfileOpened, setProfileOpened] = useState(false);
     const [isSettingsOpened, setSettingsOpened] = useState(false);
     const scrollView = useRef<ScrollView>(null);
+
+    useEffect(() => {
+        const handler = BackHandler.addEventListener("hardwareBackPress", () => {
+            AppBridge.exit();
+            return true;
+        });
+
+        return () => handler.remove();
+    }, []);
 
     const [pages, dispatchPages] = useReducer(pagesReducer, {
         current: "home",
@@ -35,7 +39,7 @@ export default function Lobby2({setScreen}: LobbyProps) {
 
         onTabSelected(page, index) {
             scrollView.current?.scrollTo({x: Dimensions.get("screen").width * index, y: 0});
-            dispatchPages({current: page.id})
+            dispatchPages({current: page.id});
         }
     });
 

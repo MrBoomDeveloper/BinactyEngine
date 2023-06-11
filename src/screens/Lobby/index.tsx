@@ -22,19 +22,14 @@ export default function Lobby({setScreen}: LobbyProps) {
 	const profile = useSelector(state => state.profile.value.me);
 	const money = useSelector(state => state.profile.value.money);
 	
-	const settings = useSelector(state => state.settings.value);
-	const isBeta = useMemo(() => settings.find(({id}) => id == "beta").initial, [settings]);
+	const settings = useSelector(state => state.settings.old);
+	const isBeta = useMemo(() => settings.find(({id}) => id == "beta")?.initial, [settings]);
 	
 	const actions = [
 		{ key: "settings", icon: require("@static/icon/settings.png"), onPress() { setSettingsVisibility(true) } }
 	];
 	
 	useEffect(() => {
-		BackHandler.addEventListener("hardwareBackPress", () => {
-			GameNative.requestClose();
-			return true;
-		});
-		
 		new NativeEventEmitter(PackBridge).addListener("reload", e => {
 			AppBridge.stopMusic();
 			setScreen("loading", {target: "lobby"});

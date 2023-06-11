@@ -1,10 +1,10 @@
-import { Reducer, ReducerAction, useEffect, useReducer, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { View, Text, Image, NativeEventEmitter, StyleSheet } from "react-native";
 import { load as loadGamemodes } from "@context/gamemodes";
 import { load as loadNews } from "@context/news";
 import { setMoney as loadMoney, setProfile as loadProfile } from "@context/profile";
-import { load as loadSettings } from "@context/settings";
+import { load as loadSettings, setup as setupSettings } from "@context/settings";
 import Button from "@components/Button";
 import { getNews } from "@screens/Lobby/News";
 import settingsPreset from "@data/SettingsData.json";
@@ -51,7 +51,9 @@ export default function Loading({setScreen, target, args}: LoadingProps) {
 			dispatch(loadGamemodes({list: await GameNative.getGamemodes(), latest: await GameNative.getKey("string", "latestGamemode")}));
 			setLoaded({progress: 20, task: "settings"});
 			
-			dispatch(loadSettings(await GameNative.getKeys(settingsPreset)));
+			const settings = await GameNative.getKeys(settingsPreset);
+			dispatch(loadSettings(settings));
+			dispatch(setupSettings(settings));
 			setLoaded({progress: 30, task: "profile"});
 			
 			dispatch(loadProfile(await AppBridge.getMyData()));

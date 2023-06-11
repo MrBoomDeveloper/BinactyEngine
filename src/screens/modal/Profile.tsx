@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { StyleSheet, View, Animated, Pressable, Alert, Text, ViewStyle, TouchableOpacity, Image } from "react-native";
+import { StyleSheet, View, Animated, Pressable, Alert, Text, ViewStyle, TouchableOpacity, Image, BackHandler } from "react-native";
 import * as constants from "@data/constants.json";
 import BoomButton from "@components/Button";
 
@@ -37,6 +37,15 @@ export function ProfileDrawer({isOpened, onClose}: ProfileDrawerProps) {
     const opacityAnimation = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
+		const handler = BackHandler.addEventListener("hardwareBackPress", () => {
+			if(isOpened) onClose();
+			return isOpened;
+		});
+
+		return () => handler.remove();
+	}, [isOpened]);
+
+    useEffect(() => {
         Animated.timing(opacityAnimation, {
             duration: 150,
             toValue: isOpened ? 1 : 0,
@@ -47,7 +56,7 @@ export function ProfileDrawer({isOpened, onClose}: ProfileDrawerProps) {
 	return (
         <Animated.View style={[styles.layout, {opacity: opacityAnimation}]} pointerEvents={isOpened ? "auto" : "none"}>
             <ProfileDrawerMenu isOpened={isOpened} />
-            <Pressable onPress={e => onClose()} style={{width: "100%", height: "100%", position: "absolute", left: 300}} />
+            <Pressable onPressIn={e => onClose()} style={{width: "100%", height: "100%", position: "absolute", left: 300}} />
         </Animated.View>
     );
 }

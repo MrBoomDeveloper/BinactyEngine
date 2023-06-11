@@ -4,6 +4,10 @@
     },
 
     "color": {
-        "purpleBackground": "#11071F"
+        "purpleBackground": "#11071F",
+        "primarySurface": "hsl(290, 100%, 55%)",
+		"secondary": "#E56EFF",
+        "surfaceSmall": "rgba(123, 53, 182, 0.8)",
+		"surfaceLight": "rgba(75, 75, 75, 0.1)"
     }
 }
