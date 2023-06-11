@@ -9,6 +9,7 @@ import { ProfileDrawer } from "@screens/modal/Profile";
 import { NavigationProps } from "@components/layout/Navigation";
 import { SettingsDrawer } from "@screens/modal/Settings";
 import { AppBridge } from "@native";
+import { NewsDrawer } from "@screens/modal/News";
 
 interface LobbyProps {
     setScreen: SetScreenProps
@@ -16,6 +17,7 @@ interface LobbyProps {
 
 export default function Lobby2({setScreen}: LobbyProps) {
     const [isProfileOpened, setProfileOpened] = useState(false);
+    const [isNewsOpened, setNewsOpened] = useState(false);
     const [isSettingsOpened, setSettingsOpened] = useState(false);
     const scrollView = useRef<ScrollView>(null);
 
@@ -48,7 +50,7 @@ export default function Lobby2({setScreen}: LobbyProps) {
             {
                 id: "news",
                 icon: require("@static/icon/news.png"),
-                onPress: () => setSettingsOpened(true)
+                onPress: () => setNewsOpened(true)
             }, {
                 id: "settings",
                 icon: require("@static/icon/settings.png"),
@@ -80,6 +82,7 @@ export default function Lobby2({setScreen}: LobbyProps) {
             </ScrollView>
 
             <ProfileDrawer isOpened={isProfileOpened} onClose={() => setProfileOpened(false)} />
+            <NewsDrawer isOpened={isNewsOpened} onClose={() => setNewsOpened(false)} />
             <SettingsDrawer isOpened={isSettingsOpened} onClose={() => setSettingsOpened(false)} />
         </View>
     );

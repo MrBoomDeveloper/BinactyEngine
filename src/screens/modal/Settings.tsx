@@ -1,6 +1,6 @@
-import { useState, useEffect, memo, useRef } from "react";
+import { useState, memo } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { View, Text, FlatList, StyleSheet, Animated, Pressable, Dimensions, BackHandler } from "react-native";
+import { View, Text, FlatList, StyleSheet, SectionList } from "react-native";
 import Header from "@components/Header";
 import { colors } from "@util/variables.json";
 import Dialog from "./Dialog";
@@ -10,64 +10,20 @@ import Toggle from "@components/Toggle";
 import Input from "@components/Input";
 import * as constants from "@data/constants.json";
 import { useAppDispatch, useAppSelector } from "@util/hooks";
+import Drawer, { SimpleDrawerProps } from "./Drawer";
 
-interface SettingsDrawerProps {
-    isOpened: boolean,
-    onClose: () => void
-}
-
-interface SettingsDrawerMenuProps {
-    isOpened: boolean
-}
-
-export function SettingsDrawer({isOpened, onClose}: SettingsDrawerProps) {
-	const opacityAnimation = useRef(new Animated.Value(0)).current;
-
-	useEffect(() => {
-		const handler = BackHandler.addEventListener("hardwareBackPress", () => {
-			if(isOpened) onClose();
-			return isOpened;
-		});
-
-		return () => handler.remove();
-	}, [isOpened]);
-
-    useEffect(() => {
-        Animated.timing(opacityAnimation, {
-            duration: 150,
-            toValue: isOpened ? 1 : 0,
-            useNativeDriver: true
-        }).start();
-    }, [opacityAnimation, isOpened]);
-
-	return (
-        <Animated.View style={[styles.layout, {opacity: opacityAnimation}]} pointerEvents={isOpened ? "auto" : "none"}>
-            <SettingsDrawerMenu isOpened={isOpened} />
-            <Pressable onPressIn={e => onClose()} style={{width: "100%", height: "100%", position: "absolute", right: 300}} />
-        </Animated.View>
-    );
-}
-
-function SettingsDrawerMenu({isOpened}: SettingsDrawerMenuProps) {
-    const slideAnimation = useRef(new Animated.Value(0)).current;
+export function SettingsDrawer(props: SimpleDrawerProps) {
 	const settings: SettingsCategory[] = useAppSelector(state => state.settings.list);
 
-    useEffect(() => {
-        Animated.timing(slideAnimation, {
-            useNativeDriver: false,
-            duration: 150,
-            toValue: isOpened ? Dimensions.get("screen").width - 350 : Dimensions.get("screen").width
-        }).start();
-    }, [isOpened, slideAnimation]);
-
-    return (
-        <Animated.SectionList sections={settings}
-			keyExtractor={item => item.id}
-			ListFooterComponent={<View style={{height: 25}} />}
-			renderSectionHeader={({section}) => <SettingsCategoryHeader {...section} />}
-			renderItem={({item}) => <Setting {...item} />}
-			style={[styles.menuLayout, {transform: [{translateX: slideAnimation}]}]} />
-    );
+	return (
+		<Drawer width={350} direction="right" {...props}>
+			<SectionList sections={settings}
+				keyExtractor={item => item.id}
+				ListFooterComponent={<View style={{height: 25}} />}
+				renderSectionHeader={({section}) => <SettingsCategoryHeader {...section} />}
+				renderItem={({item}) => <Setting {...item} />} />
+		</Drawer>
+	);
 }
 
 function SettingsCategoryHeader({title}: SettingsCategory) {
@@ -95,6 +51,15 @@ function Setting({title, description, type, restart, value, id}: SettingsItem) {
 						onToggle={newValue => {
 							dispatch(updateSetting({id, newValue, type}));
 							if(restart) AppBridge.restart();
+						}} />
+				)}
+
+				{type == "string" && (
+					<Input defaultValue={value as string}
+						type="string"
+						style={{width: 100}}
+						onChangeText={newValue => {
+							dispatch(updateSetting({id, newValue, type}));
 						}} />
 				)}
 
@@ -220,22 +185,6 @@ function Controller({id, type, max, defaultValue, onUpdate}) {
 }
 
 const styles = StyleSheet.create({
-	layout: {
-        backgroundColor: "rgba(0, 0, 0, .75)",
-        position: "absolute",
-        left: 0,
-        top: 0,
-        width: "100%",
-        height: "100%",
-        zIndex: 999
-    },
-
-	menuLayout: {
-        width: 350,
-        height: "100%",
-        backgroundColor: constants.color.purpleBackground
-    },
-
 	categoryHeaderLayout: {
 		padding: 15,
 		paddingHorizontal: 20,

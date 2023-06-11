@@ -19,16 +19,26 @@ export default function Home({setScreen}: HomeProps) {
         list.scrollToLocation({sectionIndex: 0, itemIndex: 0, viewPosition: 10})
     }, [gamemodes.current]);
 
+    const { bannerBinary, banner } = gamemodes.current;
+
     return (
-        <SectionList sections={gamemodes.list}
-            ref={scrollView}
-            showsVerticalScrollIndicator={false}
-            ListHeaderComponent={() => <Overview gamemode={gamemodes.current} setScreen={setScreen} />}
-            ListFooterComponent={End}
-            style={styles.layout}
-            keyExtractor={item => item.id}
-            renderItem={() => null}
-            renderSectionHeader={item => <Section {...item.section} />} />
+        <View>
+            <Image source={bannerBinary || {uri: banner || "asset:/packs/official/src/images/banner.jpg"}} style={styles.backgroundWallpaper} />
+            <SectionList sections={gamemodes.list}
+                ref={scrollView}
+                showsVerticalScrollIndicator={false}
+                overScrollMode="never"
+                ListHeaderComponent={() => <Overview gamemode={gamemodes.current} setScreen={setScreen} />}
+                ListFooterComponent={End}
+                style={styles.layout}
+                keyExtractor={item => item.id}
+                renderItem={() => null}
+                renderSectionHeader={item => <Section {...item.section} />} />
+
+            <Image resizeMode="stretch"
+                style={{width: "100%", height: 100, position: "absolute", top: 0, left: 0, transform: [{rotate: "180deg"}]}}
+                source={require("@static/ui/gradientShadowBottomTop.png")} />
+        </View>
     );
 }
 
@@ -98,7 +108,13 @@ function GamemodeItem({name, banner, bannerBinary, isCompact, id, gamemode}: Gam
                 <Image source={bannerBinary || {uri: banner || "asset:/packs/official/src/images/banner.jpg"}}
                     style={styles.gamemodeBanner} />
                 
-                {!isCompact && <Text>{name}</Text>}
+                {!isCompact && (<>
+                    <Image resizeMode="stretch"
+                        style={{position: "absolute", left: 0, bottom: -1, width: "100%", height: 50}}
+                        source={require("@static/ui/gradientShadowBottomTop.png")} />
+
+                    <Text style={styles.gamemodeName}>{name}</Text>
+                </>)}
             </View>
 
         </TouchableOpacity>
@@ -111,13 +127,11 @@ interface OverviewProps {
 }
 
 function Overview({gamemode, setScreen}: OverviewProps) {
-    const { bannerBinary, banner, author, name, description } = gamemode;
+    const { author, name, description } = gamemode;
 
     return (
         <View style={styles.overviewLayout}>
-            <Image source={bannerBinary || {uri: banner || "asset:/packs/official/src/images/banner.jpg"}} style={styles.overviewWallpaper} />
             <Shadow />
-
             <View style={styles.overviewInfoLayout}>
                 <Text style={styles.overviewInfoDescriptionLabel}>Made by:  {author}</Text>
                 <Text style={styles.overviewInfoTitleLabel}>{name}</Text>
@@ -150,8 +164,19 @@ function Overview({gamemode, setScreen}: OverviewProps) {
                         }}
 						styleIcon={{marginHorizontal: 5}} />
                 </View>}
-
             </View>
+
+            <View style={styles.aboutMatchRow}>
+                {gamemode.time && <>
+				     <Image style={{width: 16, height: 16}} source={require("@static/icon/time.png")} />
+				     <Text style={styles.aboutMatchLabel}>Duration  {gamemode.time}</Text>
+                </>}
+                    
+                {gamemode.maxPlayers && <>
+				    <Image style={{width: 20, height: 20, top: 1}} source={require("@static/icon/groups.png")} />
+				    <Text style={styles.aboutMatchLabel}>Max {gamemode.maxPlayers > 1 ? `${gamemode.maxPlayers} players` : "1 player"}</Text>
+                </>}
+			</View>
         </View>
     );
 }
@@ -183,6 +208,14 @@ const styles = StyleSheet.create({
         width: Dimensions.get("screen").width
     },
 
+    backgroundWallpaper: {
+        width: "100%",
+        height: "100%",
+        position: "absolute",
+        top: 0,
+        left: 0
+    },
+
     shadowLeft: {
         position: "absolute",
         left: 0,
@@ -202,7 +235,8 @@ const styles = StyleSheet.create({
     overviewLayout: {
         width: "100%",
         height: Dimensions.get("screen").height,
-        marginBottom: 25
+        borderRadius: 5,
+        flexDirection: "row"
     },
 
     overviewWallpaper: {
@@ -212,11 +246,11 @@ const styles = StyleSheet.create({
     },
 
     overviewInfoLayout: {
-        marginTop: 10,
         height: "100%",
         width: 350,
-        justifyContent: "center",
-        paddingHorizontal: size.inlineScreenPadding
+        justifyContent: "flex-end",
+        paddingHorizontal: size.inlineScreenPadding,
+        paddingBottom: 25
     },
 
     overviewInfoTitleLabel: {
@@ -239,8 +273,25 @@ const styles = StyleSheet.create({
         gap: 5
     },
 
+    aboutMatchRow: {
+		flexDirection: "row",
+		alignItems: "flex-end",
+        justifyContent: "flex-end",
+		gap: 10,
+        flexGrow: 1,
+        paddingRight: size.inlineScreenPadding,
+        paddingBottom: 25
+	},
+	
+	aboutMatchLabel: {
+		color: "white",
+		fontSize: 14,
+		marginRight: 10
+	},
+
     sectionLayout: {
-        marginBottom: 10
+        paddingTop: 10,
+        backgroundColor: "rgba(0, 0, 0, .78)"
     },
 
     sectionHeaderTitleLabel: {
@@ -263,6 +314,16 @@ const styles = StyleSheet.create({
         width: 175,
         height: 80,
         marginRight: 15,
+        justifyContent: "flex-end"
+    },
+
+    gamemodeName: {
+        color: "white",
+        fontWeight: "500",
+        marginLeft: 10,
+        marginBottom: 6,
+        textShadowColor: "#000000",
+        textShadowRadius: 5
     },
 
     gamemodeBanner: {
@@ -276,7 +337,8 @@ const styles = StyleSheet.create({
         width: "100%",
         paddingVertical: 100,
         justifyContent: "center",
-        alignItems: "center"
+        alignItems: "center",
+        backgroundColor: "rgba(0, 0, 0, .78)"
     },
 
     endMessageLabel: {

@@ -1,20 +1,11 @@
-import { useEffect, useRef } from "react";
-import { StyleSheet, View, Animated, Pressable, Alert, Text, ViewStyle, TouchableOpacity, Image, BackHandler } from "react-native";
+import { StyleSheet, View, Alert, Text, TouchableOpacity, Image } from "react-native";
 import * as constants from "@data/constants.json";
 import BoomButton from "@components/Button";
-
-interface ProfileDrawerProps {
-    isOpened: boolean,
-    onClose: () => void
-}
+import Drawer, { SimpleDrawerProps } from "./Drawer";
 
 interface ProfileButtonProps {
     name: string,
     onPress?: () => void
-}
-
-interface ProfileDrawerMenuProps {
-    isOpened: boolean
 }
 
 interface ButtonProps {
@@ -33,47 +24,9 @@ export function ProfileButton({name, onPress}: ProfileButtonProps) {
     );
 }
 
-export function ProfileDrawer({isOpened, onClose}: ProfileDrawerProps) {
-    const opacityAnimation = useRef(new Animated.Value(0)).current;
-
-    useEffect(() => {
-		const handler = BackHandler.addEventListener("hardwareBackPress", () => {
-			if(isOpened) onClose();
-			return isOpened;
-		});
-
-		return () => handler.remove();
-	}, [isOpened]);
-
-    useEffect(() => {
-        Animated.timing(opacityAnimation, {
-            duration: 150,
-            toValue: isOpened ? 1 : 0,
-            useNativeDriver: true
-        }).start();
-    }, [opacityAnimation, isOpened]);
-
+export function ProfileDrawer(props: SimpleDrawerProps) {
 	return (
-        <Animated.View style={[styles.layout, {opacity: opacityAnimation}]} pointerEvents={isOpened ? "auto" : "none"}>
-            <ProfileDrawerMenu isOpened={isOpened} />
-            <Pressable onPressIn={e => onClose()} style={{width: "100%", height: "100%", position: "absolute", left: 300}} />
-        </Animated.View>
-    );
-}
-
-function ProfileDrawerMenu({isOpened}: ProfileDrawerMenuProps) {
-    const slideAnimation = useRef(new Animated.Value(0)).current;
-
-    useEffect(() => {
-        Animated.timing(slideAnimation, {
-            useNativeDriver: false,
-            duration: 150,
-            toValue: isOpened ? 0 : -100
-        }).start();
-    }, [isOpened, slideAnimation]);
-
-    return (
-        <Animated.ScrollView style={[styles.menuLayout, {transform: [{translateX: slideAnimation}]}]}>
+        <Drawer width={250} direction="left" {...props}>
             <View style={[styles.categoryTitleLayout, {paddingTop: 10}]}>
                 <Text style={styles.categoryTitleLabel}>Profile Options</Text>
             </View>
@@ -103,7 +56,7 @@ function ProfileDrawerMenu({isOpened}: ProfileDrawerMenuProps) {
                 <Button text="Reset Packs"
                     onPress={() => Alert.alert("currently unavailable.")} />
             </View>
-        </Animated.ScrollView>
+        </Drawer>
     );
 }
 
@@ -118,22 +71,6 @@ function Button({text, onPress}: ButtonProps) {
 }
 
 const styles = StyleSheet.create({
-	layout: {
-        backgroundColor: "rgba(0, 0, 0, .75)",
-        position: "absolute",
-        left: 0,
-        top: 0,
-        width: "100%",
-        height: "100%",
-        zIndex: 999
-    },
-
-    menuLayout: {
-        width: 250,
-        height: "100%",
-        backgroundColor: constants.color.purpleBackground
-    },
-
     categoryTitleLayout: {
         backgroundColor: "rgba(0, 0, 0, .3)",
         paddingLeft: constants.size.inlineScreenPadding

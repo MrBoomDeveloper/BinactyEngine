@@ -1,13 +1,38 @@
-import { useState, useEffect, useMemo, memo } from "react";
-import { useSelector } from "react-redux";
-import { Dimensions, StyleSheet, ScrollView, FlatList, View, Text, TouchableOpacity, Linking } from "react-native";
+import { memo, useEffect, useMemo, useState } from "react";
+import { Dimensions, StyleSheet, FlatList, View, Text, TouchableOpacity, Linking } from "react-native";
 import { parse as parseRss } from "rss-to-json";
-import { colors } from "@util/variables";
+import { colors } from "@util/variables.json";
 import { removeHtml } from "@util/format";
 import moment from "moment";
 
 function News() {
-	const news = useSelector(state => state.news.value);
+	const [news, setNews] = useState([]);
+
+	useEffect(() => {
+		parseNews();
+	}, []);
+
+	async function parseNews() {
+		try {
+			let result = await parseRss("https://mrboomdev.bearblog.dev/feed/?type=rss");
+			result = result.items.sort((was, next) => {
+				return next.created - was.created;
+			});
+				
+			let sortedNews = [];
+			const filteredNews = result.filter(next => {
+				if(getOptions(removeHtml(next.description, false)).pin) {
+					sortedNews.push(next);
+					return false;
+				}
+				return true;
+			});
+			
+			setNews([...sortedNews, ...filteredNews]);
+		} catch(e) {
+			console.error(e);
+		}
+	}
 	
 	return (
 		<View style={styles.screen}>

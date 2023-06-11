@@ -107,13 +107,6 @@ function Home({setScreen}: HomeProps) {
 								onPress={() => setCurrentScreen("editor")}
 								styleIcon={{marginHorizontal: 5}} />
 						</View>
-
-						{isBeta && <Button text="Super Secret New Lobby" theme="brand"
-							fill={true} style={{marginTop: 10}} hitbox={0}
-							onPress={() => {
-								setScreen("lobby2");
-							}
-						} />}
 					</View>
 					
 					<View style={{flexGrow: 1}}>
@@ -123,6 +116,11 @@ function Home({setScreen}: HomeProps) {
 					<View style={styles.cardHolder}>
 						<View style={styles.swipeHandler} onMoveShouldSetResponder={e => handleTouch(e)} onResponderMove={e => handleSwipe(e, false)}/>
 						<MultiplayerCard style={styles.card} titleStyle={styles.cardTitle} setCurrentScreen={setCurrentScreen} touchHandler={handleTouch} />
+						<Button text="Super Secret New Lobby" theme="white"
+							style={{marginHorizontal: 20}}
+							onPress={() => {
+								setScreen("lobby2");
+							}} fill={true} hitbox={0} />
 					</View>
 				</View>
 				

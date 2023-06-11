@@ -13,6 +13,8 @@ export interface GamemodesItem {
 	author: string,
 	maps?: any[],
 	entry?: string,
+	time?: string,
+	maxPlayers?: number,
 	row?: string,
 	banner?: string,
 	bannerBinary?: number,

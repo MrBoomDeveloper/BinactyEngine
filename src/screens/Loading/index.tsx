@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { View, Text, Image, NativeEventEmitter, StyleSheet } from "react-native";
 import { load as loadGamemodes } from "@context/gamemodes";
-import { load as loadNews } from "@context/news";
 import { setMoney as loadMoney, setProfile as loadProfile } from "@context/profile";
 import { load as loadSettings, setup as setupSettings } from "@context/settings";
 import Button from "@components/Button";
@@ -70,11 +69,6 @@ export default function Loading({setScreen, target, args}: LoadingProps) {
 			
 			await PackBridge.getPacks();
 			setLoaded({progress: 80, task: "news"});
-
-			setTimeout(() => setScreen("lobby"), 2500);
-
-			dispatch(loadNews(await getNews()));
-			setLoaded({progress: 90, task: "lobby"});
 			
 			setScreen("lobby");
 			AppBridge.startMusic();
