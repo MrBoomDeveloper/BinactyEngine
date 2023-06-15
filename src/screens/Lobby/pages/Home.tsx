@@ -5,6 +5,7 @@ import { useAppDispatch, useAppSelector } from "@util/hooks";
 import { GamemodesItem, GamemodesState, GamemodesCategory, setActive } from "@context/gamemodes";
 import Button from "@components/Button";
 import { SetScreenProps } from "App";
+import { icons } from "@data/resources";
 
 interface HomeProps {
     setScreen: SetScreenProps
@@ -137,33 +138,7 @@ function Overview({gamemode, setScreen}: OverviewProps) {
                 <Text style={styles.overviewInfoTitleLabel}>{name}</Text>
                 {description && <Text numberOfLines={3} style={styles.overviewInfoDescriptionLabel}>{description}</Text>}
 
-                {(gamemode.maps != null || gamemode.entry != null) && <View style={styles.overviewActionsLayout}>
-                    <Button text="Start Game!" hitbox={0}
-						style={{flexGrow: 1}}
-						icon={require("@static/icon/play.png")}
-						theme="brand" fill={true}
-						onPress={() => {
-                            const map = gamemode.maps == null ? null : gamemode.maps[0].file;
-                            setScreen("loading", {target: "game", args: {
-                                ...gamemode,
-                                enableEditor: false,
-                                mapFile: map
-                            }});
-                        }} />
-					
-					<Button icon={require("@static/icon/edit.png")}
-						theme="brand" fill={true} rippleColor="black"
-                        hitbox={0} overlayInner={true}
-						onPress={() => {
-                            const map = gamemode.maps == null ? null : gamemode.maps[0].file;
-                            setScreen("loading", {target: "game", args: {
-                                ...gamemode,
-                                enableEditor: true,
-                                mapFile: map
-                            }});
-                        }}
-						styleIcon={{marginHorizontal: 5}} />
-                </View>}
+                {(gamemode.maps != null || gamemode.entry != null) && <OverviewActions gamemode={gamemode} setScreen={setScreen} />}
             </View>
 
             <View style={styles.aboutMatchRow}>
@@ -172,11 +147,56 @@ function Overview({gamemode, setScreen}: OverviewProps) {
 				     <Text style={styles.aboutMatchLabel}>Duration  {gamemode.time}</Text>
                 </>}
                     
-                {gamemode.maxPlayers && <>
-				    <Image style={{width: 20, height: 20, top: 1}} source={require("@static/icon/groups.png")} />
-				    <Text style={styles.aboutMatchLabel}>Max {gamemode.maxPlayers > 1 ? `${gamemode.maxPlayers} players` : "1 player"}</Text>
-                </>}
+                <Image style={{width: 20, height: 20, top: 1}} source={require("@static/icon/groups.png")} />
+				<Text style={styles.aboutMatchLabel}>Max {(gamemode.maxPlayers || 1) > 1 ? `${gamemode.maxPlayers} players` : "1 player"}</Text>
 			</View>
+        </View>
+    );
+}
+
+function OverviewActions({gamemode, setScreen}: OverviewProps) {
+    const isBeta: boolean = useAppSelector(state => state.settings.list)
+        .find(cat => cat.id == "features")?.data
+        .find(item => item.id == "beta")?.value as boolean;
+    
+    return (
+        <View style={styles.overviewActionsLayout}>
+            <Button text="Start Game!" hitbox={0}
+				style={{flexGrow: 1}}
+				icon={require("@static/icon/play.png")}
+				theme="brand" fill={true}
+				onPress={() => {
+                    const map = gamemode.maps == null ? null : gamemode.maps[0].file;
+                    setScreen("loading", {target: "game", args: {
+                        ...gamemode,
+                        enableEditor: false,
+                        mapFile: map
+                    }});
+                }} />
+                    
+            {(isBeta && (gamemode.maxPlayers || 1) > 1) && <Button icon={icons["groups"].outlineBlack}
+				theme="brand" fill={true} rippleColor="black"
+                hitbox={0} overlayInner={true}
+				onPress={() => {
+                    const map = gamemode.maps == null ? null : gamemode.maps[0].file;
+                    setScreen("loading", {target: "game", args: {
+                        ...gamemode,
+                        enableEditor: true,
+                         mapFile: map
+                    }});
+                }} styleIcon={{marginHorizontal: 5}} />}
+					
+			<Button icon={require("@static/icon/edit.png")}
+				theme="brand" fill={true} rippleColor="black"
+                hitbox={0} overlayInner={true}
+				onPress={() => {
+                    const map = gamemode.maps == null ? null : gamemode.maps[0].file;
+                    setScreen("loading", {target: "game", args: {
+                        ...gamemode,
+                        enableEditor: true,
+                        mapFile: map
+                    }});
+                }} styleIcon={{marginHorizontal: 5}} />
         </View>
     );
 }

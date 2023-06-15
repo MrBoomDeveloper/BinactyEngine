@@ -3,7 +3,7 @@ import { gamemodesSlice } from "./gamemodes";
 import { settingsSlice } from "./settings";
 import { profileSlice } from "./profile";
 
-export const store: any = configureStore({
+export const store = configureStore({
 	reducer: {
 		gamemodes: gamemodesSlice.reducer,
 		settings: settingsSlice.reducer,

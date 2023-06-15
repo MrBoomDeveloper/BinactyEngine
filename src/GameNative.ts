@@ -1,7 +1,7 @@
 import { requireNativeComponent, NativeModules, NativeModule } from "react-native";
 
-interface DebugField {
-    title: string,
+export interface DebugField {
+    key: string,
     value: string,
     secret?: boolean
 }

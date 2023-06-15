@@ -1,6 +1,7 @@
 import { Children, useState, useEffect, useRef } from "react";
 import { View, Animated, StyleSheet } from "react-native";
 
+//TODO: Delete when old lobby will be fully removed
 export default function Pager({children, select}) {
 	const animation = useRef(new Animated.Value(0));
 	useEffect(() => {

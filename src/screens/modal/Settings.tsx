@@ -35,7 +35,6 @@ function SettingsCategoryHeader({title}: SettingsCategory) {
 }
 
 function Setting({title, description, type, restart, value, id}: SettingsItem) {
-	const [error, setError] = useState("");
 	const dispatch = useAppDispatch();
 
 	return (
@@ -63,23 +62,20 @@ function Setting({title, description, type, restart, value, id}: SettingsItem) {
 						}} />
 				)}
 
-				{type == "number" && (
+				{(type == "int" || type == "float") && (
 					<Input defaultValue={value as number}
-						type="number"
-						error={error}
+						type={type}
 						style={{width: 75}}
 						maxLength={4}
 						onChangeText={newValue => {
-							if(newValue.length == 0) {
-								setError("Empty!");
-								return;
-							}
+							const response: number = (newValue == "" || isNaN(newValue as unknown as number))
+								? 0 : parseFloat(newValue);
 							
 							if(id == "musicVolume") {
-								AppBridge.setVolume(parseFloat(newValue));
+								AppBridge.setVolume(response);
 							}
 
-							dispatch(updateSetting({id, newValue, type}));
+							dispatch(updateSetting({id, newValue: response, type}));
 						}} />
 				)}
 			</View>

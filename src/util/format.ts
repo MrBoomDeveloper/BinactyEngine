@@ -1,4 +1,4 @@
-export function removeHtml(input, removeOptions = true) {
+export function removeHtml(input: string, removeOptions: boolean = true) {
 	let result = input;
 	
 	result = result.replace(/<p>/g, "");

@@ -2,17 +2,14 @@ import Button from "@components/Button";
 import { Alert, Image, StyleSheet, Text, TouchableOpacity, View, ViewStyle, ImageSourcePropType } from "react-native";
 import { size } from "@data/constants.json";
 import Navigation, { NavigationProps } from "@components/layout/Navigation";
+import { useAppSelector } from "@util/hooks";
+import { getAvatar } from "@data/resources";
 
 interface HeaderProps {
     onProfilePress: () => void,
     style?: ViewStyle,
     actions?: Action[],
     navigation?: NavigationProps
-}
-
-interface ProfileProps {
-    name: string,
-    onPress?: () => void
 }
 
 interface Action {
@@ -24,7 +21,7 @@ interface Action {
 export default function Header({style, onProfilePress, navigation, actions}: HeaderProps) {
     return (
         <View style={[styles.layout, style]}>
-            <Profile name="MrBoomDev" onPress={onProfilePress} />
+            <Profile onPress={onProfilePress} />
 
             {navigation && <View style={styles.navigationLayout}>
                 <Navigation {...navigation} />
@@ -46,12 +43,14 @@ export default function Header({style, onProfilePress, navigation, actions}: Hea
     )
 }
 
-export function Profile({name, onPress}: ProfileProps) {
+export function Profile({onPress}: {onPress: () => void}) {
+    const { nick, avatar, level, xp } = useAppSelector(state => state.profile.me);
+
     return (
-        <TouchableOpacity onPress={() => onPress && onPress()}>
+        <TouchableOpacity onPress={() => onPress()}>
             <View style={styles.profileLayout}>
-                <Image source={require("@static/avatar/premium.jpg")} style={styles.profileAvatar} />
-                <Text style={styles.profileName}>{name}</Text>
+                <Image source={getAvatar(avatar)} style={styles.profileAvatar} />
+                <Text style={styles.profileName}>{nick}</Text>
             </View>
         </TouchableOpacity>
     );

@@ -4,7 +4,6 @@ import Splash from "@screens/Splash";
 import Lobby2 from "@screens/Lobby/Lobby2";
 import { Provider  } from "react-redux";
 import { store } from "@context/store";
-import { useMap } from "@util/hooks";
 import Loading from '@screens/Loading';
 import Lobby from '@screens/Lobby';
 import GameOver from '@screens/GameOver';
@@ -16,8 +15,8 @@ export default function App() {
 			<Controller initial="splash" items={[
 				{ name: "splash", element: Splash },
 				{ name: "loading", element: Loading },
-				{ name: "lobby", element: Lobby },
-				{ name: "lobby2", element: Lobby2 },
+				{ name: "lobby", element: Lobby2 },
+				{ name: "lobby2", element: Lobby },
 				{ name: "gameover", element: GameOver }
 			]} />
 		</Provider>

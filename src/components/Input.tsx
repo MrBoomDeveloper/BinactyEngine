@@ -1,13 +1,12 @@
 import { useState, useEffect, useRef } from "react";
-import { View, Animated, Text, TextInput, StyleSheet, ViewStyle } from "react-native";
+import { View, Animated, Text, TextInput, StyleSheet, ViewStyle, KeyboardTypeOptions } from "react-native";
 import { colors } from "@util/variables.json";
-import { ObjectMap } from "App";
 
 interface InputElement {
 	placeholder?: string | number,
 	maxLength?: number,
 	error?: string,
-	type?: "string" | "number",
+	type?: "string" | "int" | "float",
 	onChangeText?: (text: string) => void,
 	style?: ViewStyle,
 	defaultValue?: string | number
@@ -17,20 +16,21 @@ export default function Input({error, placeholder = "Enter text...", maxLength, 
 	const animation = useRef(new Animated.Value(0));
 	const input = useRef<TextInput>(null);
 	const [isFocus, setIsFocus] = useState(false);
+	const isError = error != "" && error != null;
 	
 	useEffect(() => {
 		Animated.timing(animation.current, {
-			toValue: error == "" ? 0 : 1,
+			toValue: !isError ? 0 : 1,
 			duration: 150,
 			useNativeDriver: true
 		}).start();
 	}, [animation.current, error]);
 	
 	useEffect(() => {
-		animation.current = new Animated.Value(error == "" ? 0 : 1);
+		animation.current = new Animated.Value(!isError ? 0 : 1);
 	}, [error]);
 	
-	const borderColor = (error != "") ? "red" : isFocus ? colors.primary : "rgba(250, 250, 250, .1)";
+	const borderColor = isError ? "red" : isFocus ? colors.primary : "rgba(250, 250, 250, .1)";
 	return (
 		<View style={{...styles.holder, ...style, borderColor}}>
 			<Animated.View style={{...styles.error, opacity: animation.current}}>
@@ -44,17 +44,18 @@ export default function Input({error, placeholder = "Enter text...", maxLength, 
 				onFocus={() => setIsFocus(true)}
 				onBlur={() => setIsFocus(false)}
 				maxLength={maxLength || 25}
-				placeholder={error == "" ? String(placeholder || defaultValue) : error}
-				placeholderTextColor={error == "" ? "#877e8b" : "red"}
+				placeholder={!isError ? String(placeholder || defaultValue) : error}
+				placeholderTextColor={!isError ? "#877e8b" : "red"}
 				defaultValue={String(defaultValue)}
 				keyboardType={types[type]} />
 		</View>
 	);
 }
 
-const types: ObjectMap = {
-	number: "number-pad",
-	text: "default"
+const types: {[key: string]: KeyboardTypeOptions} = {
+	int: "decimal-pad",
+	float: "number-pad",
+	string: "default"
 }
 
 const styles = StyleSheet.create({

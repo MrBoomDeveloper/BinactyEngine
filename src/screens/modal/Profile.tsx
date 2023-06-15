@@ -1,76 +1,93 @@
-import { StyleSheet, View, Alert, Text, TouchableOpacity, Image } from "react-native";
+import { StyleSheet, View, Alert, Text, Image, SectionList, TouchableOpacity } from "react-native";
 import * as constants from "@data/constants.json";
-import BoomButton from "@components/Button";
 import Drawer, { SimpleDrawerProps } from "./Drawer";
+import { useEffect, useMemo, useState } from "react";
+import { AppBridge, DebugField } from "@native";
+import { Profile } from "@context/profile";
+import { getAvatar } from "@data/resources";
+import { useAppSelector } from "@util/hooks";
 
-interface ProfileButtonProps {
-    name: string,
-    onPress?: () => void
-}
-
-interface ButtonProps {
-    text: string,
-    onPress: () => void
-}
-
-export function ProfileButton({name, onPress}: ProfileButtonProps) {
+function ProfileButton({nick, avatar}: Profile) {
     return (
-        <TouchableOpacity onPress={() => onPress && onPress()}>
-            <View>
-                <Image source={require("@static/avatar/premium.jpg")} />
-                <Text>{name}</Text>
+        <View style={styles.profileLayout}>
+            <Image style={styles.profileAvatar} source={getAvatar(avatar)} />
+            <View style={{gap: 3}}>
+                <Text style={{color: "white", fontSize: 15}}>{nick}</Text>
+                <Text style={{color: "#dadada"}}>Anonymous login</Text>
+            </View>
+        </View>
+    );
+}
+
+export function ProfileDrawer(props: SimpleDrawerProps) {
+    const profile = useAppSelector(state => state.profile.me);
+    const [debug, setDebug] = useState<DebugField[]>([]);
+
+    useEffect(() => {
+        (async function() {
+            setDebug(await AppBridge.getDebug());
+        })();
+    }, []);
+
+    const actions = useMemo(() => {
+        return [
+            {
+                title: "Account",
+                data: [
+                    { text: "Edit Details", onPress() {
+                        Alert.alert("Not available now!", "Coming soon...");
+                    } }
+                ]
+            }
+        ];
+    }, []);
+
+	return (
+        <Drawer width={300} direction="left" {...props}>
+            <SectionList sections={actions}
+                style={{paddingLeft: constants.size.inlineScreenPadding, paddingRight: 10}}
+                ListHeaderComponent={() => <ProfileButton {...profile} />}
+                ListFooterComponent={() => {
+                    return (<View>
+                        {debug.map(({key, value}) => {
+                            return (
+                                <Text key={key}>{key}:  {value}</Text>
+                            );
+                        })}
+                    </View>);
+                }}
+                renderItem={({item}) => <Button text={item.text} onPress={item.onPress} />} />
+        </Drawer>
+    );
+}
+
+function Button({text, onPress}: {text: string, onPress: () => void}) {
+    return (
+        <TouchableOpacity onPress={onPress}>
+            <View style={styles.buttonLayout}>
+                <Text style={styles.buttonLabel}>{text}</Text>
             </View>
         </TouchableOpacity>
     );
 }
 
-export function ProfileDrawer(props: SimpleDrawerProps) {
-	return (
-        <Drawer width={250} direction="left" {...props}>
-            <View style={[styles.categoryTitleLayout, {paddingTop: 10}]}>
-                <Text style={styles.categoryTitleLabel}>Profile Options</Text>
-            </View>
-
-            <View style={styles.actionsLayout}>
-                <Button text="Edit Details"
-                    onPress={() => Alert.alert("currently unavailable.")} />
-                
-                <Button text="Link Account"
-                    onPress={() => Alert.alert("currently unavailable.")} />
-
-                <Button text="Log Out"
-                    onPress={() => Alert.alert("currently unavailable.")} />
-                
-                <Button text="Delete Account"
-                    onPress={() => Alert.alert("currently unavailable.")} />
-            </View>
-            
-            <View style={styles.categoryTitleLayout}>
-                <Text style={styles.categoryTitleLabel}>Developer Options</Text>
-            </View>
-
-            <View style={styles.actionsLayout}>
-                <Button text="Crash Reports"
-                    onPress={() => Alert.alert("currently unavailable.")} />
-
-                <Button text="Reset Packs"
-                    onPress={() => Alert.alert("currently unavailable.")} />
-            </View>
-        </Drawer>
-    );
-}
-
-function Button({text, onPress}: ButtonProps) {
-    return (
-        <BoomButton text={text}
-            onPress={onPress}
-            theme="brand" hitbox={0} 
-            styleText={styles.actionButtonLabel}
-            style={styles.actionButtonLayout} />
-    );
-}
-
 const styles = StyleSheet.create({
+    profileLayout: {
+        backgroundColor: constants.color.surfaceLight,
+        borderRadius: 10,
+        marginVertical: 15,
+        paddingVertical: 10,
+        paddingHorizontal: 10,
+        flexDirection: "row",
+        gap: 10
+    },
+
+    profileAvatar: {
+        width: 40,
+        height: 40,
+        borderRadius: 5
+    },
+
     categoryTitleLayout: {
         backgroundColor: "rgba(0, 0, 0, .3)",
         paddingLeft: constants.size.inlineScreenPadding
@@ -91,11 +108,17 @@ const styles = StyleSheet.create({
         gap: 8
     },
 
-    actionButtonLayout: {
-        height: 45
+    buttonLayout: {
+        height: 45,
+        backgroundColor: constants.color.surfaceLight,
+        borderRadius: 10,
+        flexDirection: "row",
+        alignItems: "center",
+        paddingHorizontal: 10
     },
 
-    actionButtonLabel: {
-        fontSize: 15
+    buttonLabel: {
+        fontSize: 15,
+        color: "white"
     }
 });

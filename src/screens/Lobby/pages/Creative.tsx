@@ -20,7 +20,7 @@ export default function Creative({setScreen}: CreativeProps) {
             <Button text="Back to old Lobby"
                 theme="brand"
                 onPress={() => {
-                    setScreen("lobby");
+                    setScreen("lobby2");
                 }} />
         </View>
     );

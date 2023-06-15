@@ -19,8 +19,8 @@ interface LobbyProps {
 export default function Lobby({setScreen}: LobbyProps) {
 	const [currentPage, setCurrentPage] = useState("home");
 	const [settingsVisibility, setSettingsVisibility] = useState(false);
-	const profile = useSelector(state => state.profile.value.me);
-	const money = useSelector(state => state.profile.value.money);
+	const profile = useSelector(state => state.profile.me);
+	const money = useSelector(state => state.profile.money);
 	
 	const settings = useSelector(state => state.settings.old);
 	const isBeta = useMemo(() => settings.find(({id}) => id == "beta")?.initial, [settings]);

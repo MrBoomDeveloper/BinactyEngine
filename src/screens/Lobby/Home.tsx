@@ -119,7 +119,7 @@ function Home({setScreen}: HomeProps) {
 						<Button text="Super Secret New Lobby" theme="white"
 							style={{marginHorizontal: 20}}
 							onPress={() => {
-								setScreen("lobby2");
+								setScreen("lobby");
 							}} fill={true} hitbox={0} />
 					</View>
 				</View>

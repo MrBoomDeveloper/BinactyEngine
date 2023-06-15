@@ -9,9 +9,6 @@ export const NavItems = [
 		label: "Skills", key: "skills", id: "skills",
 		icon: { active: require("@static/icon/power_active.png"), inactive: require("@static/icon/power.png") }
 	}, {
-		label: "Shop", key: "shop", id: "shop",
-		icon: { active: require("@static/icon/shop_active.png"), inactive: require("@static/icon/shop.png") }
-	}, {
 		label: "News", key: "logs", id: "logs",
 		icon: require("@static/icon/news.png")
 	}, {

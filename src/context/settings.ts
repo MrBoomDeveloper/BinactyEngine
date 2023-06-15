@@ -26,7 +26,7 @@ type SettingsSetupAction = {
 	title: string
 	id: string,
 	description?: string,
-	type: "boolean" | "string" | "number", 
+	type: "boolean" | "string" | "int" | "float", 
 	initial: boolean | string | number, 
 	restart?: boolean
 }[];
@@ -34,8 +34,7 @@ type SettingsSetupAction = {
 interface SettingsUpdateAction {
 	id: string,
 	newValue: string | number | boolean,
-	type: "string" | "boolean" | "number",
-	index?: number
+	type: "string" | "boolean" | "int" | "float"
 }
 
 const initialState: SettingsState = {
@@ -57,15 +56,12 @@ export const settingsSlice = createSlice({
 			state.list = result;
 		},
 
-		update(state: SettingsState, {payload: {id, newValue, type, index}}: PayloadAction<SettingsUpdateAction>) {
+		update(state: SettingsState, {payload: {id, newValue, type}}: PayloadAction<SettingsUpdateAction>) {
 			for(const cat of state.list) {
 				const setting = cat.data.find(item => item.id == id);
 				if(setting != null) setting.value = newValue;
 				GameNative.setKey(type, id, String(newValue));
 			}
-
-			if(index == null) return;
-			state.old[index].initial = newValue;
 		},
 		
 		load(state: SettingsState, {payload}) {

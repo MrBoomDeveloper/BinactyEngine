@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { View, Text, Image, StyleSheet, FlatList, Animated, Share, Easing } from "react-native";
+import { View, Text, StyleSheet, Animated, Share, Easing } from "react-native";
 import Button from "@components/Button";
 import { colors } from "@util/variables.json";
 import GameNative from "@native";
@@ -24,14 +24,13 @@ export default function GameOver({setScreen}: GameOverProps) {
 	const buttonsFadeAnimation = useRef(new Animated.Value(0)).current;
 	
 	useEffect(() => {
-		async function getBalance() {
+		(async function() {
 			const coins = await GameNative.getKey("int", "coins");
 			const diamonds = await GameNative.getKey("int", "diamonds");
 			setStats(await GameNative.getStats());
 			setBalance({coins, diamonds});
 			setIsLoaded(true);
-		}
-		getBalance();
+		})();
 	}, []);
 	
 	useEffect(() => {

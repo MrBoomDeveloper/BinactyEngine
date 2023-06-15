@@ -9,7 +9,7 @@ export function NewsDrawer(props: SimpleDrawerProps) {
         <Drawer width={350} direction="right" {...props}>
             <View>
                 <Text>News</Text>
-                {fetched.isDone && <Text>{fetched.resultMessage}</Text>}
+                {fetched.isDone && <Text>Coming soon...</Text>}
             </View>
         </Drawer>
     );

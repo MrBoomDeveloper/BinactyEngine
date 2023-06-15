@@ -5,7 +5,7 @@
             {
                 "title": "Screen inset", "id": "inset",
                 "description": "Padding between screen border and ui elements.",
-                "type": "number", "value": 50, "max": 250
+                "type": "int", "value": 50, "max": 250
             }
         ]
     }, {
@@ -14,11 +14,11 @@
             {
                 "title": "Music volume", "id": "musicVolume",
                 "description": "Lets start the show!",
-                "type": "number", "value": 100, "max": 500
+                "type": "int", "value": 100, "max": 500
             }, {
                 "title": "Sounds volume", "id": "soundsVolume",
                 "description": "All these loud scary noises!",
-                "type": "number", "value": 100, "max": 500
+                "type": "int", "value": 100, "max": 500
             }
         ]
     }, {
@@ -30,7 +30,7 @@
                 "type": "boolean", "value": true, "restart": true
             }, {
                 "title": "Beta Experience", "id": "beta",
-                "description": "Do not toggle this option! This may result to a game soft lock and worse!",
+                "description": "Bring all the new things to me now! (May break the game)",
                 "type": "boolean", "value": false, "restart": true
             }
         ]
