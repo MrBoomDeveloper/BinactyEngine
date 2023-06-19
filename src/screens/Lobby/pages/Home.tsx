@@ -6,6 +6,7 @@ import { GamemodesItem, GamemodesState, GamemodesCategory, setActive } from "@co
 import Button from "@components/Button";
 import { SetScreenProps } from "App";
 import { icons } from "@data/resources";
+import { openUrl } from "@util/redirect";
 
 interface HomeProps {
     setScreen: SetScreenProps
@@ -77,18 +78,7 @@ function GamemodeItem({name, banner, bannerBinary, isCompact, id, gamemode}: Gam
             if(id.startsWith("__ad")) {
                 switch(id.substring(5)) {
                     case "discord":
-                        const url = "https://discord.com/invite/uCUp8TSCvw";
-                        if(!Linking.canOpenURL(url)) {
-                            Alert.alert("Can't open link", "It looks, that your browser app doesnt isn't ok right now, but you can try sharing this link somewhere! " + url, [{
-                                text: "Share link",
-                                onPress: () => Share.share({
-                                    message: "Check out the BoomTeam Discord Server! " + url
-                                })
-                            }]);
-                            return;
-                        }
-                        
-                        Linking.openURL(url);
+                        openUrl("https://discord.com/invite/uCUp8TSCvw");
                         break;
                     
                     case "new_pack":
@@ -164,7 +154,7 @@ function OverviewActions({gamemode, setScreen}: OverviewProps) {
             <Button text="Start Game!" hitbox={0}
 				style={{flexGrow: 1}}
 				icon={require("@static/icon/play.png")}
-				theme="brand" fill={true}
+				theme="brand"
 				onPress={() => {
                     const map = gamemode.maps == null ? null : gamemode.maps[0].file;
                     setScreen("loading", {target: "game", args: {
@@ -175,7 +165,7 @@ function OverviewActions({gamemode, setScreen}: OverviewProps) {
                 }} />
                     
             {(isBeta && (gamemode.maxPlayers || 1) > 1) && <Button icon={icons["groups"].outlineBlack}
-				theme="brand" fill={true} rippleColor="black"
+				theme="brand" rippleColor="black"
                 hitbox={0} overlayInner={true}
 				onPress={() => {
                     const map = gamemode.maps == null ? null : gamemode.maps[0].file;
@@ -187,7 +177,7 @@ function OverviewActions({gamemode, setScreen}: OverviewProps) {
                 }} styleIcon={{marginHorizontal: 5}} />}
 					
 			<Button icon={require("@static/icon/edit.png")}
-				theme="brand" fill={true} rippleColor="black"
+				theme="brand" rippleColor="black"
                 hitbox={0} overlayInner={true}
 				onPress={() => {
                     const map = gamemode.maps == null ? null : gamemode.maps[0].file;
@@ -277,13 +267,15 @@ const styles = StyleSheet.create({
         color: "white",
         fontWeight: "500",
         fontSize: 20,
-        marginVertical: 5
+        marginVertical: 5,
+        letterSpacing: .2
     },
 
     overviewInfoDescriptionLabel: {
         color: "#d7cbe4",
         lineHeight: 20,
-        width: "85%"
+        width: "85%",
+        letterSpacing: .3
     },
 
     overviewActionsLayout: {
@@ -306,7 +298,8 @@ const styles = StyleSheet.create({
 	aboutMatchLabel: {
 		color: "white",
 		fontSize: 14,
-		marginRight: 10
+		marginRight: 10,
+        letterSpacing: .3
 	},
 
     sectionLayout: {

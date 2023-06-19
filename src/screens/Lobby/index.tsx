@@ -1,33 +1,19 @@
-import { useState, useEffect, useMemo } from "react";
-import { View, Text, StyleSheet, BackHandler, NativeEventEmitter } from "react-native";
-import { useSelector } from "react-redux";
-import { Header, Navigation, Pager, Button } from "@components";
-import { Settings } from "@screens";
+import { useEffect } from "react";
+import { View, StyleSheet, NativeEventEmitter } from "react-native";
+import Header from "@components/Header";
+import Button from "@components/Button";
 import Home from "@screens/Lobby/Home";
-import News from "@screens/Lobby/News";
-import { colors } from "@util/variables";
-import { NavItems } from "@data/HomeData";
-import Character from "./character/Character";
-import About from "./about/About";
-import GameNative, { PackBridge, AppBridge } from "@native";
+import { colors } from "@util/variables.json";
+import { PackBridge, AppBridge } from "@native";
 import { SetScreenProps } from "App";
+import { useAppSelector } from "@util/hooks";
 
 interface LobbyProps {
 	setScreen: SetScreenProps
 }
 
 export default function Lobby({setScreen}: LobbyProps) {
-	const [currentPage, setCurrentPage] = useState("home");
-	const [settingsVisibility, setSettingsVisibility] = useState(false);
-	const profile = useSelector(state => state.profile.me);
-	const money = useSelector(state => state.profile.money);
-	
-	const settings = useSelector(state => state.settings.old);
-	const isBeta = useMemo(() => settings.find(({id}) => id == "beta")?.initial, [settings]);
-	
-	const actions = [
-		{ key: "settings", icon: require("@static/icon/settings.png"), onPress() { setSettingsVisibility(true) } }
-	];
+	const profile = useAppSelector(state => state.profile.me);
 	
 	useEffect(() => {
 		new NativeEventEmitter(PackBridge).addListener("reload", e => {
@@ -38,7 +24,7 @@ export default function Lobby({setScreen}: LobbyProps) {
 	
 	return (
 		<View style={styles.screen}>
-			<Header player={profile} values={money} actions={actions}>
+			<Header player={profile} actions={[]}>
 				<View style={{flexDirection: "row", justifyContent: "center"}}>
 					<Button text="Manage Installed Packs"
 						onPress={() => PackBridge.managePacks()}
@@ -49,34 +35,8 @@ export default function Lobby({setScreen}: LobbyProps) {
 			</Header>
 			
 			<View style={styles.dualContainer}>
-				<Navigation items={NavItems} onSelect={setCurrentPage}/>
-				<Pager select={currentPage}>
-					<Home setScreen={setScreen} id="home"/>
-					{isBeta ? <Character id="character" /> : <Wip id="character" />}
-					<Wip id="skills" />
-					<Wip id="shop" />
-					<News id="logs"/>
-					{isBeta ? <About id="about" /> : <Wip id="about" />}
-				</Pager>
+				<Home setScreen={setScreen} />
 			</View>
-			
-			<Settings visible={settingsVisibility} onClose={() => setSettingsVisibility(false)} />
-		</View>
-	);
-}
-
-function Wip() {
-	return (
-		<View style={{
-			width: "100%",
-			flexGrow: 1,
-			display: "flex",
-			alignItems: "center",
-			justifyContent: "center",
-			paddingRight: 25, 
-			paddingBottom: 50}}>
-			
-			<Text style={{color: "white", fontSize: 16, marginBottom: 20}}>This page is currently under development.</Text>
 		</View>
 	);
 }

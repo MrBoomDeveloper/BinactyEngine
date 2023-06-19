@@ -1,9 +1,9 @@
 import { useMemo } from "react";
 import { StatusBar, StyleSheet, View, Image, Text, ImageSourcePropType } from "react-native";
-import { Button } from "@components";
-import { sizes, colors } from "../util/variables";
+import Button from "@components/Button";
+import { sizes, colors } from "@util/variables.json";
 
-const avatars = {
+const avatars: Record<string, number> = {
 	klarrie: require("../static/avatar/premium.jpg")
 }
 
@@ -37,7 +37,6 @@ export default function Header({ title, values, actions, onClose, player, childr
 		<View style={styles.header}>
 			{onClose && <Button
 				style={styles.back}
-				fill={true}
 				icon={require("@static/icon/back.png")}
 				theme="popup"
 				onPress={onClose} />}
@@ -52,8 +51,7 @@ export default function Header({ title, values, actions, onClose, player, childr
 					<Button key={key}
 						onPress={onPress}
 						theme="popup"
-						icon={icon}
-						fill={true} />
+						icon={icon} />
 				))}
 			</View>
 		</View>

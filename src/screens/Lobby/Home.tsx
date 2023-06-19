@@ -8,6 +8,7 @@ import Editor from "./home/Editor";
 import Multiplayer from "./home/Multiplayer";
 import MultiplayerCard from "./home/cards/Multiplayer";
 import { SetScreenProps } from "App";
+import { useAppSelector } from "@util/hooks";
 
 function getSwipeAnimationPosition(page: string): number {
 	switch(page) {
@@ -27,9 +28,9 @@ function Home({setScreen}: HomeProps) {
 	const [currentScreen, setCurrentScreen] = useState("home");
 	const swipeAnimation = useRef(new Animated.Value(0)).current;
 	const touchYBegin = useRef(0);
-	const currentGamemode = useSelector(state => state.gamemodes.current);
+	const currentGamemode = useAppSelector(state => state.gamemodes.current);
 
-	const settings = useSelector(state => state.settings.old);
+	const settings = useAppSelector(state => state.settings.old);
 	const isBeta: boolean = useMemo(() => settings.find(({id}) => id == "beta")?.initial, [settings]);
 	
 	useEffect(() => {
@@ -99,11 +100,11 @@ function Home({setScreen}: HomeProps) {
 							<Button text="Start Game!" hitbox={0}
 								style={{flexGrow: 1}}
 								icon={require("@static/icon/play.png")}
-								theme="brand" fill={true}
+								theme="brand"
 								onPress={play(false)} />
 							
 							<Button icon={require("@static/icon/edit.png")}
-								theme="brand" fill={true} hitbox={0}
+								theme="brand" hitbox={0}
 								onPress={() => setCurrentScreen("editor")}
 								styleIcon={{marginHorizontal: 5}} />
 						</View>
@@ -120,7 +121,7 @@ function Home({setScreen}: HomeProps) {
 							style={{marginHorizontal: 20}}
 							onPress={() => {
 								setScreen("lobby");
-							}} fill={true} hitbox={0} />
+							}} hitbox={0} />
 					</View>
 				</View>
 				

@@ -9,10 +9,20 @@ interface InputElement {
 	type?: "string" | "int" | "float",
 	onChangeText?: (text: string) => void,
 	style?: ViewStyle,
-	defaultValue?: string | number
+	defaultValue?: string | number,
+	align?: "center" | "left" | "right"
 }
 
-export default function Input({error, placeholder = "Enter text...", maxLength, type = "string", onChangeText, style, defaultValue}: InputElement) {
+export default function Input({
+	error, 
+	placeholder = "Enter text...", 
+	align = "center", 
+	maxLength, 
+	type = "string", 
+	onChangeText, 
+	style, 
+	defaultValue = ""
+}: InputElement) {
 	const animation = useRef(new Animated.Value(0));
 	const input = useRef<TextInput>(null);
 	const [isFocus, setIsFocus] = useState(false);
@@ -39,7 +49,7 @@ export default function Input({error, placeholder = "Enter text...", maxLength, 
 			
 			<TextInput ref={input}
 				style={styles.text}
-				textAlign="center"
+				textAlign={align}
 				onChangeText={onChangeText}
 				onFocus={() => setIsFocus(true)}
 				onBlur={() => setIsFocus(false)}

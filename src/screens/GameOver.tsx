@@ -93,7 +93,6 @@ export default function GameOver({setScreen}: GameOverProps) {
 				<Button text="Continue"
 					style={styles.action}
 					theme="brand"
-					fill={true}
 					onPress={() => close()} />
 			</Animated.View>
 			

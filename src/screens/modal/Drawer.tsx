@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { Animated, BackHandler, Dimensions, Pressable, StyleSheet, ViewStyle } from "react-native"
+import { Animated, BackHandler, Dimensions, Pressable, StyleSheet, ViewStyle } from "react-native";
 import * as constants from "@data/constants.json";
 
 export interface SimpleDrawerProps {
@@ -48,7 +48,7 @@ export default function Drawer({isOpened, onClose, width, direction, children}: 
     direction == "left"
         ? backgroundStyle.left = width
         : backgroundStyle.right = width;
-
+    
 	return (
         <Animated.View style={[styles.layout, {opacity: opacityAnimation}]} pointerEvents={isOpened ? "auto" : "none"}>
             <Animated.View style={[styles.menuLayout, {width, transform: [{translateX: slideAnimation}]}]}>

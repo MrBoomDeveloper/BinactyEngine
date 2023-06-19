@@ -1,6 +1,6 @@
+import type { AppDispatch, AppState } from "@context/store";
+import { useEffect, useReducer, useState } from "react";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
-import { useEffect, useReducer } from "react";
-import type { AppState, AppDispatch } from "@context/store";
 
 type DispatchMethod = () => AppDispatch;
 export const useAppDispatch: DispatchMethod = useDispatch;
@@ -11,6 +11,16 @@ interface FetchHookState {
     errorMessage: string,
     isDone: boolean,
     isError: boolean
+}
+
+export function useAsyncMemo<T>(callback: () => Promise<T>, initialValue: T, dependencies?: any[]): T {
+    const [state, setState] = useState(initialValue);
+
+    useEffect(() => {
+        callback().then(response => setState(response));
+    }, dependencies || []);
+
+    return state;
 }
 
 export function useFetch(initialUrl?: string): [fetched: FetchHookState, fetch: (url: string) => void] {
