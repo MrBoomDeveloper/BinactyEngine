@@ -1,36 +1,43 @@
-import { View, Text, SectionList, StyleSheet, Dimensions, Image, FlatList, TouchableOpacity, Alert, Linking, Share } from "react-native";
-import { useRef, useEffect } from "react";
-import { size } from "@data/constants.json";
+import { View, Text, SectionList, StyleSheet, Dimensions, Image, FlatList, TouchableOpacity, Alert, Linking, Share, TextStyle, ViewStyle, Animated } from "react-native";
+import { useRef, useEffect, useState } from "react";
+import * as constants from "@data/constants.json";
 import { useAppDispatch, useAppSelector } from "@util/hooks";
-import { GamemodesItem, GamemodesState, GamemodesCategory, setActive } from "@context/gamemodes";
+import { GamemodesItem, GamemodesState, GamemodesCategory, setActive, Level } from "@context/gamemodes";
 import Button from "@components/Button";
 import { SetScreenProps } from "App";
 import { icons } from "@data/resources";
 import { openUrl } from "@util/redirect";
+import { LevelPreview, LevelsMenu } from "./Levels";
 
 interface HomeProps {
     setScreen: SetScreenProps
 }
 
 export default function Home({setScreen}: HomeProps) {
-    const gamemodes: GamemodesState = useAppSelector(state => state.gamemodes);
+    const currentGamemode = useAppSelector(state => state.gamemodes.current);
+	const allGamemodes = useAppSelector(state => state.gamemodes.list);
     const scrollView = useRef(null);
 
     useEffect(() => {
-        const list = scrollView.current as unknown as SectionList
-        list.scrollToLocation({sectionIndex: 0, itemIndex: 0, viewPosition: 10})
-    }, [gamemodes.current]);
+        try {
+            const list = scrollView.current as unknown as SectionList
+            list.scrollToLocation({sectionIndex: 0, itemIndex: 0, viewPosition: 999});
+        } catch(e) {
+            console.error(e);
+        }
+        
+    }, [currentGamemode]);
 
-    const { bannerBinary, banner } = gamemodes.current;
+    const { bannerBinary, banner } = currentGamemode;
 
     return (
         <View>
             <Image source={bannerBinary || {uri: banner || "asset:/packs/official/src/images/banner.jpg"}} style={styles.backgroundWallpaper} />
-            <SectionList sections={gamemodes.list}
+            <SectionList sections={allGamemodes}
                 ref={scrollView}
                 showsVerticalScrollIndicator={false}
                 overScrollMode="never"
-                ListHeaderComponent={() => <Overview gamemode={gamemodes.current} setScreen={setScreen} />}
+                ListHeaderComponent={() => <Overview gamemode={currentGamemode} setScreen={setScreen} />}
                 ListFooterComponent={End}
                 style={styles.layout}
                 keyExtractor={item => item.id}
@@ -52,8 +59,8 @@ function Section({title, data, isCompact, id}: GamemodesCategory) {
             </View>}
             
             <FlatList data={data} horizontal
-                ListHeaderComponent={<View style={{width: size.inlineScreenPadding}} />}
-                ListFooterComponent={<View style={{width: size.inlineScreenPadding}} />}
+                ListHeaderComponent={<View style={{width: constants.size.inlineScreenPadding}} />}
+                ListFooterComponent={<View style={{width: constants.size.inlineScreenPadding}} />}
                 showsHorizontalScrollIndicator={false}
                 renderItem={({item}) => {
                     return (
@@ -96,7 +103,7 @@ function GamemodeItem({name, banner, bannerBinary, isCompact, id, gamemode}: Gam
         }}>
 
             <View style={[styles.gamemodeLayout, isCompact && styles.gamemodeCompactLayout]}>
-                <Image source={bannerBinary || {uri: banner || "asset:/packs/official/src/images/banner.jpg"}}
+                <Image source={bannerBinary || {uri: banner || constants.resources.defaultGamemodeBanner}}
                     style={styles.gamemodeBanner} />
                 
                 {!isCompact && (<>
@@ -117,34 +124,100 @@ interface OverviewProps {
     gamemode: GamemodesItem
 }
 
-function Overview({gamemode, setScreen}: OverviewProps) {
-    const { author, name, description } = gamemode;
+function ExpandableText({text, style}: {
+    text: string,
+    style?: TextStyle
+}) {
+    const [isExpanded, setExpanded] = useState(false);
 
     return (
-        <View style={styles.overviewLayout}>
-            <Shadow />
-            <View style={styles.overviewInfoLayout}>
-                <Text style={styles.overviewInfoDescriptionLabel}>Made by:  {author}</Text>
-                <Text style={styles.overviewInfoTitleLabel}>{name}</Text>
-                {description && <Text numberOfLines={3} style={styles.overviewInfoDescriptionLabel}>{description}</Text>}
-
-                {(gamemode.maps != null || gamemode.entry != null) && <OverviewActions gamemode={gamemode} setScreen={setScreen} />}
-            </View>
-
-            <View style={styles.aboutMatchRow}>
-                {gamemode.time && <>
-				     <Image style={{width: 16, height: 16}} source={require("@static/icon/time.png")} />
-				     <Text style={styles.aboutMatchLabel}>Duration  {gamemode.time}</Text>
-                </>}
-                    
-                <Image style={{width: 20, height: 20, top: 1}} source={require("@static/icon/groups.png")} />
-				<Text style={styles.aboutMatchLabel}>Max {(gamemode.maxPlayers || 1) > 1 ? `${gamemode.maxPlayers} players` : "1 player"}</Text>
-			</View>
-        </View>
+        <TouchableOpacity onPress={() => setExpanded(!isExpanded)}>
+            <Text style={style} numberOfLines={isExpanded ? 999 : 2}>{text}</Text>
+        </TouchableOpacity>
     );
 }
 
-function OverviewActions({gamemode, setScreen}: OverviewProps) {
+function Overview({gamemode, setScreen}: OverviewProps) {
+    const [isLevelsShown, setLevelsIsShown] = useState(false);
+    const animation = useRef(new Animated.Value(0)).current;
+
+    useEffect(() => {
+        Animated.timing(animation, {
+            useNativeDriver: false,
+            duration: 250,
+            toValue: isLevelsShown ? 1 : 0
+        }).start();
+    }, [animation, isLevelsShown]);
+
+    const { author, name, description, levels } = gamemode;
+
+    const scrollAnimation = animation.interpolate({
+        inputRange: [0, 1],
+        outputRange: [0, -Dimensions.get("screen").width]
+    });
+
+    const opacityAnimation = animation.interpolate({
+        inputRange: [0, 1],
+        outputRange: [0, .78]
+    });
+
+    return (
+        <>
+            <Animated.View style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                backgroundColor: "black",
+                opacity: opacityAnimation
+            }} />
+
+            <Animated.View style={{flexDirection: "row", left: scrollAnimation}}>
+                <Shadow />
+                <View style={styles.overviewLayout}>
+                    <View style={styles.overviewInfoLayout}>
+                        <Text style={styles.overviewInfoDescriptionLabel}>Made by:  {author}</Text>
+                        <Text style={styles.overviewInfoTitleLabel}>{name}</Text>
+                        {description && <ExpandableText text={description} 
+                            style={styles.overviewInfoDescriptionLabel} />}
+
+                        {(gamemode.maps != null || gamemode.entry != null) && <OverviewActions 
+                            gamemode={gamemode}
+                            setScreen={setScreen} />}
+                    </View>
+
+                    {levels ? <LevelPreview levels={levels} gamemode={gamemode}
+                        onPress={() => setLevelsIsShown(true)} /> : <View style={{flexGrow: 1}} />}
+
+                    <View style={styles.aboutMatchRow}>
+                        {gamemode.time && <>
+				            <Image style={{width: 16, height: 16}} source={require("@static/icon/time.png")} />
+				            <Text style={styles.aboutMatchLabel}>Duration  {gamemode.time}</Text>
+                        </>}
+                    
+                        <Image style={{width: 20, height: 20, top: 1}} source={require("@static/icon/groups.png")} />
+				        <Text style={styles.aboutMatchLabel}>Max {(gamemode.maxPlayers || 1) > 1 ? `${gamemode.maxPlayers} players` : "1 player"}</Text>
+			        </View>
+                </View>
+
+                {gamemode.levels && <LevelsMenu isShown={isLevelsShown} 
+                    exit={() => setLevelsIsShown(false)}
+                    gamemode={gamemode}
+                    onSelect={() => {
+                        setLevelsIsShown(false);
+                    }}
+                    levels={gamemode.levels} />}
+            </Animated.View>
+        </>
+    );
+}
+
+function OverviewActions({gamemode, setScreen, level}: {
+    gamemode: GamemodesItem,
+    setScreen: SetScreenProps,
+    level?: Level
+}) {
     const isBeta: boolean = useAppSelector(state => state.settings.list)
         .find(cat => cat.id == "features")?.data
         .find(item => item.id == "beta")?.value as boolean;
@@ -158,7 +231,7 @@ function OverviewActions({gamemode, setScreen}: OverviewProps) {
 				onPress={() => {
                     const map = gamemode.maps == null ? null : gamemode.maps[0].file;
                     setScreen("loading", {target: "game", args: {
-                        ...gamemode,
+                        ...gamemode, level,
                         enableEditor: false,
                         mapFile: map
                     }});
@@ -246,20 +319,22 @@ const styles = StyleSheet.create({
         width: "100%",
         height: Dimensions.get("screen").height,
         borderRadius: 5,
-        flexDirection: "row"
+        flexDirection: "row",
+        alignItems: "flex-end"
     },
 
     overviewWallpaper: {
         position: "absolute",
         width: "100%",
-        height: "100%"
+        height: "100%",
+        backgroundColor: "black"
     },
 
     overviewInfoLayout: {
         height: "100%",
-        width: 350,
+        width: 200,
         justifyContent: "flex-end",
-        paddingHorizontal: size.inlineScreenPadding,
+        marginLeft: constants.size.inlineScreenPadding,
         paddingBottom: 25
     },
 
@@ -272,14 +347,14 @@ const styles = StyleSheet.create({
     },
 
     overviewInfoDescriptionLabel: {
-        color: "#d7cbe4",
+        color: "#e7d9f5",
+        opacity: .8,
         lineHeight: 20,
-        width: "85%",
-        letterSpacing: .3
+        letterSpacing: .4
     },
 
     overviewActionsLayout: {
-        width: 200,
+        width: "100%",
         marginTop: 12,
         flexDirection: "row",
         gap: 5
@@ -288,10 +363,8 @@ const styles = StyleSheet.create({
     aboutMatchRow: {
 		flexDirection: "row",
 		alignItems: "flex-end",
-        justifyContent: "flex-end",
 		gap: 10,
-        flexGrow: 1,
-        paddingRight: size.inlineScreenPadding,
+        paddingRight: constants.size.inlineScreenPadding,
         paddingBottom: 25
 	},
 	
@@ -315,7 +388,7 @@ const styles = StyleSheet.create({
 
     sectionHeaderLayout: {
         paddingVertical: 15,
-        paddingHorizontal: size.inlineScreenPadding
+        paddingHorizontal: constants.size.inlineScreenPadding
     },
 
     gamemodeCompactLayout: {

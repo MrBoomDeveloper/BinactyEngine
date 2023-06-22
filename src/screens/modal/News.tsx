@@ -54,7 +54,11 @@ export function NewsDrawer(props: SimpleDrawerProps) {
         });
 
         try {
-            const { items } = await loadRss("https://mrboomdev.bearblog.dev/feed/?type=rss");
+            const { items } = await loadRss("https://mrboomdev.bearblog.dev/feed/?type=rss", {
+                timeoutErrorMessage: "Your internet connection is kinda slow. Try connecting to Wi-Fi.",
+                timeout: 15 * 1000
+            });
+
             setNews({
                 isLoading: false,
                 isSuccessful: true,

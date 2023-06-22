@@ -1,4 +1,8 @@
 {
+    "resources": {
+        "defaultGamemodeBanner": "asset:/packs/official/src/images/banner.jpg"
+    },
+
     "size": {
         "inlineScreenPadding": 50
     },

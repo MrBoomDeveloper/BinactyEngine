@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Animated, BackHandler, Dimensions, Pressable, StyleSheet, ViewStyle } from "react-native";
 import * as constants from "@data/constants.json";
 
@@ -14,10 +14,12 @@ interface DrawerProps extends SimpleDrawerProps {
 }
 
 export default function Drawer({isOpened, onClose, width, direction, children}: DrawerProps) {
+    const [isAnimationFinished, setIsAnimationFinished] = useState(false);
     const opacityAnimation = useRef(new Animated.Value(0)).current;
     const slideAnimation = useRef(new Animated.Value(0)).current;
 
 	useEffect(() => {
+        setIsAnimationFinished(false);
 		const handler = BackHandler.addEventListener("hardwareBackPress", () => {
 			if(isOpened) onClose();
 			return isOpened;
@@ -41,7 +43,7 @@ export default function Drawer({isOpened, onClose, width, direction, children}: 
                     ? isOpened ? 0 : -width
                     : isOpened ? Dimensions.get("screen").width - width : Dimensions.get("screen").width
             })
-        ]).start();
+        ]).start(() => setIsAnimationFinished(true));
     }, [opacityAnimation, slideAnimation, isOpened]);
 
     const backgroundStyle: ViewStyle = {width: "100%", height: "100%", position: "absolute"};
@@ -49,12 +51,17 @@ export default function Drawer({isOpened, onClose, width, direction, children}: 
         ? backgroundStyle.left = width
         : backgroundStyle.right = width;
     
+    if(isAnimationFinished && !isOpened) return null;
+
 	return (
         <Animated.View style={[styles.layout, {opacity: opacityAnimation}]} pointerEvents={isOpened ? "auto" : "none"}>
             <Animated.View style={[styles.menuLayout, {width, transform: [{translateX: slideAnimation}]}]}>
                 {children}
             </Animated.View>
-            <Pressable onPressIn={e => onClose()} style={backgroundStyle} />
+            <Pressable style={backgroundStyle} onPressIn={e => {
+                setIsAnimationFinished(false);
+                onClose();
+            }} />
         </Animated.View>
     );
 }

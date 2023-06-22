@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
 import { View, Text, Image, NativeEventEmitter, StyleSheet } from "react-native";
-import { load as loadGamemodes } from "@context/gamemodes";
+import { setupList as setupGamemodesList, setupProgresses as setupGamemodeProgresses, Progresses } from "@context/gamemodes";
 import { setMoney as loadMoney, setProfile as loadProfile } from "@context/profile";
-import { load as loadSettings, setup as setupSettings } from "@context/settings";
+import { SettingsItem, load as loadSettings, setup as setupSettings } from "@context/settings";
 import Button from "@components/Button";
 import settingsPreset from "@data/SettingsData.json";
 import { GameNative, AppBridge, PackBridge } from "@native";
 import { SetScreenProps } from "App";
+import * as constants from "@data/constants.json";
+import { useAppDispatch } from "@util/hooks";
+import { PayloadAction } from "@reduxjs/toolkit";
 
 interface LoadingProps {
 	setScreen: SetScreenProps,
@@ -17,11 +19,16 @@ interface LoadingProps {
 
 let isGameStarted = false;
 
+interface LoadingStepProps {
+	setLoaded: (props: {progress: number, task: string}) => void,
+	dispatch: (payload: any) => void
+}
+
 export default function Loading({setScreen, target, args}: LoadingProps) {
 	const [loaded, setLoaded] = useState({progress: 0, task: "account"});
 	const [isSigned, setIsSigned] = useState(true);
 	const [isProcessing, setIsProcessing] = useState(false);
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 
 	async function login(method: string) {
 		if(isProcessing) return;
@@ -37,38 +44,52 @@ export default function Loading({setScreen, target, args}: LoadingProps) {
 	}
 	
 	async function loadStuff() {
+		AppBridge.startMusic();
 		try {
-			AppBridge.startMusic();
-			
 			if((await GameNative.getKey("boolean", "beta")) && !(await AppBridge.isSignedIn())) {
 				setIsSigned(false);
 				return;
-			}
-			setLoaded({progress: 10, task: "gamemodes"});
+			} 
 			
-			dispatch(loadGamemodes({list: await GameNative.getGamemodes(), latest: await GameNative.getKey("string", "latestGamemode")}));
-			setLoaded({progress: 20, task: "settings"});
+			setLoaded({progress: 10, task: "packs"});
+			await PackBridge.getPacks();
+
+			await loadGamemodes({setLoaded, dispatch});
+			// setLoaded({progress: 20, task: "gamemodes list"});
+			// const gamemodes = await PackBridge.getGamemodes();
+			// dispatch(setupGamemodesList({
+			// 	list: gamemodes,
+			// 	latest: await GameNative.getKey("string", "latestGamemode")
+			// }));
 			
+			// setLoaded({progress: 30, task: "gamemode progresses"});
+			// const progresses: Record<string, string> = {};
+			// const pending: string[] = [];
+			// for(const cat of gamemodes) {
+			// 	for(const gamemode of cat.data) {
+					
+			// 	}
+			// }
+			// dispatch(setupGamemodeProgresses(progresses));
+			
+			setLoaded({progress: 40, task: "settings"});
 			const settings = await GameNative.getKeys(settingsPreset);
 			dispatch(loadSettings(settings));
 			dispatch(setupSettings(settings));
-			setLoaded({progress: 30, task: "profile"});
-			
+
+			setLoaded({progress: 50, task: "profile"});
 			dispatch(loadProfile(await AppBridge.getMyData()));
-			setLoaded({progress: 40, task: "money"});
-			
-			const coins = await GameNative.getKey("int", "coins");
-			setLoaded({progress: 50, task: "money"});
-			
-			const diamonds = await GameNative.getKey("int", "diamonds");
+
 			setLoaded({progress: 60, task: "money"});
-			
+			const coins = await GameNative.getKey("int", "coins");
+
+			setLoaded({progress: 70, task: "money"});
+			const diamonds = await GameNative.getKey("int", "diamonds");
+
+			setLoaded({progress: 80, task: "money"});
 			dispatch(loadMoney({coins, diamonds}));
-			setLoaded({progress: 70, task: "packs"});
-			
-			await PackBridge.getPacks();
-			setLoaded({progress: 80, task: "news"});
-			
+
+			setLoaded({progress: 90, task: "lobby"});
 			setScreen("lobby");
 			AppBridge.startMusic();
 		} catch(e) {
@@ -107,7 +128,7 @@ export default function Loading({setScreen, target, args}: LoadingProps) {
 	
 	return (
 		<View style={styles.screen}>
-			<Image style={styles.banner} resizeMode="cover" source={require("../../../android/assets/packs/official/src/images/banner.jpg")} />
+			<Image style={styles.banner} resizeMode="cover" source={{uri: constants.resources.defaultGamemodeBanner}} />
 			<Shadow />
 			{isSigned && (<>
 				<Text style={styles.text}>Loading {loaded.task} {loaded.progress}%</Text>
@@ -133,6 +154,51 @@ export default function Loading({setScreen, target, args}: LoadingProps) {
 			</View>}
 		</View>
 	);
+}
+
+async function loadGamemodes({setLoaded, dispatch}: LoadingStepProps) {
+	setLoaded({progress: 20, task: "gamemodes list"});
+
+	const gamemodes = await PackBridge.getGamemodes();
+	dispatch(setupGamemodesList({
+		list: gamemodes,
+		latest: await GameNative.getKey("string", "latestGamemode")
+	}));
+			
+	setLoaded({progress: 30, task: "gamemode progresses"});
+
+	const progresses: Progresses = {};
+	const pending: SettingsItem[] = [];
+	for(const cat of gamemodes) {
+		for(const gamemode of cat.data) {
+			pending.push({
+				id: "gm_" + gamemode.id + "__latestLevel",
+				type: "string",
+				initial: "{\"category\":\"\", \"level\": \"\"}"
+			});
+		}
+	}
+
+	const got = await AppBridge.getKeys(pending);
+	for(const item of got) {
+		const gamemodeId = item.id.substring(3, item.id.lastIndexOf("__"));
+
+		if(!(gamemodeId in item)) {
+			progresses[gamemodeId] = {
+				latestLevel: { category: "", level: "" }
+			}
+		}
+
+		if(item.id.endsWith("__latestLevel")) {
+			try {
+				progresses[gamemodeId].latestLevel = JSON.parse(item.initial as string);
+			} catch(e) {
+				console.warn(e);
+			}
+		}
+	}
+
+	dispatch(setupGamemodeProgresses(progresses));
 }
 
 function Shadow() {

@@ -1,10 +1,16 @@
-import GameNative from "@native";
+import GameNative, { AppBridge } from "@native";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 export interface GamemodesState {
 	current: GamemodesItem,
-	list: GamemodesCategory[]
+	list: GamemodesCategory[],
+	progresses: Progresses
 }
+
+export type Progresses = Record<string, { latestLevel: { 
+	category: string, 
+	level: string 
+} }>;
 
 export interface GamemodesItem {
 	name: string,
@@ -17,8 +23,23 @@ export interface GamemodesItem {
 	maxPlayers?: number,
 	row?: string,
 	banner?: string,
+	levels?: LevelsCategory[],
 	bannerBinary?: number,
 	isCompact?: boolean
+}
+
+export interface LevelsCategory {
+	title: string,
+	id: string,
+	data: Level[]
+}
+
+export interface Level {
+	name: string,
+	id: string,
+	banner?: string,
+	description?: string,
+	time?: string
 }
 
 export interface GamemodesCategory {
@@ -30,6 +51,7 @@ export interface GamemodesCategory {
 
 const initialState: GamemodesState = {
 	list: [],
+	progresses: {},
 	current: {
 		name: "Loading...",
 		description: "Loading...",
@@ -51,12 +73,32 @@ interface LatestGamemode {
 export const gamemodesSlice = createSlice({
 	name: "Gamemodes", initialState,
 	reducers: {
-		setActive: (state, {payload}: PayloadAction<GamemodesItem>) => {
+		setActive(state, {payload}: PayloadAction<GamemodesItem>) {
 			state.current = payload;
 			GameNative.setKey("string", "latestGamemode", JSON.stringify({row: payload.row, item: payload.id}));
 		},
+
+		setActiveLevel(state, {payload: {gamemode, category, level}}: PayloadAction<{
+			gamemode: GamemodesItem,
+			category: LevelsCategory,
+			level: Level
+		}>) {
+			const latest = state.progresses[gamemode.id].latestLevel = {
+				category: category.id,
+				level: level.id
+			}
+
+			AppBridge.setKey("string", "gm_" + gamemode.id + "__latestLevel", JSON.stringify({
+				category: category.id,
+				level: level.id
+			}));
+		},
+
+		setupProgresses(state, {payload}: PayloadAction<Progresses>) {
+			state.progresses = payload;
+		},
 		
-		load: (state, {payload: {list, latest}}: PayloadAction<GamemodesLoadPayload>) => {
+		setupList(state, {payload: {list, latest}}: PayloadAction<GamemodesLoadPayload>) {
 			state.list = list;
 			state.list = [{
 				title: "Other", isCompact: true,
@@ -96,4 +138,4 @@ export const gamemodesSlice = createSlice({
 	}
 });
 
-export const { setActive, load } = gamemodesSlice.actions;
+export const { setActive, setupList, setActiveLevel, setupProgresses } = gamemodesSlice.actions;

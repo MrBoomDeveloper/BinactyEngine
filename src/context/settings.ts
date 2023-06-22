@@ -14,10 +14,10 @@ export interface SettingsCategory {
 }
 
 export interface SettingsItem {
-	title: string,
+	title?: string,
 	id: string,
 	type: string,
-	value?: string | number | boolean,
+	value?: string | number | boolean, initial?: string | number | boolean,
 	description?: string,
 	restart?: boolean
 }
@@ -53,6 +53,7 @@ export const settingsSlice = createSlice({
 					setting.value =  payload.find(item => item.id == setting.id)?.initial;
 				}
 			}
+			
 			state.list = result;
 		},
 

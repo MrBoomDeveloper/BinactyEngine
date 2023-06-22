@@ -1,4 +1,9 @@
+import { GamemodesCategory } from "@context/gamemodes";
+import { SettingsItem } from "@context/settings";
 import { requireNativeComponent, NativeModules, NativeModule } from "react-native";
+
+export type NativeVariableType = "string" | "int" | "float" | "boolean";
+export type NativeVariableValue = string | number | boolean;
 
 export interface DebugField {
     key: string,
@@ -16,6 +21,10 @@ interface AppBridgeModule extends NativeModule {
     stopMusic: () => void,
     setVolume: (volume: number) => void,
 
+    setKey: (type: NativeVariableType, name: string, value: NativeVariableValue) => Promise<any>,
+    getKey: (type: NativeVariableType, name: string, defaultValue: NativeVariableValue) => Promise<NativeVariableValue>,
+    getKeys: (keys: SettingsItem[]) => Promise<SettingsItem[]>
+
     //TODO: Move to a separate ProfileBridge
     signIn: (method: "google" | "gamejolt" | "guest" | "name" | string) => Promise<boolean>,
     isSignedIn: () => Promise<boolean>,
@@ -25,7 +34,8 @@ interface AppBridgeModule extends NativeModule {
 interface PackBridgeModule extends NativeModule {
     managePacks: () => void,
     getPacks: () => Promise<any>,
-    createPack: (props: any) => Promise<boolean>
+    createPack: (props: any) => Promise<boolean>,
+    getGamemodes: () => Promise<GamemodesCategory[]>
 }
 
 type Target = "me" | string;

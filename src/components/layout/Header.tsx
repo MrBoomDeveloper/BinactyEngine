@@ -9,11 +9,11 @@ import Progress from "@components/Progress";
 interface HeaderProps {
     onProfilePress: () => void,
     style?: ViewStyle,
-    actions?: Action[],
+    actions?: HeaderAction[],
     navigation?: NavigationProps
 }
 
-interface Action {
+export interface HeaderAction {
     id: string,
     icon: ImageSourcePropType,
     onPress: () => void
