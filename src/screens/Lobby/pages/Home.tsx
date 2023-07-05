@@ -213,14 +213,19 @@ function Overview({gamemode, setScreen}: OverviewProps) {
     );
 }
 
-function OverviewActions({gamemode, setScreen, level}: {
+function OverviewActions({gamemode, setScreen}: {
     gamemode: GamemodesItem,
-    setScreen: SetScreenProps,
-    level?: Level
+    setScreen: SetScreenProps
 }) {
     const isBeta: boolean = useAppSelector(state => state.settings.list)
         .find(cat => cat.id == "features")?.data
         .find(item => item.id == "beta")?.value as boolean;
+
+    const progress = useAppSelector(state => state.gamemodes.progresses[gamemode.id].latestLevel);
+	
+	const level = gamemode.levels == null ? null :
+        gamemode.levels.find(item => item.id == progress.category)?.data
+            .find(item => item.id == progress.level) || gamemode.levels[0].data[0];
     
     return (
         <View style={styles.overviewActionsLayout}>
@@ -243,9 +248,9 @@ function OverviewActions({gamemode, setScreen, level}: {
 				onPress={() => {
                     const map = gamemode.maps == null ? null : gamemode.maps[0].file;
                     setScreen("loading", {target: "game", args: {
-                        ...gamemode,
-                        enableEditor: true,
-                         mapFile: map
+                        ...gamemode, level,
+                        enableEditor: false,
+                        mapFile: map
                     }});
                 }} styleIcon={{marginHorizontal: 5}} />}
 					
@@ -255,7 +260,7 @@ function OverviewActions({gamemode, setScreen, level}: {
 				onPress={() => {
                     const map = gamemode.maps == null ? null : gamemode.maps[0].file;
                     setScreen("loading", {target: "game", args: {
-                        ...gamemode,
+                        ...gamemode, level,
                         enableEditor: true,
                         mapFile: map
                     }});

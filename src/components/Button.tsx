@@ -86,7 +86,11 @@ const styles: Record<string, {
 
 	white: {
 		layout: { backgroundColor: "white" },
-		label: { color: "black" }
+		label: { 
+			color: "black",
+			fontWeight: "700",
+			letterSpacing: .4
+		}
 	},
 
 	default: {

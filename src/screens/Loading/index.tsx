@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { View, Text, Image, NativeEventEmitter, StyleSheet } from "react-native";
 import { setupList as setupGamemodesList, setupProgresses as setupGamemodeProgresses, Progresses } from "@context/gamemodes";
 import { setMoney as loadMoney, setProfile as loadProfile } from "@context/profile";
@@ -8,7 +8,7 @@ import settingsPreset from "@data/SettingsData.json";
 import { GameNative, AppBridge, PackBridge } from "@native";
 import { SetScreenProps } from "App";
 import * as constants from "@data/constants.json";
-import { useAppDispatch } from "@util/hooks";
+import { useAppDispatch, useAsyncMemo } from "@util/hooks";
 import { PayloadAction } from "@reduxjs/toolkit";
 
 interface LoadingProps {
@@ -30,6 +30,8 @@ export default function Loading({setScreen, target, args}: LoadingProps) {
 	const [isProcessing, setIsProcessing] = useState(false);
 	const dispatch = useAppDispatch();
 
+	const debugInfo = useAsyncMemo(async () => await AppBridge.getDebugMap(), null);
+
 	async function login(method: string) {
 		if(isProcessing) return;
 		try {
@@ -45,8 +47,9 @@ export default function Loading({setScreen, target, args}: LoadingProps) {
 	
 	async function loadStuff() {
 		AppBridge.startMusic();
+
 		try {
-			if((await GameNative.getKey("boolean", "beta")) && !(await AppBridge.isSignedIn())) {
+			if((await AppBridge.getKey("boolean", "beta", false)) && !(await AppBridge.isSignedIn())) {
 				setIsSigned(false);
 				return;
 			} 
@@ -55,22 +58,6 @@ export default function Loading({setScreen, target, args}: LoadingProps) {
 			await PackBridge.getPacks();
 
 			await loadGamemodes({setLoaded, dispatch});
-			// setLoaded({progress: 20, task: "gamemodes list"});
-			// const gamemodes = await PackBridge.getGamemodes();
-			// dispatch(setupGamemodesList({
-			// 	list: gamemodes,
-			// 	latest: await GameNative.getKey("string", "latestGamemode")
-			// }));
-			
-			// setLoaded({progress: 30, task: "gamemode progresses"});
-			// const progresses: Record<string, string> = {};
-			// const pending: string[] = [];
-			// for(const cat of gamemodes) {
-			// 	for(const gamemode of cat.data) {
-					
-			// 	}
-			// }
-			// dispatch(setupGamemodeProgresses(progresses));
 			
 			setLoaded({progress: 40, task: "settings"});
 			const settings = await GameNative.getKeys(settingsPreset);
@@ -81,10 +68,10 @@ export default function Loading({setScreen, target, args}: LoadingProps) {
 			dispatch(loadProfile(await AppBridge.getMyData()));
 
 			setLoaded({progress: 60, task: "money"});
-			const coins = await GameNative.getKey("int", "coins");
+			const coins = await AppBridge.getKey("int", "coins", 0);
 
 			setLoaded({progress: 70, task: "money"});
-			const diamonds = await GameNative.getKey("int", "diamonds");
+			const diamonds = await AppBridge.getKey("int", "diamonds", 0);
 
 			setLoaded({progress: 80, task: "money"});
 			dispatch(loadMoney({coins, diamonds}));
@@ -128,29 +115,39 @@ export default function Loading({setScreen, target, args}: LoadingProps) {
 	
 	return (
 		<View style={styles.screen}>
-			<Image style={styles.banner} resizeMode="cover" source={{uri: constants.resources.defaultGamemodeBanner}} />
+			<Image style={styles.banner} resizeMode="cover" source={require("@static/banner/loading_poster.jpg")} />
 			<Shadow />
+
+			{debugInfo != null && <View style={{flex: 1, paddingTop: 10, paddingHorizontal: 25, flexDirection: "row"}}>
+				<Text selectable selectionColor={constants.color.surfaceSmall}>Version: {debugInfo.buildVersionName}</Text>
+				<View style={{flexGrow: 1}} />
+				<Text selectable selectionColor={constants.color.surfaceSmall}>Device: {debugInfo.deviceBrand} {debugInfo.deviceModel}</Text>
+			</View>}
+
 			{isSigned && (<>
 				<Text style={styles.text}>Loading {loaded.task} {loaded.progress}%</Text>
 				<View style={[styles.progressBar, {width: loaded.progress + "%"}]} />
 			</>)}
 
-			{(!isSigned) && <View style={[styles.loginOptions, {opacity: (isProcessing ? 0.5 : 1)}]}>
-				{/* <Button text="Continue with Google"
-					icon={require("@static/icon/google.jpg")}
-					styleIcon={{width: 22, height: 22, marginHorizontal: 5}}
-					onPress={() => login("google")} 
-					theme="white" />
-					
-				<Button text="Continue as Guest"
-					style={{paddingHorizontal: 20}}
-					onPress={() => login("guest")} 
-					theme="white" /> */}
+			{(!isSigned) && <View style={{opacity: (isProcessing ? 0.5 : 1)}}>
+				<Text style={styles.loginTitle}>Welcome to the Binacty Engine</Text>
+				<Text style={styles.loginDescription}>Before we start, let's find out what to call you.</Text>
 
-				<Button text="Continue by Nickname"
-					style={{paddingHorizontal: 20}}
-					onPress={() => login("name")}
-					theme="white" />
+				<View style={styles.loginOptions}>
+					<Button text="Continue with BoomID"
+						style={{paddingLeft: 10, paddingRight: 12}}
+						styleIcon={{height: 24, marginRight: 4}}
+						icon={require("@static/icon/person_black_outlined.png")}
+						onPress={() => login("name")}
+						theme="white" />
+						
+					<Button text="Continue as Guest"
+						style={{paddingLeft: 10, paddingRight: 12}}
+						styleIcon={{height: 24, marginRight: 4}}
+						icon={require("@static/icon/time_black_outlined.png")}
+						onPress={() => login("guest")} 
+						theme="white" />
+				</View>
 			</View>}
 		</View>
 	);
@@ -223,8 +220,8 @@ const styles = StyleSheet.create({
 		bottom: 0,
 		left: 0,
 		width: "100%",
-		height: 200,
-		opacity: 0.75
+		height: 150,
+		opacity: 0.5
 	},
 
 	screen: {
@@ -245,15 +242,30 @@ const styles = StyleSheet.create({
 		margin: 25,
 		marginBottom: 10
 	},
+
+	loginTitle: {
+		color: "white",
+		fontWeight: "700",
+		textAlign: "center",
+		textShadowColor: "black",
+		textShadowRadius: 5,
+		fontSize: 25
+	},
+
+	loginDescription: {
+		color: "#ffffff",
+		textAlign: "center",
+		textShadowColor: "black",
+		textShadowRadius: 5,
+		marginTop: 6,
+		marginBottom: 10
+	},
 	
 	loginOptions: {
-		position: "absolute",
-		left: 0,
-		bottom: 0,
-		width: "100%",
 		justifyContent: "center",
 		flexDirection: "row",
-		padding: 35,
-		gap: 10
+		paddingBottom: 35,
+		paddingTop: 10,
+		gap: 12
 	}
 });

@@ -10,6 +10,7 @@ import { NavigationProps } from "@components/layout/Navigation";
 import { SettingsDrawer } from "@screens/modal/Settings";
 import { AppBridge } from "@native";
 import { NewsDrawer } from "@screens/modal/News";
+import Character from "./pages/Character";
 
 interface LobbyProps {
     setScreen: SetScreenProps
@@ -76,7 +77,7 @@ export default function Lobby2({setScreen}: LobbyProps) {
                 style={styles.pagesLayout}>
                 
                 <Home setScreen={setScreen} />
-                <Placeholder3 />
+                <Character />
                 <Placeholder />
                 <Creative setScreen={setScreen} />
             </ScrollView>
@@ -89,7 +90,6 @@ export default function Lobby2({setScreen}: LobbyProps) {
 }
 
 const Placeholder = () => (<View style={[styles.pageLayout, {backgroundColor: "#ff000016"}]} />);
-const Placeholder3 = () => (<View style={[styles.pageLayout, {backgroundColor: "#0000ff1f"}]} />);
 
 const styles = StyleSheet.create({
     screen: {

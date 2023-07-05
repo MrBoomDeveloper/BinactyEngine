@@ -11,11 +11,22 @@ export interface DebugField {
     secret?: boolean
 }
 
+interface DebugFieldsMap {
+    buildType: string,
+	buildVersionName: string,
+	buildVersionCode: string,
+	applicationId: string,
+	deviceBrand: string,
+	deviceModel: string,
+	deviceOs: string
+}
+
 interface AppBridgeModule extends NativeModule {
     exit: () => void,
     restart: () => void,
 
     getDebug: () => Promise<DebugField[]>,
+    getDebugMap: () => Promise<DebugFieldsMap>,
 
     startMusic: () => void,
     stopMusic: () => void,
@@ -33,9 +44,12 @@ interface AppBridgeModule extends NativeModule {
 
 interface PackBridgeModule extends NativeModule {
     managePacks: () => void,
-    getPacks: () => Promise<any>,
+
+    pickPack: (options: {source: "storage" | "official"}) => Promise<any>,
     createPack: (props: any) => Promise<boolean>,
-    getGamemodes: () => Promise<GamemodesCategory[]>
+
+    getGamemodes: () => Promise<GamemodesCategory[]>,
+    getPacks: () => Promise<any>
 }
 
 type Target = "me" | string;
@@ -68,6 +82,24 @@ interface MultiplayerBridgeModule extends NativeModule {
     }) => Promise<boolean>
 }
 
+NativeModules.AppBridge.getDebugMap = async (): Promise<DebugFieldsMap> => {
+    const response: DebugField[] = await NativeModules.AppBridge.getDebug();
+
+    function getProperty(key: string) {
+        return response.find(item => item.key == key)?.value || "Unknown";
+    }
+
+    return {
+        buildType: getProperty("buildType"),
+		buildVersionName: getProperty("buildVersionName"),
+		buildVersionCode: getProperty("buildVersionCode"),
+		applicationId: getProperty("applicationId"),
+		deviceBrand: getProperty("brand"),
+		deviceModel: getProperty("model"),
+		deviceOs: getProperty("os")
+    }
+}
+
 export const {
     AppBridge,
     PackBridge,
@@ -78,8 +110,6 @@ export const {
     ProfileBridge: ProfileBridgeModule,
     MultiplayerBridge: MultiplayerBridgeModule
 };
-
-
 
 export const CustomViews = requireNativeComponent("CharacterView");
 export const { GameNative } = NativeModules;

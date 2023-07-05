@@ -3,13 +3,21 @@ import Input from "@components/Input";
 import { size } from "@data/constants.json";
 import { PackBridge } from "@native";
 import { SetScreenProps } from "App";
-import { View, StyleSheet, Dimensions, Text } from "react-native";
+import { View, StyleSheet, Dimensions, Text, Alert } from "react-native";
 
 interface CreativeProps {
     setScreen: SetScreenProps
 }
 
 export default function Creative({setScreen}: CreativeProps) {
+    function pick() {
+        PackBridge.pickPack({
+            source: "storage"
+        }).then(pack => {
+            Alert.alert("Yay!");
+        });
+    }
+
     return (
         <View style={styles.layout}>
             <View style={styles.header}>
@@ -30,7 +38,7 @@ export default function Creative({setScreen}: CreativeProps) {
                     styleIcon={{width: 22, height: 22, marginRight: 4}}
                     theme="brand" hitbox={0}
                     style={styles.headerButton}
-                    onPress={() => PackBridge.managePacks()} />
+                    onPress={() => pick()} />
             </View>
             
             <View style={{flexDirection: "row", gap: 15, marginVertical: 4}}>
