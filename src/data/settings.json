@@ -1,5 +1,18 @@
 [
     {
+        "title": "Graphics", "id": "graphics",
+        "data": [
+            {
+                "title": "Delay between Map Objects position recaching", "id": "objectPositionRecacheDelay",
+                "description": "How often to update map objects positions.",
+                "type": "float", "value": 1.0
+            }, {
+                "title": "Delay between Map Objects layer updates", "id": "objectResortDelay",
+                "description": "How often to update map objects layers.",
+                "type": "float", "value": 0.5
+            }
+        ]
+    }, {
         "title": "Interface", "id": "interface",
         "data": [
             {

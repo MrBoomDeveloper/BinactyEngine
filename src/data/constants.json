@@ -8,6 +8,7 @@
     },
 
     "color": {
+        "primary": "#da33ff",
         "purpleBackground": "#11071F",
         "primarySurface": "hsl(290, 100%, 55%)",
 		"secondary": "#E56EFF",

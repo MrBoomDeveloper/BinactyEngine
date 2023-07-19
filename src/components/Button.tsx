@@ -1,11 +1,12 @@
 import { Pressable, Text, Image, ImageSourcePropType, ViewStyle, TextStyle, ImageStyle } from "react-native";
+import * as constants from "@data/constants.json";
 import { colors } from "@util/variables.json";
 
 interface ButtonArguments {
 	onPress: () => void,
 	theme: "brand" | "popup" | "white",
 	children?: JSX.Element,
-	style?: ViewStyle,
+	style?: ViewStyle | ViewStyle[],
 	styleText?: TextStyle,
 	styleIcon?: ImageStyle,
 	icon?: ImageSourcePropType,
@@ -49,8 +50,8 @@ export default function Button({text, children, icon, theme, rippleColor, onPres
 }
 
 const ripple: Record<string, string> = {
-	fill: "black",
-	brand: colors.primary,
+	fill: "rgba(0, 0, 0, .7)",
+	brand: constants.color.primary,
 	popup: "rgb(250, 250, 250, .8)",
 	white: "black"
 }
@@ -64,7 +65,7 @@ const styles: Record<string, {
 	}
 }> = {
 	brand: {
-		layout: { backgroundColor: "#e642ff" },
+		layout: { backgroundColor: "#fa52fa" },
 		label: {
 			color: "black",
 			fontWeight: "700",

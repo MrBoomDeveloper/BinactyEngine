@@ -138,6 +138,7 @@ function ExpandableText({text, style}: {
 }
 
 function Overview({gamemode, setScreen}: OverviewProps) {
+    const { maps, banner, description, author, name, levels, entry, maxPlayers, time } = gamemode;
     const [isLevelsShown, setLevelsIsShown] = useState(false);
     const animation = useRef(new Animated.Value(0)).current;
 
@@ -148,8 +149,6 @@ function Overview({gamemode, setScreen}: OverviewProps) {
             toValue: isLevelsShown ? 1 : 0
         }).start();
     }, [animation, isLevelsShown]);
-
-    const { author, name, description, levels } = gamemode;
 
     const scrollAnimation = animation.interpolate({
         inputRange: [0, 1],
@@ -182,7 +181,7 @@ function Overview({gamemode, setScreen}: OverviewProps) {
                         {description && <ExpandableText text={description} 
                             style={styles.overviewInfoDescriptionLabel} />}
 
-                        {(gamemode.maps != null || gamemode.entry != null) && <OverviewActions 
+                        {(maps != null || entry != null && maxPlayers > 0) && <OverviewActions 
                             gamemode={gamemode}
                             setScreen={setScreen} />}
                     </View>
@@ -191,26 +190,30 @@ function Overview({gamemode, setScreen}: OverviewProps) {
                         onPress={() => setLevelsIsShown(true)} /> : <View style={{flexGrow: 1}} />}
 
                     <View style={styles.aboutMatchRow}>
-                        {gamemode.time && <>
+                        {time && <>
 				            <Image style={{width: 16, height: 16}} source={require("@static/icon/time.png")} />
-				            <Text style={styles.aboutMatchLabel}>Duration  {gamemode.time}</Text>
+				            <Text style={styles.aboutMatchLabel}>Duration  {time}</Text>
                         </>}
                     
                         <Image style={{width: 20, height: 20, top: 1}} source={require("@static/icon/groups.png")} />
-				        <Text style={styles.aboutMatchLabel}>Max {(gamemode.maxPlayers || 1) > 1 ? `${gamemode.maxPlayers} players` : "1 player"}</Text>
+				        <Text style={styles.aboutMatchLabel}>{formatPlayersCount(maxPlayers)}</Text>
 			        </View>
                 </View>
 
-                {gamemode.levels && <LevelsMenu isShown={isLevelsShown} 
+                {levels && <LevelsMenu isShown={isLevelsShown} 
                     exit={() => setLevelsIsShown(false)}
                     gamemode={gamemode}
-                    onSelect={() => {
-                        setLevelsIsShown(false);
-                    }}
-                    levels={gamemode.levels} />}
+                    onSelect={() => setLevelsIsShown(false)}
+                    levels={levels} />}
             </Animated.View>
         </>
     );
+}
+
+function formatPlayersCount(count: number) {
+    if(count == 0) return "No players";
+    if(count == 1) return "Max 1 player";
+    return `Max ${count} players`;
 }
 
 function OverviewActions({gamemode, setScreen}: {

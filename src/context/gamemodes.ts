@@ -20,7 +20,7 @@ export interface GamemodesItem {
 	maps?: any[],
 	entry?: string,
 	time?: string,
-	maxPlayers?: number,
+	maxPlayers: number,
 	row?: string,
 	banner?: string,
 	levels?: LevelsCategory[],
@@ -57,6 +57,7 @@ const initialState: GamemodesState = {
 		description: "Loading...",
 		id: "__loading",
 		author: "Loading...",
+		maxPlayers: 0
 	}
 }
 
@@ -75,7 +76,7 @@ export const gamemodesSlice = createSlice({
 	reducers: {
 		setActive(state, {payload}: PayloadAction<GamemodesItem>) {
 			state.current = payload;
-			GameNative.setKey("string", "latestGamemode", JSON.stringify({row: payload.row, item: payload.id}));
+			AppBridge.setKey("string", "latestGamemode", JSON.stringify({row: payload.row, item: payload.id}));
 		},
 
 		setActiveLevel(state, {payload: {gamemode, category, level}}: PayloadAction<{
@@ -88,7 +89,7 @@ export const gamemodesSlice = createSlice({
 				level: level.id
 			}
 
-			AppBridge.setKey("string", "gm_" + gamemode.id + "__latestLevel", JSON.stringify({
+			AppBridge.setKey("string", `gm_${gamemode.id}__latestLevel`, JSON.stringify({
 				category: category.id,
 				level: level.id
 			}));
@@ -109,19 +110,22 @@ export const gamemodesSlice = createSlice({
 						description: "Turn your dreams into real!",
 						id: "__ad_new_pack",
 						author: "You",
-						bannerBinary: require("@static/banner/ad/create_pack.png")
+						bannerBinary: require("@static/banner/ad/create_pack.png"),
+						maxPlayers: 0
 					}, {
 						name: "Join Discord",
 						description: "Join our Discord Server to see all the news!",
 						id: "__ad_discord",
 						author: "None",
-						bannerBinary: require("@static/banner/ad/discord.png")
+						bannerBinary: require("@static/banner/ad/discord.png"),
+						maxPlayers: 0
 					}, {
 						name: "Tutorial",
 						description: "Learn the basics of the game.",
 						id: "__ad_tutorial",
 						author: "MrBoomDev",
-						bannerBinary: require("@static/banner/ad/tutorial.png")
+						bannerBinary: require("@static/banner/ad/tutorial.png"),
+						maxPlayers: 0
 					}
 				]
 			}, ...list];

@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { View, Text, StyleSheet, Animated, Share, Easing } from "react-native";
 import Button from "@components/Button";
 import { colors } from "@util/variables.json";
-import GameNative from "@native";
+import GameNative, { AppBridge } from "@native";
 import { SetScreenProps } from "App";
 
 interface GameOverProps {
@@ -25,8 +25,8 @@ export default function GameOver({setScreen}: GameOverProps) {
 	
 	useEffect(() => {
 		(async function() {
-			const coins = await GameNative.getKey("int", "coins");
-			const diamonds = await GameNative.getKey("int", "diamonds");
+			const coins = await AppBridge.getKey("int", "coins", 0) as number;
+			const diamonds = await AppBridge.getKey("int", "diamonds", 0) as number;
 			setStats(await GameNative.getStats());
 			setBalance({coins, diamonds});
 			setIsLoaded(true);
@@ -69,7 +69,7 @@ export default function GameOver({setScreen}: GameOverProps) {
 	function close() {
 		if(!isLoaded) return;
 		if(stats.isWin) {
-			GameNative.setKey("int", "coins", String(balance.coins + 1));
+			AppBridge.setKey("int", "coins", String(balance.coins + 1));
 		}
 		setScreen("loading", {target: "lobby"});
 	}
@@ -142,8 +142,8 @@ const styles = StyleSheet.create({
 	},
 	
 	action: {
-		width: 150,
-		height: 42
+		width: 140,
+		height: 40
 	},
 	
 	titleHolder: {

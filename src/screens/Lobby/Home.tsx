@@ -90,7 +90,9 @@ function Home({setScreen}: HomeProps) {
 							{currentGamemode.time && <Text style={styles.aboutMatchLabel}>{currentGamemode.time}</Text>}
 							
 							<Image style={{width: 20, height: 20}} source={require("@static/icon/groups.png")} />
-							<Text style={styles.aboutMatchLabel}>{currentGamemode.maxPlayers > 1 ? `${currentGamemode.maxPlayers} players` : "1 player"}</Text>
+							<Text style={styles.aboutMatchLabel}>{
+								currentGamemode.maxPlayers > 1 ? currentGamemode.maxPlayers + "players" : "1 player"
+							}</Text>
 						</View>
 						
 						{currentGamemode.description && <Text style={{...styles.description, marginVertical: 6}}>{currentGamemode.description}</Text>}

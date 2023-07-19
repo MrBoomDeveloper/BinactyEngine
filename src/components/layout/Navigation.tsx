@@ -52,7 +52,8 @@ const styles = StyleSheet.create({
     },
 
     tabLabel: {
-        color: "#c9bec9"
+        color: "#f1e9f1ae",
+        letterSpacing: .3
     },
 
     tabActiveLabel: {

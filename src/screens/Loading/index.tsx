@@ -1,15 +1,15 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { View, Text, Image, NativeEventEmitter, StyleSheet } from "react-native";
 import { setupList as setupGamemodesList, setupProgresses as setupGamemodeProgresses, Progresses } from "@context/gamemodes";
 import { setMoney as loadMoney, setProfile as loadProfile } from "@context/profile";
-import { SettingsItem, load as loadSettings, setup as setupSettings } from "@context/settings";
+import { SettingsItem, setup as setupSettings } from "@context/settings";
+import { setup as setupPacks } from "@context/packs";
 import Button from "@components/Button";
-import settingsPreset from "@data/SettingsData.json";
+import settingsAll from "@data/settings.json";
 import { GameNative, AppBridge, PackBridge } from "@native";
 import { SetScreenProps } from "App";
 import * as constants from "@data/constants.json";
 import { useAppDispatch, useAsyncMemo } from "@util/hooks";
-import { PayloadAction } from "@reduxjs/toolkit";
 
 interface LoadingProps {
 	setScreen: SetScreenProps,
@@ -55,14 +55,10 @@ export default function Loading({setScreen, target, args}: LoadingProps) {
 			} 
 			
 			setLoaded({progress: 10, task: "packs"});
-			await PackBridge.getPacks();
+			dispatch(setupPacks(await PackBridge.getPacks()));
 
 			await loadGamemodes({setLoaded, dispatch});
-			
-			setLoaded({progress: 40, task: "settings"});
-			const settings = await GameNative.getKeys(settingsPreset);
-			dispatch(loadSettings(settings));
-			dispatch(setupSettings(settings));
+			await loadSettings({setLoaded, dispatch});
 
 			setLoaded({progress: 50, task: "profile"});
 			dispatch(loadProfile(await AppBridge.getMyData()));
@@ -118,7 +114,7 @@ export default function Loading({setScreen, target, args}: LoadingProps) {
 			<Image style={styles.banner} resizeMode="cover" source={require("@static/banner/loading_poster.jpg")} />
 			<Shadow />
 
-			{debugInfo != null && <View style={{flex: 1, paddingTop: 10, paddingHorizontal: 25, flexDirection: "row"}}>
+			{debugInfo != null && <View style={{flex: 1, paddingTop: 10, paddingHorizontal: constants.size.inlineScreenPadding, flexDirection: "row"}}>
 				<Text selectable selectionColor={constants.color.surfaceSmall}>Version: {debugInfo.buildVersionName}</Text>
 				<View style={{flexGrow: 1}} />
 				<Text selectable selectionColor={constants.color.surfaceSmall}>Device: {debugInfo.deviceBrand} {debugInfo.deviceModel}</Text>
@@ -153,13 +149,24 @@ export default function Loading({setScreen, target, args}: LoadingProps) {
 	);
 }
 
+async function loadSettings({setLoaded, dispatch}: LoadingStepProps) {
+	setLoaded({progress: 40, task: "settings"});
+
+	const settingsList: SettingsItem[] = settingsAll.reduce((all: SettingsItem[], next) => {
+		next.data.forEach(item => all.push(item));
+		return all;
+	}, []);
+		
+	dispatch(setupSettings(await AppBridge.getKeys(settingsList)));
+}
+
 async function loadGamemodes({setLoaded, dispatch}: LoadingStepProps) {
 	setLoaded({progress: 20, task: "gamemodes list"});
 
 	const gamemodes = await PackBridge.getGamemodes();
 	dispatch(setupGamemodesList({
 		list: gamemodes,
-		latest: await GameNative.getKey("string", "latestGamemode")
+		latest: await AppBridge.getKey("string", "latestGamemode", "") as string
 	}));
 			
 	setLoaded({progress: 30, task: "gamemode progresses"});
@@ -169,9 +176,9 @@ async function loadGamemodes({setLoaded, dispatch}: LoadingStepProps) {
 	for(const cat of gamemodes) {
 		for(const gamemode of cat.data) {
 			pending.push({
-				id: "gm_" + gamemode.id + "__latestLevel",
+				id: `gm_${gamemode.id}__latestLevel`,
 				type: "string",
-				initial: "{\"category\":\"\", \"level\": \"\"}"
+				value: "{\"category\":\"\", \"level\": \"\"}"
 			});
 		}
 	}
@@ -188,7 +195,7 @@ async function loadGamemodes({setLoaded, dispatch}: LoadingStepProps) {
 
 		if(item.id.endsWith("__latestLevel")) {
 			try {
-				progresses[gamemodeId].latestLevel = JSON.parse(item.initial as string);
+				progresses[gamemodeId].latestLevel = JSON.parse(item.value as string);
 			} catch(e) {
 				console.warn(e);
 			}
@@ -211,8 +218,9 @@ function Shadow() {
 const styles = StyleSheet.create({
 	progressBar: {
 		backgroundColor: "white",
-		height: 8,
-		width: "100%"
+		height: 4,
+		width: "100%",
+		margin: 8
 	},
 
 	shadowBottom: {

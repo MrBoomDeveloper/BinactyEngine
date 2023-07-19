@@ -62,15 +62,14 @@ function Setting({title, description, type, restart, value, id}: SettingsItem) {
 						type={type}
 						style={{width: 75}}
 						maxLength={4}
+						placeholder=""
 						onChangeText={newValue => {
-							const response: number = (newValue == "" || isNaN(newValue as unknown as number))
-								? 0 : parseFloat(newValue);
-							
-							if(id == "musicVolume") {
-								AppBridge.setVolume(response);
-							}
+							if(newValue == "" || isNaN(newValue as unknown as number)) return;
 
-							dispatch(updateSetting({id, newValue: response, type}));
+							const value = parseFloat(newValue);
+							if(id == "musicVolume") AppBridge.setVolume(value);
+							
+							dispatch(updateSetting({id, newValue: value, type}));
 						}} />
 				)}
 			</View>

@@ -111,7 +111,8 @@ const styles = StyleSheet.create({
 	},
 
 	card: {
-		gap: 10
+		gap: 10,
+		marginBottom: 10
 	},
 
 	cardLayout: {
@@ -150,8 +151,8 @@ const styles = StyleSheet.create({
 
 	exitIcon: {
 		resizeMode: "contain",
-		width: 40, 
-		height: 40,
+		width: 30, 
+		height: 30,
 		transform: [{ rotate: "90deg" }]
 	},
 

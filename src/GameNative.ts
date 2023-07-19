@@ -1,4 +1,5 @@
 import { GamemodesCategory } from "@context/gamemodes";
+import { Pack } from "@context/packs";
 import { SettingsItem } from "@context/settings";
 import { requireNativeComponent, NativeModules, NativeModule } from "react-native";
 
@@ -45,11 +46,11 @@ interface AppBridgeModule extends NativeModule {
 interface PackBridgeModule extends NativeModule {
     managePacks: () => void,
 
-    pickPack: (options: {source: "storage" | "official"}) => Promise<any>,
+    pickPack: (options: {source: "storage" | "official"}) => Promise<Pack>,
     createPack: (props: any) => Promise<boolean>,
 
     getGamemodes: () => Promise<GamemodesCategory[]>,
-    getPacks: () => Promise<any>
+    getPacks: () => Promise<Pack[]>
 }
 
 type Target = "me" | string;

@@ -12,43 +12,40 @@ export default function App() {
 	return (
 		<Provider store={store}>
 			<StatusBar hidden={true} />
-			<Controller initial="splash" items={[
-				{ name: "splash", element: Splash },
-				{ name: "loading", element: Loading },
-				{ name: "lobby", element: Lobby2 },
-				{ name: "lobby2", element: Lobby },
-				{ name: "gameover", element: GameOver }
-			]} />
+			<Controller initial="splash" items={{
+				"splash": { element: Splash },
+				"loading": { element: Loading },
+				"lobby": { element: Lobby2 },
+				"lobby2": { element: Lobby },
+				"gameover": { element: GameOver }
+			}} />
 		</Provider>
 	);
 };
 
 interface ControllerProps {
 	initial: string,
-	items: {
-		name: string,
+	items: Record<string, {
 		element: any
-	}[]
+	}>
 }
 
-export type SetScreenProps = (name: string, props?: ObjectMap) => void;
-
-export interface ObjectMap {
-	[key: string]: any
-}
+export type SetScreenProps = (name: string, props?: Record<string, any>) => void;
 
 function Controller({initial, items}: ControllerProps) {
 	const [current, setCurrent] = useState(initial);
 	const [allProps, setAllProps] = useState(new Map());
 
-	const found = items.find(item => item.name == current)?.element || items[0] || null;
+	const found = items[current].element || items[0].element || null;
 
 	return createElement(found, {
 		setScreen: (name: string, props?: SetScreenProps) => {
 			const newMap = new Map(allProps);
-			newMap.set("__" + name + "_props", props);
+			newMap.set(`__${name}_props`, props);
+
 			setAllProps(newMap);
+			
 			if(name != current) setCurrent(name);
-		}, ...allProps.get("__" + current + "_props")
+		}, ...allProps.get(`__${current}_props`)
 	});
 }

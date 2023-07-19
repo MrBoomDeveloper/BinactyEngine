@@ -62,9 +62,9 @@ export default function Input({
 	);
 }
 
-const types: {[key: string]: KeyboardTypeOptions} = {
-	int: "decimal-pad",
-	float: "number-pad",
+const types: Record<string, KeyboardTypeOptions> = {
+	int: "number-pad",
+	float: "numeric",
 	string: "default"
 }
 
