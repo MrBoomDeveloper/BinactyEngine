@@ -9,6 +9,14 @@
 
     "color": {
         "primary": "#da33ff",
+
+        "surfacePurple": "#6b3dad",
+        "surfacePurpleLight": "#7d51bd",
+
+        "background": "#11071F",
+        "backgroundLight": "#1d0c36",
+
+        
         "purpleBackground": "#11071F",
         "primarySurface": "hsl(290, 100%, 55%)",
 		"secondary": "#E56EFF",

@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, SectionList } from "react-native";
+import { View, Text, StyleSheet, SectionList, TouchableOpacity } from "react-native";
 import { SettingsCategory, SettingsItem, update as updateSetting } from "@context/settings";
 import { AppBridge } from "@native";
 import Toggle from "@components/Toggle";
@@ -6,12 +6,14 @@ import Input from "@components/Input";
 import * as constants from "@data/constants.json";
 import { useAppDispatch, useAppSelector } from "@util/hooks";
 import Drawer, { SimpleDrawerProps } from "./Drawer";
+import Dropdown from "@components/Dropdown";
+import { useRef } from "react";
 
 export function SettingsDrawer(props: SimpleDrawerProps) {
 	const settings: SettingsCategory[] = useAppSelector(state => state.settings.list);
 
 	return (
-		<Drawer width={350} direction="right" {...props}>
+		<Drawer width={375} direction="right" {...props}>
 			<SectionList sections={settings}
 				keyExtractor={item => item.id}
 				ListFooterComponent={<View style={{height: 25}} />}
@@ -29,51 +31,61 @@ function SettingsCategoryHeader({title}: SettingsCategory) {
 	)
 }
 
-function Setting({title, description, type, restart, value, id}: SettingsItem) {
+function Setting({title, description, type, restart, value, id, variants}: SettingsItem) {
 	const dispatch = useAppDispatch();
 
 	return (
-		<View style={styles.settingLayout}>
-			<View style={styles.settingInfo}>
-				<Text style={styles.settingTitle}>{title}</Text>
-				{description && <Text style={styles.settingDescription}>{description}</Text>}
-			</View>
+		<TouchableOpacity>
+			<View style={styles.settingLayout}>
+				<View style={styles.settingInfo}>
+					<Text style={styles.settingTitle}>{title}</Text>
+					{description && <Text style={styles.settingDescription}>{description}</Text>}
+				</View>
 
-			<View style={styles.settinAction}>
-				{type == "boolean" && (
-					<Toggle defaultValue={value as boolean}
-						onToggle={newValue => {
-							dispatch(updateSetting({id, newValue, type}));
-							if(restart) AppBridge.restart();
-						}} />
-				)}
+				<View style={styles.settinAction}>
+					{(type == "boolean" && variants == null) && (
+						<Toggle defaultValue={value as boolean}
+							onToggle={newValue => {
+								dispatch(updateSetting({id, newValue, type}));
+								if(restart) AppBridge.restart();
+							}} />
+					)}
 
-				{type == "string" && (
-					<Input defaultValue={value as string}
-						type="string"
-						style={{width: 100}}
-						onChangeText={newValue => {
-							dispatch(updateSetting({id, newValue, type}));
-						}} />
-				)}
+					{(type == "string" && variants == null) && (
+						<Input defaultValue={value as string}
+							type="string"
+							style={{width: 85}}
+							onChangeText={newValue => {
+								dispatch(updateSetting({id, newValue, type}));
+							}} />
+					)}
 
-				{(type == "int" || type == "float") && (
-					<Input defaultValue={value as number}
-						type={type}
-						style={{width: 75}}
-						maxLength={4}
-						placeholder=""
-						onChangeText={newValue => {
-							if(newValue == "" || isNaN(newValue as unknown as number)) return;
+					{(type == "int" || type == "float" && variants == null ) && (
+						<Input defaultValue={value as number}
+							type={type}
+							style={{width: 75}}
+							maxLength={4}
+							placeholder=""
+							onChangeText={newValue => {
+								if(newValue == "" || isNaN(newValue as unknown as number)) return;
 
-							const value = parseFloat(newValue);
-							if(id == "musicVolume") AppBridge.setVolume(value);
+								const value = parseFloat(newValue);
+								if(id == "musicVolume") AppBridge.setVolume(value);
 							
-							dispatch(updateSetting({id, newValue: value, type}));
-						}} />
-				)}
+								dispatch(updateSetting({id, newValue: value, type}));
+							}} />
+					)}
+
+					{(variants != null) && (
+						<Dropdown items={variants} horizontal 
+							selected={value}
+							onSelect={(item) => {
+								dispatch(updateSetting({id, newValue: item.value, type}));
+							}} />
+					)}
+				</View>
 			</View>
-		</View>
+		</TouchableOpacity>
 	)
 }
 
@@ -101,17 +113,20 @@ const styles = StyleSheet.create({
 		borderRadius: 8,
 		flexDirection: "row",
 		borderWidth: 1,
-        borderColor: "#221824"
+        borderColor: "#221824",
+		flexGrow: 1
 	},
 
 	settingInfo: {
-		maxWidth: 150
+		flexGrow: 1,
+		flexShrink: 1
 	},
 
 	settingTitle: {
 		color: "white",
 		fontSize: 16,
-		lineHeight: 24
+		lineHeight: 24,
+		
 	},
 
 	settingDescription: {
@@ -120,8 +135,8 @@ const styles = StyleSheet.create({
 	},
 
 	settinAction: {
-		flexGrow: 1,
 		justifyContent: "center",
-		alignItems: "flex-end"
+		alignItems: "flex-end",
+		marginLeft: 20
 	}
 });

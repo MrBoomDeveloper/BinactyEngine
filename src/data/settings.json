@@ -3,13 +3,21 @@
         "title": "Graphics", "id": "graphics",
         "data": [
             {
-                "title": "Delay between Map Objects position recaching", "id": "objectPositionRecacheDelay",
+                "title": "Delay between Objects position recaching", "id": "objectPositionRecacheDelay",
                 "description": "How often to update map objects positions.",
                 "type": "float", "value": 1.0
             }, {
-                "title": "Delay between Map Objects layer updates", "id": "objectResortDelay",
+                "title": "Delay between Objects layer updates", "id": "objectResortDelay",
                 "description": "How often to update map objects layers.",
                 "type": "float", "value": 0.5
+            }, {
+                "title": "Renderer", "id": "renderer",
+                "description": "The thing that draws everything! (Currently does nothing)",
+                "type": "string", "value": "libgdx",
+                "variants": [
+                    { "title": "LibGDX", "value": "libgdx" },
+                    { "title": "SurfaceView", "value": "surface_view" }
+                ]
             }
         ]
     }, {
@@ -19,6 +27,15 @@
                 "title": "Screen inset", "id": "inset",
                 "description": "Padding between screen border and ui elements.",
                 "type": "int", "value": 50, "max": 250
+            }, {
+                "title": "Show player names", "id": "display_names",
+                "description": "May be overwritten by the gamemode. (Currently does nothing)",
+                "type": "string", "value": "all",
+                "variants": [
+                    { "title": "All", "value": "all" },
+                    { "title": "Team", "value": "team" },
+                    { "title": "None", "value": "none" }
+                ]
             }
         ]
     }, {
@@ -39,11 +56,11 @@
         "data": [
             {
                 "title": "Allow crashlytics", "id": "crashlytics",
-                "description": "This thing prompts the developer, when you found an error.",
+                "description": "Send helpful information to developers to help fix bugs.",
                 "type": "boolean", "value": true, "restart": true
             }, {
                 "title": "Beta Experience", "id": "beta",
-                "description": "Bring all the new things to me now! (May break the game)",
+                "description": "Bring all the new unstabble things to me now!",
                 "type": "boolean", "value": false, "restart": true
             }
         ]
@@ -52,7 +69,7 @@
         "data": [
             {
                 "title": "Show gameplay debug information", "id": "debug",
-                "description": "While playing you'll see the current FPS, Delta time between frames, current player position and etc.",
+                "description": "Just a bunch of nerdy text during the game.",
                 "type": "boolean", "value": false
             }, {
                 "title": "Enable Box2D Debug Renderer", "id": "debugRenderer",

@@ -1,6 +1,6 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import preset from "@data/settings.json";
-import { AppBridge } from "@native";
+import { AppBridge, NativeVariableType, NativeVariableValue } from "@native";
 
 interface SettingsState {
 	list: SettingsCategory[]
@@ -15,16 +15,22 @@ export interface SettingsCategory {
 export interface SettingsItem {
 	title?: string,
 	id: string,
-	type: string,
-	value?: string | number | boolean,
+	type: NativeVariableType,
+	value?: NativeVariableValue,
 	description?: string,
-	restart?: boolean
+	restart?: boolean,
+	variants?: SettingItemVariant[]
+}
+
+export interface SettingItemVariant {
+	title: string,
+	value: NativeVariableValue
 }
 
 interface SettingsUpdateAction {
 	id: string,
-	newValue: string | number | boolean,
-	type: "string" | "boolean" | "int" | "float"
+	newValue: NativeVariableValue,
+	type: NativeVariableType
 }
 
 const initialState: SettingsState = { list: [] };

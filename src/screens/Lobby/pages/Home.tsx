@@ -246,7 +246,7 @@ function OverviewActions({gamemode, setScreen}: {
                 }} />
                     
             {(isBeta && (gamemode.maxPlayers || 1) > 1) && <Button icon={icons["groups"].outlineBlack}
-				theme="brand" rippleColor="black"
+				theme="brand" rippleColor="#000000c0"
                 hitbox={0} overlayInner={true}
 				onPress={() => {
                     const map = gamemode.maps == null ? null : gamemode.maps[0].file;
@@ -258,7 +258,7 @@ function OverviewActions({gamemode, setScreen}: {
                 }} styleIcon={{marginHorizontal: 5}} />}
 					
 			<Button icon={require("@static/icon/edit.png")}
-				theme="brand" rippleColor="black"
+				theme="brand" rippleColor="#000000c0"
                 hitbox={0} overlayInner={true}
 				onPress={() => {
                     const map = gamemode.maps == null ? null : gamemode.maps[0].file;
