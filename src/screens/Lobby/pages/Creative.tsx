@@ -6,14 +6,14 @@ import { useAppDispatch, useAppSelector } from "@util/hooks";
 import { SetScreenProps } from "App";
 import { View, StyleSheet, Dimensions, Text, Alert, SectionList, Image, TouchableOpacity, FlatList } from "react-native";
 import * as constants from "@data/constants.json";
-import { useState } from "react";
+import { memo, useState } from "react";
 import { Pack } from "@context/packs";
 
 interface CreativeProps {
     setScreen: SetScreenProps
 }
 
-export default function Creative({setScreen}: CreativeProps) {
+function Creative({setScreen}: CreativeProps) {
     const packs = useAppSelector(state => state.packs.installed);
     const dispatch = useAppDispatch();
 
@@ -63,9 +63,9 @@ export default function Creative({setScreen}: CreativeProps) {
 
                 renderSectionHeader={({section}) => {
                     return <View>
-                        <View style={{marginBottom: 12, marginTop: 16, gap: 12, flexDirection: "row", alignItems: "center"}}>
+                        <View style={{marginBottom: 15, marginTop: 25, gap: 16, flexDirection: "row", alignItems: "center"}}>
                             <Text style={{
-                                color: "#f0e1ed", fontSize: 16, fontWeight: "500", letterSpacing: .2
+                                color: "#f0e1ed", fontSize: 16, letterSpacing: .2
                             }}>{section.title}:  {section.data.length}</Text>
 
                             <Text style={{
@@ -87,9 +87,9 @@ function PackCard({name, icon, description, author}: Pack) {
     return (
         <TouchableOpacity style={{flex: 1}}>
             <View style={styles.packLayout}>
-                <View style={{flexDirection: "row", gap: 14, flexGrow: 1}}>
+                <View style={{flexDirection: "row", gap: 16, flexGrow: 1}}>
                     <Image style={styles.packIcon} source={{uri: icon ?? constants.resources.defaultGamemodeBanner}} />
-                    <View style={{gap: 4, flexGrow: 1, flexShrink: 1}}>
+                    <View style={{gap: 5, flexGrow: 1, flexShrink: 1}}>
                         <View style={{flexDirection: "row", gap: 12, alignItems: "center"}}>
                             <Text style={styles.packTitle}>{name}</Text>
                             <Text style={styles.packMeta}>Made by:  {author}</Text>
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         borderWidth: 1, 
         borderColor: "#362436",
-        padding: 10
+        padding: 12
     },
 
     packIcon: {
@@ -149,11 +149,11 @@ const styles = StyleSheet.create({
 
     packTitle: {
         color: "white",
-        letterSpacing: .3
+        letterSpacing: .4
     },
 
     packDescription: {
-        letterSpacing: .3,
+        letterSpacing: .4,
         color: "#cab9cc",
         lineHeight: 20,
         fontSize: 13
@@ -165,3 +165,5 @@ const styles = StyleSheet.create({
         fontSize: 12
     }
 });
+
+export default memo(Creative);

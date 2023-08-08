@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, memo } from "react";
 import { View, Animated, Pressable, StyleSheet, ViewStyle } from "react-native";
 import { colors } from "@util/variables.json";
 
@@ -8,7 +8,7 @@ interface ToggleProps {
 	style?: ViewStyle
 }
 
-export default function Toggle({defaultValue, onToggle, style}: ToggleProps) {
+function Toggle({defaultValue, onToggle, style}: ToggleProps) {
 	const [isActive, setActive] = useState(defaultValue);
 	const animation = useRef(new Animated.Value(3));
 
@@ -65,3 +65,5 @@ const styles = StyleSheet.create({
 		backgroundColor: "white"
 	}
 });
+
+export default memo(Toggle);

@@ -1,5 +1,5 @@
 import { View, Text, Pressable, StyleSheet, Image, Animated } from 'react-native';
-import { Ref, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Ref, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import * as constants from "@data/constants.json";
 
 interface DropdownProps {
@@ -15,7 +15,7 @@ interface DropdownItem {
 	unavailable?: boolean
 }
 
-export default function Dropdown({items, onSelect, horizontal, selected}: DropdownProps) {
+function Dropdown({items, onSelect, horizontal, selected}: DropdownProps) {
 	const opacityAnimation = useRef(new Animated.Value(0));
 	const scaleAnimation = useRef(new Animated.Value(0));
 	const [isOpened, setOpened] = useState(false);
@@ -144,3 +144,5 @@ const styles = StyleSheet.create({
 		letterSpacing: .3
 	}
 });
+
+export default memo(Dropdown);

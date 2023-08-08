@@ -1,6 +1,6 @@
 import { memo } from "react";
 import { Text, View, FlatList, StyleSheet, ViewStyle, TextStyle } from "react-native";
-import { Button } from "@components";
+import Button from "@components/Button";
 
 interface MultiplaerCardElement {
 	style: ViewStyle,

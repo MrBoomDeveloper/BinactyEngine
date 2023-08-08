@@ -1,16 +1,16 @@
 import { GamemodesItem, Level, LevelsCategory, setActive, setActiveLevel } from "@context/gamemodes";
 import { Image, SectionList, StyleSheet, Text, TouchableOpacity, View, BackHandler } from "react-native";
 import * as constants from "@data/constants.json";
-import { useEffect } from "react";
+import { memo, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@util/hooks";
 
-export function LevelsMenu({levels, exit, isShown, onSelect, gamemode}: {
+export const LevelsMenu = memo(({levels, exit, isShown, onSelect, gamemode}: {
 	levels: LevelsCategory[],
 	isShown: boolean,
 	gamemode: GamemodesItem,
 	onSelect: (level: Level) => void,
 	exit: () => void
-}) {
+}) => {
 	useEffect(() => {
 		if(!isShown) return;
 
@@ -40,7 +40,7 @@ export function LevelsMenu({levels, exit, isShown, onSelect, gamemode}: {
 					onSelect={onSelect} />} />
 		</View>
 	);
-}
+});
 
 function LevelCard({level, onSelect, gamemode, category}: {
 	level: Level,
@@ -66,11 +66,11 @@ function LevelCard({level, onSelect, gamemode, category}: {
 	)
 }
 
-export function LevelPreview({levels, gamemode, onPress}: {
+export const LevelPreview = memo(({levels, gamemode, onPress}: {
 	levels: LevelsCategory[],
 	gamemode: GamemodesItem,
 	onPress: () => void
-}) {
+}) => {
 	const progress = useAppSelector(state => state.gamemodes.progresses[gamemode.id].latestLevel);
 	
 	const level: Level = levels == null 
@@ -94,7 +94,7 @@ export function LevelPreview({levels, gamemode, onPress}: {
             </View>
         </TouchableOpacity>
     );
-}
+});
 
 const styles = StyleSheet.create({
 	layout: {

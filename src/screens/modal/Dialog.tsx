@@ -1,5 +1,6 @@
 import { View, Modal, StyleSheet } from "react-native";
 import { colors } from "@util/variables.json";
+import { memo } from "react";
 
 interface DialogProps {
 	visible: boolean,
@@ -7,7 +8,7 @@ interface DialogProps {
 	onClose: () => void
 }
 
-export default function Dialog({visible, children, onClose}: DialogProps) {
+function Dialog({visible, children, onClose}: DialogProps) {
 	return (
 		<Modal onRequestClose={onClose}
 			animationType="slide"
@@ -27,3 +28,5 @@ const styles = StyleSheet.create({
 		backgroundColor: colors.background
 	}
 });
+
+export default memo(Dialog);

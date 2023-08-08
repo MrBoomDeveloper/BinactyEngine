@@ -1,8 +1,13 @@
 import { Dimensions, FlatList, StyleSheet, Text, View } from "react-native";
 import * as constants from "@data/constants.json";
 import Button from "@components/Button";
+import Input from "@components/Input";
+import { useAsyncMemo } from "@util/hooks";
+import { AppBridge } from "@native";
+import { memo } from "react";
 
-export default function Character() {
+function Character() {
+	const playerCharacter = useAsyncMemo(async () => await AppBridge.getKey("string", "playerCharacter", "{\"source\":\"INTERNAL\",\"path\":\"packs/official/src/characters/klarrie\"}"), "Loading...");
 	const categories = [
 		{
 
@@ -41,6 +46,13 @@ export default function Character() {
 			</View>
 
 			<View style={styles.characterHolder}>
+				<Input defaultValue={playerCharacter as string} 
+					type="string"
+					maxLength={250}
+					onChangeText={(newValue) => {
+						AppBridge.setKey("string", "playerCharacter", newValue);
+					}} />
+
 				<Text>Coming soon...</Text>
 			</View>
 		</View>
@@ -84,3 +96,5 @@ const styles = StyleSheet.create({
 		paddingBottom: 25
 	}
 });
+
+export default memo(Character);

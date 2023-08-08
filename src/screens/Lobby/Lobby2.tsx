@@ -2,7 +2,7 @@ import { BackHandler, Dimensions, ScrollView, StyleSheet, View } from "react-nat
 import { color } from "@data/constants.json";
 import Header from "@components/layout/Header";
 import Home from "./pages/Home";
-import { useRef, useState, useMemo, useReducer, useEffect } from "react";
+import { useRef, useState, useMemo, useReducer, useEffect, useCallback } from "react";
 import { SetScreenProps } from "App";
 import Creative from "./pages/Creative";
 import { ProfileDrawer } from "@screens/modal/Profile";
@@ -21,6 +21,10 @@ export default function Lobby2({setScreen}: LobbyProps) {
     const [isNewsOpened, setNewsOpened] = useState(false);
     const [isSettingsOpened, setSettingsOpened] = useState(false);
     const scrollView = useRef<ScrollView>(null);
+
+    const pagesReducer = useCallback((state: NavigationProps, action: NavigationProps) => {
+        return {...state, ...action};
+    }, []);
 
     useEffect(() => {
         const handler = BackHandler.addEventListener("hardwareBackPress", () => {
@@ -59,10 +63,6 @@ export default function Lobby2({setScreen}: LobbyProps) {
             }
         ]
     }, []);
-
-    function pagesReducer(state: NavigationProps, action: NavigationProps) {
-        return {...state, ...action};
-    }
 
     return (
         <View style={styles.screen}>

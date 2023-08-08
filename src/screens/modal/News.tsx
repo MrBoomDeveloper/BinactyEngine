@@ -1,12 +1,11 @@
 import { Dimensions, FlatList, StyleSheet, Text, View, RefreshControl, TouchableOpacity, Clipboard, Share, Image } from "react-native";
 import Drawer, { SimpleDrawerProps } from "./Drawer";
-import { useEffect, useReducer, useState } from "react";
+import { memo, useEffect, useReducer, useState } from "react";
 import { parse as loadRss } from "rss-to-json"
 import { removeHtml } from "@util/format";
 import moment from "moment";
 import * as constants from "@data/constants.json";
 import Button from "@components/Button";
-import { AppBridge } from "@native";
 
 interface PostProps {
 	title: string,
@@ -34,7 +33,7 @@ interface EmptyProps {
 	reloadFunction: () => void
 }
 
-export function NewsDrawer(props: SimpleDrawerProps) {
+export const NewsDrawer = memo((props: SimpleDrawerProps) => {
 	const [news, setNews] = useReducer(reducer, {isError: false, isLoading: true, content: [], errorMessage: ""});
 	const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -103,7 +102,7 @@ export function NewsDrawer(props: SimpleDrawerProps) {
 				} />
 		</Drawer>
 	);
-}
+});
 
 function Post({title, description, created}: PostProps) {
 	const [isExpanded, setExpanded] = useState(false);

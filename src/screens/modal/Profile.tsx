@@ -1,7 +1,7 @@
 import { StyleSheet, View, Alert, Text, Image, SectionList, TouchableOpacity } from "react-native";
 import * as constants from "@data/constants.json";
 import Drawer, { SimpleDrawerProps } from "./Drawer";
-import { useMemo } from "react";
+import { memo, useMemo } from "react";
 import { AppBridge } from "@native";
 import { Profile } from "@context/profile";
 import { getAvatar } from "@data/resources";
@@ -23,7 +23,7 @@ function ProfileButton({nick, avatar}: Profile) {
     );
 }
 
-export function ProfileDrawer(props: SimpleDrawerProps) {
+export const ProfileDrawer = memo((props: SimpleDrawerProps) => {
     const profile = useAppSelector(state => state.profile.me);
 
     const actions = useMemo(() => {
@@ -102,7 +102,7 @@ export function ProfileDrawer(props: SimpleDrawerProps) {
                 }} />
         </Drawer>
     );
-}
+});
 
 const styles = StyleSheet.create({
     profileLayout: {

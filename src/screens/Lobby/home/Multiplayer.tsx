@@ -1,5 +1,5 @@
 import { View, Text, FlatList, Animated, StyleSheet } from "react-native";
-import { Button } from "@components";
+import Button from "@components/Button";
 import { colors } from "@util/variables";
 
 export default function MultiplayerScreen({swipeAnimation, setCurrentScreen}) {

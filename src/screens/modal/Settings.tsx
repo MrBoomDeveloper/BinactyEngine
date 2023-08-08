@@ -7,9 +7,9 @@ import * as constants from "@data/constants.json";
 import { useAppDispatch, useAppSelector } from "@util/hooks";
 import Drawer, { SimpleDrawerProps } from "./Drawer";
 import Dropdown from "@components/Dropdown";
-import { useRef } from "react";
+import { memo, useRef } from "react";
 
-export function SettingsDrawer(props: SimpleDrawerProps) {
+export const SettingsDrawer = memo((props: SimpleDrawerProps) => {
 	const settings: SettingsCategory[] = useAppSelector(state => state.settings.list);
 
 	return (
@@ -21,7 +21,7 @@ export function SettingsDrawer(props: SimpleDrawerProps) {
 				renderItem={({item}) => <Setting {...item} />} />
 		</Drawer>
 	);
-}
+});
 
 function SettingsCategoryHeader({title}: SettingsCategory) {
 	return (

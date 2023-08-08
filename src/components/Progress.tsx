@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { StyleSheet, Text, View, ViewStyle } from "react-native";
 
 interface ProgressProps {
@@ -7,7 +8,7 @@ interface ProgressProps {
 	style?: ViewStyle
 }
 
-export default function Progress({style, current, max, showLabel}: ProgressProps) {
+function Progress({style, current, max, showLabel}: ProgressProps) {
 	return (
 		<View style={[styles.layout, style]}>
 			<View style={[styles.bar, { width: current / max * 100 + "%"}]} />
@@ -42,3 +43,5 @@ const styles = StyleSheet.create({
 		textShadowRadius: 5
 	}
 });
+
+export default memo(Progress);

@@ -1,6 +1,7 @@
 import { Pressable, Text, Image, ImageSourcePropType, ViewStyle, TextStyle, ImageStyle } from "react-native";
 import * as constants from "@data/constants.json";
 import { colors } from "@util/variables.json";
+import { memo } from "react";
 
 interface ButtonArguments {
 	onPress: () => void,
@@ -16,7 +17,7 @@ interface ButtonArguments {
 	overlayInner?: boolean
 }
 
-export default function Button({text, children, icon, theme, rippleColor, onPress, style, styleText, styleIcon, overlayInner, hitbox = 25}: ButtonArguments) {
+function Button({text, children, icon, theme, rippleColor, onPress, style, styleText, styleIcon, overlayInner, hitbox = 25}: ButtonArguments) {
 	return (
 		<Pressable onPress={onPress} hitSlop={hitbox}
 			style={[
@@ -124,3 +125,5 @@ const styles: Record<string, {
 		}
 	}
 }
+
+export default memo(Button);

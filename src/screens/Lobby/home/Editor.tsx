@@ -1,7 +1,8 @@
 import { memo } from "react";
 import { useSelector } from "react-redux";
 import { View, Text, Animated, StyleSheet, ScrollView } from "react-native";
-import { Button, Input } from "@components";
+import Button from "@components/Button";
+import Input from "@components/Input";
 import { colors } from "@util/variables";
 import { SetScreenProps } from "App";
 

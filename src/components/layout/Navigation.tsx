@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 
 export interface NavigationProps {
@@ -13,7 +14,7 @@ export interface NavigationTabProps {
     onPress?: () => void
 }
 
-export default function Navigation({tabs, onTabSelected, current}: NavigationProps) {
+function Navigation({tabs, onTabSelected, current}: NavigationProps) {
     return (
         <View style={styles.layout}>
             {tabs?.map((item, index) =>
@@ -60,3 +61,5 @@ const styles = StyleSheet.create({
         color: "black"
     }
 });
+
+export default memo(Navigation);

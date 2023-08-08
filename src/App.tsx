@@ -1,5 +1,5 @@
-import { createElement, useState } from "react";
-import { StatusBar } from 'react-native';
+import { createElement, useEffect, useMemo, useReducer, useRef, useState } from "react";
+import { Animated, StatusBar, View, ViewStyle } from 'react-native';
 import Splash from "@screens/Splash";
 import Lobby2 from "@screens/Lobby/Lobby2";
 import { Provider  } from "react-redux";
@@ -32,20 +32,37 @@ interface ControllerProps {
 
 export type SetScreenProps = (name: string, props?: Record<string, any>) => void;
 
+interface ControllerState {
+	current: string,
+	components: Map<string, any>
+}
+
+function controllerReducer(state: ControllerState, payload: Partial<ControllerState>) {
+	return {...state, ...payload};
+}
+
 function Controller({initial, items}: ControllerProps) {
-	const [current, setCurrent] = useState(initial);
-	const [allProps, setAllProps] = useState(new Map());
+	const [state, dispatch] = useReducer(controllerReducer, { components: new Map(), current: "" });
 
-	const found = items[current].element || items[0].element || null;
+	const defaultProps = useMemo(() => {
+		return {
+			setScreen: (name: string, props?: SetScreenProps) => {
+				const newComponentsMap = new Map(state.components);
+				newComponentsMap.set(name, createElement(items[name].element, {...defaultProps, ...props}));
+				dispatch({ components: newComponentsMap, current: name });
+			}
+		}
+	}, []);
 
-	return createElement(found, {
-		setScreen: (name: string, props?: SetScreenProps) => {
-			const newMap = new Map(allProps);
-			newMap.set(`__${name}_props`, props);
+	useEffect(() => {
+		const newMap = new Map();
 
-			setAllProps(newMap);
-			
-			if(name != current) setCurrent(name);
-		}, ...allProps.get(`__${current}_props`)
-	});
+		for(const [key, value] of Object.entries(items)) {
+			newMap.set(key, createElement(value.element, defaultProps));
+		}
+
+		dispatch({ current: initial, components: newMap });
+	}, [items]);
+
+	return state.components.get(state.current);
 }

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, memo } from "react";
 import { View, Animated, Text, TextInput, StyleSheet, ViewStyle, KeyboardTypeOptions } from "react-native";
 import { colors } from "@util/variables.json";
 
@@ -13,7 +13,7 @@ interface InputElement {
 	align?: "center" | "left" | "right"
 }
 
-export default function Input({
+function Input({
 	error, 
 	placeholder = "Enter text...", 
 	align = "center", 
@@ -107,3 +107,5 @@ const styles = StyleSheet.create({
 		fontSize: 14
 	}
 });
+
+export default memo(Input);

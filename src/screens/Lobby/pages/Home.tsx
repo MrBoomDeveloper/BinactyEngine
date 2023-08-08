@@ -1,5 +1,5 @@
 import { View, Text, SectionList, StyleSheet, Dimensions, Image, FlatList, TouchableOpacity, Alert, Linking, Share, TextStyle, ViewStyle, Animated } from "react-native";
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, memo } from "react";
 import * as constants from "@data/constants.json";
 import { useAppDispatch, useAppSelector } from "@util/hooks";
 import { GamemodesItem, GamemodesState, GamemodesCategory, setActive, Level } from "@context/gamemodes";
@@ -13,7 +13,7 @@ interface HomeProps {
     setScreen: SetScreenProps
 }
 
-export default function Home({setScreen}: HomeProps) {
+function Home({setScreen}: HomeProps) {
     const currentGamemode = useAppSelector(state => state.gamemodes.current);
 	const allGamemodes = useAppSelector(state => state.gamemodes.list);
     const scrollView = useRef(null);
@@ -137,7 +137,7 @@ function ExpandableText({text, style}: {
     );
 }
 
-function Overview({gamemode, setScreen}: OverviewProps) {
+const Overview = memo(({gamemode, setScreen}: OverviewProps) => {
     const { maps, banner, description, author, name, levels, entry, maxPlayers, time } = gamemode;
     const [isLevelsShown, setLevelsIsShown] = useState(false);
     const animation = useRef(new Animated.Value(0)).current;
@@ -208,7 +208,7 @@ function Overview({gamemode, setScreen}: OverviewProps) {
             </Animated.View>
         </>
     );
-}
+});
 
 function formatPlayersCount(count: number) {
     if(count == 0) return "No players";
@@ -272,15 +272,15 @@ function OverviewActions({gamemode, setScreen}: {
     );
 }
 
-function End() {
+const End = memo(() => {
     return (
         <View style={styles.endLayout}>
             <Text style={styles.endMessageLabel}>Thats all. You've reached the end.</Text>
         </View>
     )
-}
+});
 
-function Shadow() {
+const Shadow = memo(() => {
     return (
         <>
             <Image resizeMode="stretch"
@@ -292,7 +292,7 @@ function Shadow() {
 				source={require("@static/ui/gradientShadowBottomTop.png")} />
         </>
     );
-}
+});
 
 const styles = StyleSheet.create({
     layout: {
@@ -440,3 +440,5 @@ const styles = StyleSheet.create({
         fontSize: 15
     }
 });
+
+export default memo(Home);

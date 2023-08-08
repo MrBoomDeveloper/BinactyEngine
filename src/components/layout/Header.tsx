@@ -1,10 +1,11 @@
 import Button from "@components/Button";
-import { Alert, Image, StyleSheet, Text, TouchableOpacity, View, ViewStyle, ImageSourcePropType } from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, View, ViewStyle, ImageSourcePropType } from "react-native";
 import { size } from "@data/constants.json";
 import Navigation, { NavigationProps } from "@components/layout/Navigation";
 import { useAppSelector } from "@util/hooks";
 import { getAvatar } from "@data/resources";
 import Progress from "@components/Progress";
+import { memo } from "react";
 
 interface HeaderProps {
     onProfilePress: () => void,
@@ -19,7 +20,7 @@ export interface HeaderAction {
     onPress: () => void
 }
 
-export default function Header({style, onProfilePress, navigation, actions}: HeaderProps) {
+const Header = ({style, onProfilePress, navigation, actions}: HeaderProps) => {
     return (
         <View style={[styles.layout, style]}>
             <Profile onPress={onProfilePress} />
@@ -44,7 +45,7 @@ export default function Header({style, onProfilePress, navigation, actions}: Hea
     )
 }
 
-export function Profile({onPress}: {onPress: () => void}) {
+export const Profile = memo(({onPress}: {onPress: () => void}) => {
     const { nick, avatar, level, xp } = useAppSelector(state => state.profile.me);
 
     return (
@@ -54,14 +55,14 @@ export function Profile({onPress}: {onPress: () => void}) {
                 <View style={{gap: 4}}>
                     <Text style={styles.profileName}>{nick}</Text>
                     <View style={styles.profileStats}>
-                        <Text style={styles.profileLevel}>Lvl. 1</Text>
+                        <Text style={styles.profileLevel}>Lvl. {level}</Text>
                         <Progress showLabel={false} current={0} max={100} style={{width: 70}} />
                     </View>
                 </View>
             </View>
         </TouchableOpacity>
     );
-}
+});
 
 const styles = StyleSheet.create({
     layout: {
@@ -117,3 +118,5 @@ const styles = StyleSheet.create({
         gap: 8
     }
 });
+
+export default memo(Header);

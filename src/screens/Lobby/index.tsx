@@ -28,7 +28,7 @@ export default function Lobby({setScreen}: LobbyProps) {
 				<View style={{flexDirection: "row", justifyContent: "center"}}>
 					<Button text="Manage Installed Packs"
 						onPress={() => PackBridge.managePacks()}
-						theme="popup" fill={true}
+						theme="popup"
 						style={{paddingHorizontal: 50}}
 						rippleColor="rgba(250, 250, 250, .1)" />
 				</View>

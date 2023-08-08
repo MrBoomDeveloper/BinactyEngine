@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { Animated, BackHandler, Dimensions, Pressable, StyleSheet, ViewStyle } from "react-native";
 import * as constants from "@data/constants.json";
 
@@ -13,7 +13,7 @@ interface DrawerProps extends SimpleDrawerProps {
     children: JSX.Element | JSX.Element[]
 }
 
-export default function Drawer({isOpened, onClose, width, direction, children}: DrawerProps) {
+function Drawer({isOpened, onClose, width, direction, children}: DrawerProps) {
     const [isAnimationFinished, setIsAnimationFinished] = useState(false);
     const opacityAnimation = useRef(new Animated.Value(0)).current;
     const slideAnimation = useRef(new Animated.Value(0)).current;
@@ -82,3 +82,5 @@ const styles = StyleSheet.create({
         backgroundColor: constants.color.purpleBackground
     },
 });
+
+export default memo(Drawer);

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { View, Text, Image, NativeEventEmitter, StyleSheet } from "react-native";
 import { setupList as setupGamemodesList, setupProgresses as setupGamemodeProgresses, Progresses } from "@context/gamemodes";
 import { setMoney as loadMoney, setProfile as loadProfile } from "@context/profile";
@@ -24,7 +24,7 @@ interface LoadingStepProps {
 	dispatch: (payload: any) => void
 }
 
-export default function Loading({setScreen, target, args}: LoadingProps) {
+function Loading({setScreen, target, args}: LoadingProps) {
 	const [loaded, setLoaded] = useState({progress: 0, task: "account"});
 	const [isSigned, setIsSigned] = useState(true);
 	const [isProcessing, setIsProcessing] = useState(false);
@@ -153,7 +153,7 @@ async function loadSettings({setLoaded, dispatch}: LoadingStepProps) {
 	setLoaded({progress: 40, task: "settings"});
 
 	const settingsList: SettingsItem[] = settingsAll.reduce((all: SettingsItem[], next) => {
-		next.data.forEach(item => all.push(item));
+		next.data.forEach(item => all.push(item as SettingsItem));
 		return all;
 	}, []);
 		
@@ -277,3 +277,5 @@ const styles = StyleSheet.create({
 		gap: 12
 	}
 });
+
+export default memo(Loading);
