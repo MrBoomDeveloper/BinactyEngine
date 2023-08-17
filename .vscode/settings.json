@@ -1,7 +1,11 @@
 {
     "typescript.tsdk": "node_modules\\typescript\\lib",
     "cSpell.words": [
-        "gameover"
+        "Gamemode",
+        "Gamemodes",
+        "gameover",
+        "hitbox",
+        "Pressable"
     ],
     "cSpell.language": "en-US,ru,en"
 }

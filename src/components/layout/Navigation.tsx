@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
 
     tabLabel: {
         color: "#f1e9f1ae",
-        letterSpacing: .3
+        fontFamily: "HeeboMedium"
     },
 
     tabActiveLabel: {

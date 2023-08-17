@@ -6,6 +6,7 @@ import { removeHtml } from "@util/format";
 import moment from "moment";
 import * as constants from "@data/constants.json";
 import Button from "@components/Button";
+import ExpandableText from "features/data/ExpandableText";
 
 interface PostProps {
 	title: string,
@@ -80,7 +81,7 @@ export const NewsDrawer = memo((props: SimpleDrawerProps) => {
 	}, []);
 
 	return (
-		<Drawer width={350} direction="right" {...props}>
+		<Drawer width={350} direction="right" {...props} style={{paddingRight: news.isLoading ? 0 : constants.size.inlineScreenPadding}}>
 			<FlatList data={news.content}
 				renderItem={({item}) => <Post {...item} />}
 				contentContainerStyle={{paddingBottom: 10}}
@@ -105,8 +106,6 @@ export const NewsDrawer = memo((props: SimpleDrawerProps) => {
 });
 
 function Post({title, description, created}: PostProps) {
-	const [isExpanded, setExpanded] = useState(false);
-
 	function onPress() {
 		Share.share({ 
 			message: `${title}. ${removeHtml(description)}`
@@ -114,7 +113,7 @@ function Post({title, description, created}: PostProps) {
 	}
 
 	return (
-		<TouchableOpacity activeOpacity={.4} onLongPress={onPress} onPress={() => setExpanded(!isExpanded)}>
+		<TouchableOpacity activeOpacity={.4} onLongPress={onPress}>
 			<View style={styles.postLayout}>
 				<View style={styles.postHeader}>
 					<Text style={styles.postTitle}>{title}</Text>
@@ -122,8 +121,8 @@ function Post({title, description, created}: PostProps) {
 					<Text style={styles.postDate}>{moment(created).fromNow()}</Text>
 				</View>
 
-				<Text style={styles.postDescription} numberOfLines={isExpanded ? 9999 : 9}>{removeHtml(description)}</Text>
-				<Text style={styles.expander}>{isExpanded ? "Click to collapse" : "Click to expand"}...</Text>
+				<ExpandableText text={removeHtml(description)} 
+					style={styles.postDescription} minLines={8} />
 			</View>
 		</TouchableOpacity>
 	)

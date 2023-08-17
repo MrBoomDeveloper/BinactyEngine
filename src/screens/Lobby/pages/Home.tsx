@@ -1,19 +1,13 @@
-import { View, Text, SectionList, StyleSheet, Dimensions, Image, FlatList, TouchableOpacity, Alert, Linking, Share, TextStyle, ViewStyle, Animated } from "react-native";
-import { useRef, useEffect, useState, memo } from "react";
+import { View, Text, SectionList, StyleSheet, Dimensions, Image, FlatList, TouchableOpacity, Alert } from "react-native";
+import { useRef, useEffect, memo } from "react";
 import * as constants from "@data/constants.json";
 import { useAppDispatch, useAppSelector } from "@util/hooks";
-import { GamemodesItem, GamemodesState, GamemodesCategory, setActive, Level } from "@context/gamemodes";
-import Button from "@components/Button";
+import { GamemodesItem, GamemodesCategory, setActive } from "@context/gamemodes";
 import { SetScreenProps } from "App";
-import { icons } from "@data/resources";
 import { openUrl } from "@util/redirect";
-import { LevelPreview, LevelsMenu } from "./Levels";
+import Overview from "./home/Overview";
 
-interface HomeProps {
-    setScreen: SetScreenProps
-}
-
-function Home({setScreen}: HomeProps) {
+function Home({ setScreen }: { setScreen: SetScreenProps }) {
     const currentGamemode = useAppSelector(state => state.gamemodes.current);
 	const allGamemodes = useAppSelector(state => state.gamemodes.list);
     const scrollView = useRef(null);
@@ -119,179 +113,12 @@ function GamemodeItem({name, banner, bannerBinary, isCompact, id, gamemode}: Gam
     );
 }
 
-interface OverviewProps {
-    setScreen: SetScreenProps,
-    gamemode: GamemodesItem
-}
-
-function ExpandableText({text, style}: {
-    text: string,
-    style?: TextStyle
-}) {
-    const [isExpanded, setExpanded] = useState(false);
-
-    return (
-        <TouchableOpacity onPress={() => setExpanded(!isExpanded)}>
-            <Text style={style} numberOfLines={isExpanded ? 999 : 2}>{text}</Text>
-        </TouchableOpacity>
-    );
-}
-
-const Overview = memo(({gamemode, setScreen}: OverviewProps) => {
-    const { maps, banner, description, author, name, levels, entry, maxPlayers, time } = gamemode;
-    const [isLevelsShown, setLevelsIsShown] = useState(false);
-    const animation = useRef(new Animated.Value(0)).current;
-
-    useEffect(() => {
-        Animated.timing(animation, {
-            useNativeDriver: false,
-            duration: 250,
-            toValue: isLevelsShown ? 1 : 0
-        }).start();
-    }, [animation, isLevelsShown]);
-
-    const scrollAnimation = animation.interpolate({
-        inputRange: [0, 1],
-        outputRange: [0, -Dimensions.get("screen").width]
-    });
-
-    const opacityAnimation = animation.interpolate({
-        inputRange: [0, 1],
-        outputRange: [0, .78]
-    });
-
-    return (
-        <>
-            <Animated.View style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                width: "100%",
-                height: "100%",
-                backgroundColor: "black",
-                opacity: opacityAnimation
-            }} />
-
-            <Animated.View style={{flexDirection: "row", left: scrollAnimation}}>
-                <Shadow />
-                <View style={styles.overviewLayout}>
-                    <View style={styles.overviewInfoLayout}>
-                        <Text style={styles.overviewInfoDescriptionLabel}>Made by:  {author}</Text>
-                        <Text style={styles.overviewInfoTitleLabel}>{name}</Text>
-                        {description && <ExpandableText text={description} 
-                            style={styles.overviewInfoDescriptionLabel} />}
-
-                        {(maps != null || entry != null && maxPlayers > 0) && <OverviewActions 
-                            gamemode={gamemode}
-                            setScreen={setScreen} />}
-                    </View>
-
-                    {levels ? <LevelPreview levels={levels} gamemode={gamemode}
-                        onPress={() => setLevelsIsShown(true)} /> : <View style={{flexGrow: 1}} />}
-
-                    <View style={styles.aboutMatchRow}>
-                        {time && <>
-				            <Image style={{width: 16, height: 16}} source={require("@static/icon/time.png")} />
-				            <Text style={styles.aboutMatchLabel}>Duration  {time}</Text>
-                        </>}
-                    
-                        <Image style={{width: 20, height: 20, top: 1}} source={require("@static/icon/groups.png")} />
-				        <Text style={styles.aboutMatchLabel}>{formatPlayersCount(maxPlayers)}</Text>
-			        </View>
-                </View>
-
-                {levels && <LevelsMenu isShown={isLevelsShown} 
-                    exit={() => setLevelsIsShown(false)}
-                    gamemode={gamemode}
-                    onSelect={() => setLevelsIsShown(false)}
-                    levels={levels} />}
-            </Animated.View>
-        </>
-    );
-});
-
-function formatPlayersCount(count: number) {
-    if(count == 0) return "No players";
-    if(count == 1) return "Max 1 player";
-    return `Max ${count} players`;
-}
-
-function OverviewActions({gamemode, setScreen}: {
-    gamemode: GamemodesItem,
-    setScreen: SetScreenProps
-}) {
-    const isBeta: boolean = useAppSelector(state => state.settings.list)
-        .find(cat => cat.id == "features")?.data
-        .find(item => item.id == "beta")?.value as boolean;
-
-    const progress = useAppSelector(state => state.gamemodes.progresses[gamemode.id].latestLevel);
-	
-	const level = gamemode.levels == null ? null :
-        gamemode.levels.find(item => item.id == progress.category)?.data
-            .find(item => item.id == progress.level) || gamemode.levels[0].data[0];
-    
-    return (
-        <View style={styles.overviewActionsLayout}>
-            <Button text="Start Game!" hitbox={0}
-				style={{flexGrow: 1}}
-				icon={require("@static/icon/play.png")}
-				theme="brand"
-				onPress={() => {
-                    const map = gamemode.maps == null ? null : gamemode.maps[0].file;
-                    setScreen("loading", {target: "game", args: {
-                        ...gamemode, level,
-                        enableEditor: false,
-                        mapFile: map
-                    }});
-                }} />
-                    
-            {(isBeta && (gamemode.maxPlayers || 1) > 1) && <Button icon={icons["groups"].outlineBlack}
-				theme="brand" rippleColor="#000000c0"
-                hitbox={0} overlayInner={true}
-				onPress={() => {
-                    const map = gamemode.maps == null ? null : gamemode.maps[0].file;
-                    setScreen("loading", {target: "game", args: {
-                        ...gamemode, level,
-                        enableEditor: false,
-                        mapFile: map
-                    }});
-                }} styleIcon={{marginHorizontal: 5}} />}
-					
-			<Button icon={require("@static/icon/edit.png")}
-				theme="brand" rippleColor="#000000c0"
-                hitbox={0} overlayInner={true}
-				onPress={() => {
-                    const map = gamemode.maps == null ? null : gamemode.maps[0].file;
-                    setScreen("loading", {target: "game", args: {
-                        ...gamemode, level,
-                        enableEditor: true,
-                        mapFile: map
-                    }});
-                }} styleIcon={{marginHorizontal: 5}} />
-        </View>
-    );
-}
-
 const End = memo(() => {
     return (
         <View style={styles.endLayout}>
             <Text style={styles.endMessageLabel}>Thats all. You've reached the end.</Text>
         </View>
     )
-});
-
-const Shadow = memo(() => {
-    return (
-        <>
-            <Image resizeMode="stretch"
-			    style={styles.shadowLeft}
-			    source={require("@static/ui/gradientShadowLeftRight.png")} />
-            
-            <Image resizeMode="stretch"
-				style={styles.shadowBottom}
-				source={require("@static/ui/gradientShadowBottomTop.png")} />
-        </>
-    );
 });
 
 const styles = StyleSheet.create({
@@ -306,82 +133,6 @@ const styles = StyleSheet.create({
         top: 0,
         left: 0
     },
-
-    shadowLeft: {
-        position: "absolute",
-        left: 0,
-        top: 0,
-        height: "100%",
-        width: 350
-    },
-
-    shadowBottom: {
-        position: "absolute",
-        left: 0,
-        bottom: 0,
-        height: 100,
-        width: "100%"
-    },
-
-    overviewLayout: {
-        width: "100%",
-        height: Dimensions.get("screen").height,
-        borderRadius: 5,
-        flexDirection: "row",
-        alignItems: "flex-end"
-    },
-
-    overviewWallpaper: {
-        position: "absolute",
-        width: "100%",
-        height: "100%",
-        backgroundColor: "black"
-    },
-
-    overviewInfoLayout: {
-        height: "100%",
-        width: 200,
-        justifyContent: "flex-end",
-        marginLeft: constants.size.inlineScreenPadding,
-        paddingBottom: 25
-    },
-
-    overviewInfoTitleLabel: {
-        color: "white",
-        fontWeight: "500",
-        fontSize: 20,
-        marginVertical: 5,
-        letterSpacing: .2
-    },
-
-    overviewInfoDescriptionLabel: {
-        color: "#e7d9f5",
-        opacity: .8,
-        lineHeight: 20,
-        letterSpacing: .4
-    },
-
-    overviewActionsLayout: {
-        width: "100%",
-        marginTop: 12,
-        flexDirection: "row",
-        gap: 5
-    },
-
-    aboutMatchRow: {
-		flexDirection: "row",
-		alignItems: "flex-end",
-		gap: 10,
-        paddingRight: constants.size.inlineScreenPadding,
-        paddingBottom: 25
-	},
-	
-	aboutMatchLabel: {
-		color: "white",
-		fontSize: 14,
-		marginRight: 10,
-        letterSpacing: .3
-	},
 
     sectionLayout: {
         paddingTop: 10,

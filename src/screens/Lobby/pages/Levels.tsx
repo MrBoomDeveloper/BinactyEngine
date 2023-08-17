@@ -1,7 +1,7 @@
 import { GamemodesItem, Level, LevelsCategory, setActive, setActiveLevel } from "@context/gamemodes";
 import { Image, SectionList, StyleSheet, Text, TouchableOpacity, View, BackHandler } from "react-native";
 import * as constants from "@data/constants.json";
-import { memo, useEffect } from "react";
+import { memo, useEffect, useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "@util/hooks";
 
 export const LevelsMenu = memo(({levels, exit, isShown, onSelect, gamemode}: {
@@ -73,20 +73,24 @@ export const LevelPreview = memo(({levels, gamemode, onPress}: {
 }) => {
 	const progress = useAppSelector(state => state.gamemodes.progresses[gamemode.id].latestLevel);
 	
-	const level: Level = levels == null 
-        ? { name: "Unknown", id: "unknown" }
-        : levels.find(item => item.id == progress.category)?.data
-                .find(item => item.id == progress.level) || levels[0].data[0];
+	const level = useMemo(() => {
+        if(levels == null) return { name: "Unknown", id: "" };
+
+        const category = levels.find(item => item.id == progress.category)?.data;
+        const level = category?.find(item => item.id == progress.level);
+
+        return level || levels[0].data[0];
+    }, [levels]);
 
     return (
         <TouchableOpacity style={{flexGrow: 1}} onPress={onPress}>
             <View style={styles.levelPreviewLayout}>
                 <View style={{gap: 4, flexGrow: 1}}>
-                    <Text style={{color: "white", fontWeight: "500"}}>{level.name}</Text>
+                    <Text style={{color: "white", fontWeight: "500", fontFamily: "OpenSansRegular"}}>{level.name}</Text>
                     <Text style={{
                         color: "#c5bad1",
                         lineHeight: 20,
-                        letterSpacing: .3,
+                        fontFamily: "OpenSansRegular",
                         fontSize: 13
                     }}>{level.description || "No description were provided."}</Text>
                 </View>
@@ -123,9 +127,7 @@ const styles = StyleSheet.create({
 		overflow: "hidden"
 	},
 
-	cardBanner: {
-
-	},
+	cardBanner: {},
 
 	cardTitle: {
 		color: "white",

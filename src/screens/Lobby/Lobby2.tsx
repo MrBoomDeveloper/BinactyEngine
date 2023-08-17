@@ -12,11 +12,7 @@ import { AppBridge } from "@native";
 import { NewsDrawer } from "@screens/modal/News";
 import Character from "./pages/Character";
 
-interface LobbyProps {
-    setScreen: SetScreenProps
-}
-
-export default function Lobby2({setScreen}: LobbyProps) {
+export default function Lobby2({setScreen}: { setScreen: SetScreenProps }) {
     const [isProfileOpened, setProfileOpened] = useState(false);
     const [isNewsOpened, setNewsOpened] = useState(false);
     const [isSettingsOpened, setSettingsOpened] = useState(false);

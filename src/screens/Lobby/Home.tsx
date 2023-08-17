@@ -1,5 +1,4 @@
-import { useRef, useEffect, useState, memo, useMemo } from "react";
-import { useSelector } from "react-redux";
+import { useRef, useEffect, useState, memo } from "react";
 import { TouchableOpacity, View, Image, Text, StyleSheet, Animated, Easing, GestureResponderEvent } from "react-native";
 import Button from "@components/Button";
 import { colors } from "@util/variables.json";
@@ -29,9 +28,6 @@ function Home({setScreen}: HomeProps) {
 	const swipeAnimation = useRef(new Animated.Value(0)).current;
 	const touchYBegin = useRef(0);
 	const currentGamemode = useAppSelector(state => state.gamemodes.current);
-
-	const settings = useAppSelector(state => state.settings.old);
-	const isBeta: boolean = useMemo(() => settings.find(({id}) => id == "beta")?.initial, [settings]);
 	
 	useEffect(() => {
 		Animated.timing(swipeAnimation, {

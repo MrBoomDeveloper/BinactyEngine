@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
         color: "white",
         fontSize: 15,
         fontWeight: "500",
-        letterSpacing: .2
+        fontFamily: "HeeboMedium"
     },
 
     profileStats: {
@@ -101,7 +101,8 @@ const styles = StyleSheet.create({
 
     profileLevel: {
         fontSize: 13,
-        color: "#ccc0ce"
+        color: "#ccc0ce",
+        fontFamily: "HeeboMedium"
     },
 
     navigationLayout: {

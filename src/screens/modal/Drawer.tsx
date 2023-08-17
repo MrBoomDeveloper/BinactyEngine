@@ -10,10 +10,11 @@ export interface SimpleDrawerProps {
 interface DrawerProps extends SimpleDrawerProps {
     width: number,
     direction: "left" | "right",
-    children: JSX.Element | JSX.Element[]
+    children: JSX.Element | JSX.Element[],
+    style?: ViewStyle | ViewStyle[]
 }
 
-function Drawer({isOpened, onClose, width, direction, children}: DrawerProps) {
+function Drawer({isOpened, onClose, width, direction, children, style}: DrawerProps) {
     const [isAnimationFinished, setIsAnimationFinished] = useState(false);
     const opacityAnimation = useRef(new Animated.Value(0)).current;
     const slideAnimation = useRef(new Animated.Value(0)).current;
@@ -55,7 +56,7 @@ function Drawer({isOpened, onClose, width, direction, children}: DrawerProps) {
 
 	return (
         <Animated.View style={[styles.layout, {opacity: opacityAnimation}]} pointerEvents={isOpened ? "auto" : "none"}>
-            <Animated.View style={[styles.menuLayout, {width, transform: [{translateX: slideAnimation}]}]}>
+            <Animated.View style={[styles.menuLayout, {width, transform: [{translateX: slideAnimation}]}, style]}>
                 {children}
             </Animated.View>
             <Pressable style={backgroundStyle} onPressIn={e => {

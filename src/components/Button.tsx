@@ -108,7 +108,7 @@ const styles: Record<string, {
 
 		label: {
 			fontSize: 14,
-			letterSpacing: .2
+			fontFamily: "HeeboMedium"
 		},
 
 		icon: {

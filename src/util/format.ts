@@ -31,3 +31,9 @@ export function removeHtml(input: string, removeOptions: boolean = true) {
 	
 	return result;
 }
+
+export function formatPlayersCount(count: number) {
+    if(count == 0) return "No players";
+    if(count == 1) return "Max 1 player";
+    return `Max ${count} players`;
+}
