@@ -66,7 +66,7 @@ const styles: Record<string, {
 	}
 }> = {
 	brand: {
-		layout: { backgroundColor: "#fa52fa" },
+		layout: { backgroundColor: constants.color.primaryLight },
 		label: {
 			color: "black",
 			fontWeight: "700",

@@ -66,11 +66,11 @@ function LevelCard({level, onSelect, gamemode, category}: {
 	)
 }
 
-export const LevelPreview = memo(({levels, gamemode, onPress}: {
+export function LevelPreview({levels, gamemode, onPress}: {
 	levels: LevelsCategory[],
 	gamemode: GamemodesItem,
 	onPress: () => void
-}) => {
+}) {
 	const progress = useAppSelector(state => state.gamemodes.progresses[gamemode.id].latestLevel);
 	
 	const level = useMemo(() => {
@@ -80,7 +80,7 @@ export const LevelPreview = memo(({levels, gamemode, onPress}: {
         const level = category?.find(item => item.id == progress.level);
 
         return level || levels[0].data[0];
-    }, [levels]);
+    }, [gamemode, progress]);
 
     return (
         <TouchableOpacity style={{flexGrow: 1}} onPress={onPress}>
@@ -98,7 +98,7 @@ export const LevelPreview = memo(({levels, gamemode, onPress}: {
             </View>
         </TouchableOpacity>
     );
-});
+}
 
 const styles = StyleSheet.create({
 	layout: {

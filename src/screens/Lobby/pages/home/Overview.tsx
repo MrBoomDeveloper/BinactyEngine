@@ -10,6 +10,7 @@ import { icons } from "@data/resources";
 import { StatsBar } from "features/data/Stats";
 import { formatPlayersCount } from "@util/format";
 import ExpandableText from "features/data/ExpandableText";
+import { FadingView } from "features/effects/FadingView";
 
 function Overview({ gamemode, setScreen }: {
     setScreen: SetScreenProps,
@@ -22,7 +23,7 @@ function Overview({ gamemode, setScreen }: {
     useEffect(() => {
         Animated.timing(animation, {
             useNativeDriver: false,
-            duration: 250,
+            duration: 200,
             toValue: isLevelsShown ? 1 : 0
         }).start();
     }, [isLevelsShown]);
@@ -51,7 +52,7 @@ function Overview({ gamemode, setScreen }: {
 
             <Animated.View style={{flexDirection: "row", left: scrollAnimation}}>
                 <Shadow />
-                <View style={styles.layout}>
+                <FadingView style={styles.layout} duration={450}>
                     <View style={styles.infoLayout}>
                         <Text style={styles.infoAuthorLabel}>Made by:  {author}</Text>
 
@@ -72,7 +73,7 @@ function Overview({ gamemode, setScreen }: {
 
                     {levels ? <LevelPreview levels={levels} gamemode={gamemode}
                         onPress={() => setLevelsIsShown(true)} /> : <View style={{flexGrow: 1}} />}
-                </View>
+                </FadingView>
 
                 {levels && <LevelsMenu isShown={isLevelsShown} 
                     exit={() => setLevelsIsShown(false)}
@@ -101,7 +102,7 @@ function OverviewActions({gamemode, setScreen}: {
         const level = category?.find(item => item.id == progress.level);
 
         return level || gamemode.levels[0].data[0];
-    }, [gamemode.levels]);
+    }, [gamemode.levels, progress]);
 
     const play = useCallback((isEditor: boolean) => {
         const map = gamemode.maps == null ? null : gamemode.maps[0].file;
@@ -111,7 +112,7 @@ function OverviewActions({gamemode, setScreen}: {
             enableEditor: isEditor,
             mapFile: map
         }});
-    }, [gamemode]);
+    }, [gamemode, level]);
     
     return (
         <View style={styles.actionsLayout}>

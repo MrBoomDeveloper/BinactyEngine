@@ -58,7 +58,7 @@ function Dropdown({items, onSelect, horizontal, selected}: DropdownProps) {
 			}}>
 				<View style={styles.expander}>
 					<Text style={styles.expanderLabel}>{currentItem?.title}</Text>
-					<Image source={require("@static/icon/expand.png")} style={styles.expanderIcon} />
+					<Image source={require("@static/icon/expand_black.png")} style={styles.expanderIcon} />
 				</View>
 			</Pressable>
 
@@ -89,7 +89,7 @@ function Dropdown({items, onSelect, horizontal, selected}: DropdownProps) {
 
 const styles = StyleSheet.create({
 	expander: {
-		backgroundColor: constants.color.surfacePurple,
+		backgroundColor: constants.color.primaryLight,
 		borderRadius: 8,
 		paddingRight: 14,
 		paddingLeft: 20,
@@ -102,12 +102,10 @@ const styles = StyleSheet.create({
 	},
 
 	expanderLabel: {
-		color: "white", 
-		fontWeight: "500",
+		color: "#1b1b1b",
 		textShadowColor: "black",
-		textShadowRadius: 5,
 		textAlignVertical: "center",
-		letterSpacing: .3
+		fontFamily: "HeeboMedium"
 	},
 
 	expanderIcon: {
@@ -124,7 +122,7 @@ const styles = StyleSheet.create({
 	},
 
 	popupView: {
-		backgroundColor: constants.color.surfacePurpleLight,
+		backgroundColor: constants.color.primaryLight,
 		borderRadius: 8,
 		borderWidth: 1,
 		borderColor: "#000000",
@@ -136,12 +134,10 @@ const styles = StyleSheet.create({
 	},
 
 	popupItemLabel: {
-		color: "white", 
+		color: "#252525", 
 		fontWeight: "500", 
 		fontSize: 15,
-		textShadowColor: "black",
-		textShadowRadius: 5,
-		letterSpacing: .3
+		fontFamily: "HeeboMedium"
 	}
 });
 

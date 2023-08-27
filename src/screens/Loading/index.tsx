@@ -11,12 +11,6 @@ import { SetScreenProps } from "App";
 import * as constants from "@data/constants.json";
 import { useAppDispatch, useAsyncMemo } from "@util/hooks";
 
-interface LoadingProps {
-	setScreen: SetScreenProps,
-	target: string,
-	args: any
-}
-
 let isGameStarted = false;
 
 interface LoadingStepProps {
@@ -24,7 +18,11 @@ interface LoadingStepProps {
 	dispatch: (payload: any) => void
 }
 
-function Loading({setScreen, target, args}: LoadingProps) {
+function Loading({setScreen, target, args}: {
+	setScreen: SetScreenProps,
+	target: string,
+	args: any
+}) {
 	const [loaded, setLoaded] = useState({progress: 0, task: "account"});
 	const [isSigned, setIsSigned] = useState(true);
 	const [isProcessing, setIsProcessing] = useState(false);
@@ -52,7 +50,7 @@ function Loading({setScreen, target, args}: LoadingProps) {
 			if((await AppBridge.getKey("boolean", "beta", false)) && !(await AppBridge.isSignedIn())) {
 				setIsSigned(false);
 				return;
-			} 
+			}
 			
 			setLoaded({progress: 10, task: "packs"});
 			dispatch(setupPacks(await PackBridge.getPacks()));
@@ -114,37 +112,39 @@ function Loading({setScreen, target, args}: LoadingProps) {
 			<Image style={styles.banner} resizeMode="cover" source={require("@static/banner/loading_poster.jpg")} />
 			<Shadow />
 
-			{debugInfo != null && <View style={{flex: 1, paddingTop: 10, paddingHorizontal: constants.size.inlineScreenPadding, flexDirection: "row"}}>
-				<Text selectable selectionColor={constants.color.surfaceSmall}>Version: {debugInfo.buildVersionName}</Text>
-				<View style={{flexGrow: 1}} />
-				<Text selectable selectionColor={constants.color.surfaceSmall}>Device: {debugInfo.deviceBrand} {debugInfo.deviceModel}</Text>
-			</View>}
+			<View style={{flex: 1, paddingHorizontal: constants.size.inlineScreenPadding}}>
+				{debugInfo != null && <View style={{flex: 1, paddingTop: 10, flexDirection: "row"}}>
+					<Text style={styles.debugText}>Version: {debugInfo.buildVersionName}</Text>
+					<View style={{flexGrow: 1}} />
+					<Text style={styles.debugText}>Device: {debugInfo.deviceBrand} {debugInfo.deviceModel}</Text>
+				</View>}
 
-			{isSigned && (<>
-				<Text style={styles.text}>Loading {loaded.task} {loaded.progress}%</Text>
-				<View style={[styles.progressBar, {width: loaded.progress + "%"}]} />
-			</>)}
+				{isSigned && (<>
+					<Text style={styles.progressPercentage}>Loading {loaded.task}:  {loaded.progress}%</Text>
+					<View style={[styles.progressBar, {width: loaded.progress + "%"}]} />
+				</>)}
 
-			{(!isSigned) && <View style={{opacity: (isProcessing ? 0.5 : 1)}}>
-				<Text style={styles.loginTitle}>Welcome to the Binacty Engine</Text>
-				<Text style={styles.loginDescription}>Before we start, let's find out what to call you.</Text>
+				{(!isSigned) && <View style={{opacity: (isProcessing ? 0.5 : 1)}}>
+					<Text style={styles.loginTitle}>Welcome to the Binacty Engine</Text>
+					<Text style={styles.loginDescription}>Before we start, let's find out what to call you.</Text>
 
-				<View style={styles.loginOptions}>
-					<Button text="Continue with BoomID"
-						style={{paddingLeft: 10, paddingRight: 12}}
-						styleIcon={{height: 24, marginRight: 4}}
-						icon={require("@static/icon/person_black_outlined.png")}
-						onPress={() => login("name")}
-						theme="white" />
-						
-					<Button text="Continue as Guest"
-						style={{paddingLeft: 10, paddingRight: 12}}
-						styleIcon={{height: 24, marginRight: 4}}
-						icon={require("@static/icon/time_black_outlined.png")}
-						onPress={() => login("guest")} 
-						theme="white" />
-				</View>
-			</View>}
+					<View style={styles.loginOptions}>
+						<Button text="Continue with BoomID"
+							style={{paddingLeft: 10, paddingRight: 12}}
+							styleIcon={{height: 24, marginRight: 4}}
+							icon={require("@static/icon/person_black_outlined.png")}
+							onPress={() => login("name")}
+							theme="white" />
+							
+						<Button text="Continue as Guest"
+							style={{paddingLeft: 10, paddingRight: 12}}
+							styleIcon={{height: 24, marginRight: 4}}
+							icon={require("@static/icon/time_black_outlined.png")}
+							onPress={() => login("guest")} 
+							theme="white" />
+					</View>
+				</View>}
+			</View>
 		</View>
 	);
 }
@@ -218,9 +218,22 @@ function Shadow() {
 const styles = StyleSheet.create({
 	progressBar: {
 		backgroundColor: "white",
-		height: 4,
+		height: 3,
 		width: "100%",
-		margin: 8
+		marginVertical: 8,
+		borderRadius: 3
+	},
+
+	progressPercentage: {
+		color: "white",
+		fontSize: 25,
+		fontFamily: "HeeboRegular",
+		marginBottom: 10
+	},
+
+	debugText: {
+		fontFamily: "OpenSansRegular",
+		color: "#ffffff90"
 	},
 
 	shadowBottom: {
@@ -242,22 +255,14 @@ const styles = StyleSheet.create({
 		width: "100%",
 		height: "100%"
 	},
-	
-	text: {
-		color: "white",
-		fontSize: 25,
-		fontWeight: "500",
-		margin: 25,
-		marginBottom: 10
-	},
 
 	loginTitle: {
 		color: "white",
-		fontWeight: "700",
 		textAlign: "center",
+		fontFamily: "HeeboBold",
 		textShadowColor: "black",
 		textShadowRadius: 5,
-		fontSize: 25
+		fontSize: 27
 	},
 
 	loginDescription: {
@@ -265,7 +270,8 @@ const styles = StyleSheet.create({
 		textAlign: "center",
 		textShadowColor: "black",
 		textShadowRadius: 5,
-		marginTop: 6,
+		fontFamily: "OpenSansMedium",
+		marginTop: 8,
 		marginBottom: 10
 	},
 	

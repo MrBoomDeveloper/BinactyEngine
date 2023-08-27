@@ -9,6 +9,7 @@
 
     "color": {
         "primary": "#da33ff",
+        "primaryLight": "#fa52fa",
 
         "surfacePurple": "#6b3dad",
         "surfacePurpleLight": "#7d51bd",
