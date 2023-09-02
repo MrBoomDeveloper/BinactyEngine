@@ -7,10 +7,6 @@
                 "description": "How often to update map objects positions.",
                 "type": "float", "value": 1.0
             }, {
-                "title": "Delay between Objects layer updates", "id": "objectResortDelay",
-                "description": "How often to update map objects layers.",
-                "type": "float", "value": 0.5
-            }, {
                 "title": "Renderer", "id": "renderer",
                 "description": "The thing that draws everything! (Currently does nothing)",
                 "type": "string", "value": "libgdx",

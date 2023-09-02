@@ -1,5 +1,5 @@
 import { memo, useEffect, useState } from "react";
-import { View, Text, Image, NativeEventEmitter, StyleSheet } from "react-native";
+import { View, Text, Image, NativeEventEmitter, StyleSheet, TouchableOpacity } from "react-native";
 import { setupList as setupGamemodesList, setupProgresses as setupGamemodeProgresses, Progresses } from "@context/gamemodes";
 import { setMoney as loadMoney, setProfile as loadProfile } from "@context/profile";
 import { SettingsItem, setup as setupSettings } from "@context/settings";
@@ -10,6 +10,7 @@ import { GameNative, AppBridge, PackBridge } from "@native";
 import { SetScreenProps } from "App";
 import * as constants from "@data/constants.json";
 import { useAppDispatch, useAsyncMemo } from "@util/hooks";
+import { FadingView } from "features/effects/FadingView";
 
 let isGameStarted = false;
 
@@ -24,6 +25,7 @@ function Loading({setScreen, target, args}: {
 	args: any
 }) {
 	const [loaded, setLoaded] = useState({progress: 0, task: "account"});
+	const [isFirstGame, setIsFirstGame] = useState(false);
 	const [isSigned, setIsSigned] = useState(true);
 	const [isProcessing, setIsProcessing] = useState(false);
 	const dispatch = useAppDispatch();
@@ -45,6 +47,13 @@ function Loading({setScreen, target, args}: {
 	
 	async function loadStuff() {
 		AppBridge.startMusic();
+
+		if(await AppBridge.getKey("boolean", "isFirstGame", true)) {
+			setIsFirstGame(true);
+			setIsSigned(false);
+			PackBridge.getPacks();
+			return;
+		}
 
 		try {
 			if((await AppBridge.getKey("boolean", "beta", false)) && !(await AppBridge.isSignedIn())) {
@@ -90,9 +99,10 @@ function Loading({setScreen, target, args}: {
 				return;
 			}
 
-			new NativeEventEmitter(GameNative).addListener("GameOver", e => {
+			const gameOverListener = new NativeEventEmitter(GameNative).addListener("GameOver", e => {
 				setScreen("gameover");
 				isGameStarted = false;
+				gameOverListener.remove();
 			});
 			
 			AppBridge.stopMusic();
@@ -101,14 +111,14 @@ function Loading({setScreen, target, args}: {
 		}
 		
 		new NativeEventEmitter(GameNative).addListener("ForceExit", e => {
-			setScreen("loading", {target: "lobby"});
+			setScreen("loading", { target: "lobby" });
 			loadStuff();
 			isGameStarted = false;
 		});
 	}, [target]);
 	
 	return (
-		<View style={styles.screen}>
+		<FadingView style={styles.screen}>
 			<Image style={styles.banner} resizeMode="cover" source={require("@static/banner/loading_poster.jpg")} />
 			<Shadow />
 
@@ -119,33 +129,50 @@ function Loading({setScreen, target, args}: {
 					<Text style={styles.debugText}>Device: {debugInfo.deviceBrand} {debugInfo.deviceModel}</Text>
 				</View>}
 
-				{isSigned && (<>
+				{(isSigned && !isFirstGame) && (<>
 					<Text style={styles.progressPercentage}>Loading {loaded.task}:  {loaded.progress}%</Text>
 					<View style={[styles.progressBar, {width: loaded.progress + "%"}]} />
 				</>)}
 
 				{(!isSigned) && <View style={{opacity: (isProcessing ? 0.5 : 1)}}>
 					<Text style={styles.loginTitle}>Welcome to the Binacty Engine</Text>
-					<Text style={styles.loginDescription}>Before we start, let's find out what to call you.</Text>
+					<Text style={styles.loginDescription}>A powerful mobile game engine for beautiful 2d games.</Text>
 
-					<View style={styles.loginOptions}>
-						<Button text="Continue with BoomID"
-							style={{paddingLeft: 10, paddingRight: 12}}
-							styleIcon={{height: 24, marginRight: 4}}
-							icon={require("@static/icon/person_black_outlined.png")}
-							onPress={() => login("name")}
-							theme="white" />
+					{!isFirstGame ? (<>
+						<View style={styles.loginOptions}>
+							<Button text="Continue with BoomID"
+								style={{paddingLeft: 10, paddingRight: 12}}
+								styleIcon={{height: 24, marginRight: 4}}
+								icon={require("@static/icon/person_black_outlined.png")}
+								onPress={() => login("name")}
+								theme="white" />
 							
-						<Button text="Continue as Guest"
-							style={{paddingLeft: 10, paddingRight: 12}}
-							styleIcon={{height: 24, marginRight: 4}}
-							icon={require("@static/icon/time_black_outlined.png")}
-							onPress={() => login("guest")} 
-							theme="white" />
-					</View>
+							<Button text="Continue as Guest"
+								style={{paddingLeft: 10, paddingRight: 12}}
+								styleIcon={{height: 24, marginRight: 4}}
+								icon={require("@static/icon/time_black_outlined.png")}
+								onPress={() => login("guest")}
+								theme="white" />
+						</View>
+					</>) : (
+						<TouchableOpacity onPress={async () => {
+							await AppBridge.setKey("boolean", "isFirstGame", false);
+							setIsFirstGame(false);
+							setIsSigned(true);
+
+							try {
+								await AppBridge.startFirstGame();
+							} catch(e) {
+								console.error(e);
+								loadStuff();
+							}
+						}}>
+							<Text style={styles.touchToStart}>Touch here to start the game</Text>
+						</TouchableOpacity>
+					)}
 				</View>}
 			</View>
-		</View>
+		</FadingView>
 	);
 }
 
@@ -216,6 +243,16 @@ function Shadow() {
 }
 
 const styles = StyleSheet.create({
+	touchToStart: {
+		width: "100%",
+		paddingTop: 30,
+		paddingBottom: 45,
+		textAlign: "center",
+		color: "white",
+		fontFamily: "OpenSansRegular",
+		fontSize: 15
+	},
+
 	progressBar: {
 		backgroundColor: "white",
 		height: 3,

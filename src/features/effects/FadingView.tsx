@@ -9,19 +9,25 @@ import { Animated } from "react-native";
  * - One of the dependencies got changed
  * @param duration Duration in milliseconds
  */
-export const FadingView = memo(({children, style, dependencies = [], duration = 1000}: {
+export const FadingView = memo(({children, style, dependencies = [], duration = 1000, toValue = 1, fromValue = 0}: {
 	children: JSX.Element | JSX.Element[],
 	style?: ViewStyle | ViewStyle[],
 	dependencies?: any[],
-	duration?: number
+	duration?: number,
+	toValue?: number,
+	fromValue?: number
 }) => {
-	const animation = useRef(new Animated.Value(0)).current;
+	const animation = useRef(new Animated.Value(fromValue)).current;
+
+	useEffect(() => {
+		animation.setValue(fromValue);
+	}, [fromValue]);
 
 	useEffect(() => {
 		Animated.timing(animation, {
 			useNativeDriver: true,
 			duration,
-			toValue: 1
+			toValue
 		}).start();
 	}, dependencies);
 

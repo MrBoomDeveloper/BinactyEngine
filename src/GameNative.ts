@@ -14,6 +14,7 @@ export interface DebugField {
 
 interface DebugFieldsMap {
     buildType: string,
+    buildDate: string,
 	buildVersionName: string,
 	buildVersionCode: string,
 	applicationId: string,
@@ -33,14 +34,15 @@ interface AppBridgeModule extends NativeModule {
     stopMusic: () => void,
     setVolume: (volume: number) => void,
 
-    setKey: (type: NativeVariableType, name: string, value: NativeVariableValue) => Promise<any>,
-    getKey: (type: NativeVariableType, name: string, defaultValue: NativeVariableValue) => Promise<NativeVariableValue>,
+    setKey: <T extends NativeVariableValue>(type: NativeVariableType, name: string, value: T) => Promise<boolean>,
+    getKey: <T extends NativeVariableValue>(type: NativeVariableType, name: string, defaultValue: T) => Promise<T>,
     getKeys: (keys: SettingsItem[]) => Promise<SettingsItem[]>
 
     //TODO: Move to a separate ProfileBridge
     signIn: (method: "google" | "gamejolt" | "guest" | "name" | string) => Promise<boolean>,
     isSignedIn: () => Promise<boolean>,
-    getMyData: () => Promise<any>
+    getMyData: () => Promise<any>,
+    startFirstGame: () => Promise<boolean>
 }
 
 interface PackBridgeModule extends NativeModule {
@@ -92,6 +94,7 @@ NativeModules.AppBridge.getDebugMap = async (): Promise<DebugFieldsMap> => {
 
     return {
         buildType: getProperty("buildType"),
+        buildDate: getProperty("buildDate"),
 		buildVersionName: getProperty("buildVersionName"),
 		buildVersionCode: getProperty("buildVersionCode"),
 		applicationId: getProperty("applicationId"),
