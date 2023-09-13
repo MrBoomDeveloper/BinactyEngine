@@ -11,8 +11,10 @@ import { SettingsDrawer } from "@screens/modal/Settings";
 import { AppBridge } from "@native";
 import { NewsDrawer } from "@screens/modal/News";
 import Character from "./pages/Character";
+import { useTheme } from "@util/hooks";
 
 export default function Lobby2({setScreen}: { setScreen: SetScreenProps }) {
+    const [theme] = useTheme();
     const [isProfileOpened, setProfileOpened] = useState(false);
     const [isNewsOpened, setNewsOpened] = useState(false);
     const [isSettingsOpened, setSettingsOpened] = useState(false);
@@ -35,7 +37,7 @@ export default function Lobby2({setScreen}: { setScreen: SetScreenProps }) {
         current: "home",
         tabs: [
             { title: "Home", id: "home" },
-            { title: "Character", id: "character" },
+            { title: "Customization", id: "character" },
             { title: "Skills", id: "skills" },
             { title: "Creative", id: "creative" }
         ],
@@ -61,7 +63,7 @@ export default function Lobby2({setScreen}: { setScreen: SetScreenProps }) {
     }, []);
 
     return (
-        <View style={styles.screen}>
+        <View style={[styles.screen, { backgroundColor: theme.colors.screenBackground }]}>
             <Header navigation={pages} actions={actions}
                 style={{position: "absolute", zIndex: 999}}
                 onProfilePress={() => setProfileOpened(true)} />

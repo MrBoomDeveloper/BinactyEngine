@@ -2,23 +2,26 @@ import { Animated, Dimensions, Image, StyleSheet, Text, View } from "react-nativ
 import * as constants from "@data/constants.json";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { SetScreenProps } from "App";
-import { GamemodesItem } from "@context/gamemodes";
+import { GamemodesItem, joinMultiplayer } from "@context/gamemodes";
 import Button from "@components/Button";
-import { useAppSelector } from "@util/hooks";
+import { useAppDispatch, useAppSelector } from "@util/hooks";
 import { LevelPreview, LevelsMenu } from "../Levels";
 import { icons } from "@data/resources";
 import { StatsBar } from "features/data/Stats";
 import { formatPlayersCount } from "@util/format";
 import ExpandableText from "features/data/ExpandableText";
 import { FadingView } from "features/effects/FadingView";
+import Multiplayer from "./Multiplayer";
 
 function Overview({ gamemode, setScreen }: {
     setScreen: SetScreenProps,
     gamemode: GamemodesItem
 }) {
     const { maps, description, author, name, levels, entry, maxPlayers, time } = gamemode;
-    const [isLevelsShown, setLevelsIsShown] = useState(false);
+
     const animation = useRef(new Animated.Value(0)).current;
+    const multiplayer = useAppSelector(state => state.gamemodes.multiplayer);
+    const [isLevelsShown, setLevelsIsShown] = useState(false);
 
     useEffect(() => {
         Animated.timing(animation, {
@@ -38,8 +41,34 @@ function Overview({ gamemode, setScreen }: {
         outputRange: [0, .78]
     });
 
+    if(multiplayer.isInRoom) {
+        return (
+            <Multiplayer gamemode={gamemode} />
+        );
+    }
+
+    const infoLayout = (
+        <View style={styles.infoLayout}>
+            <Text style={styles.infoAuthorLabel}>Made by:  {author}</Text>
+
+            <Text style={styles.infoTitleLabel}>{name}</Text>
+
+            <StatsBar style={{marginTop: 4, marginBottom: 6}} items={[
+                ...(time != null ? [{ title: `Duration  ${time}`, icon: require("@static/icon/time.png") }] : []),
+                ...[{ title: formatPlayersCount(maxPlayers), icon: require("@static/icon/groups.png") }]
+            ]} />
+
+            {description && <ExpandableText text={description} 
+                style={[styles.infoDescriptionLabel, { color: "#f5ecf3" }]} />}
+
+            {(maps != null || entry != null && maxPlayers > 0) && <OverviewActions 
+                gamemode={gamemode}
+                setScreen={setScreen} />}
+        </View>
+    );
+
     return (
-        <>
+        <View style={{overflow: "hidden"}}>
             <Animated.View style={{
                 position: "absolute",
                 top: 0,
@@ -50,26 +79,17 @@ function Overview({ gamemode, setScreen }: {
                 opacity: opacityAnimation
             }} />
 
-            <Animated.View style={{flexDirection: "row", left: scrollAnimation}}>
+            <Animated.View style={{
+                flexDirection: "row", 
+                left: scrollAnimation, 
+                width: Dimensions.get("screen").width, 
+                height: Dimensions.get("screen").height
+            }}>
                 <Shadow />
                 <FadingView style={styles.layout} duration={450}>
-                    <View style={styles.infoLayout}>
-                        <Text style={styles.infoAuthorLabel}>Made by:  {author}</Text>
+                    {infoLayout}
 
-                        <Text style={styles.infoTitleLabel}>{name}</Text>
-
-                        <StatsBar style={{marginTop: 4, marginBottom: 6}} items={[
-                            ...(time != null ? [{ title: `Duration  ${time}`, icon: require("@static/icon/time.png") }] : []),
-                            ...[{ title: formatPlayersCount(maxPlayers), icon: require("@static/icon/groups.png") }]
-                        ]} />
-
-                        {description && <ExpandableText text={description} 
-                            style={[styles.infoDescriptionLabel, { color: "#f5ecf3" }]} />}
-
-                        {(maps != null || entry != null && maxPlayers > 0) && <OverviewActions 
-                            gamemode={gamemode}
-                            setScreen={setScreen} />}
-                    </View>
+                    <View style={{flexGrow: 1}} />
 
                     {levels ? <LevelPreview levels={levels} gamemode={gamemode}
                         onPress={() => setLevelsIsShown(true)} /> : <View style={{flexGrow: 1}} />}
@@ -81,7 +101,7 @@ function Overview({ gamemode, setScreen }: {
                     onSelect={() => setLevelsIsShown(false)}
                     levels={levels} />}
             </Animated.View>
-        </>
+        </View>
     );
 }
 
@@ -89,6 +109,8 @@ function OverviewActions({gamemode, setScreen}: {
     gamemode: GamemodesItem,
     setScreen: SetScreenProps
 }) {
+    const dispatch = useAppDispatch();
+
     const isBeta: boolean = useAppSelector(state => state.settings.list)
         .find(cat => cat.id == "features")?.data
         .find(item => item.id == "beta")?.value as boolean;
@@ -116,19 +138,35 @@ function OverviewActions({gamemode, setScreen}: {
     
     return (
         <View style={styles.actionsLayout}>
-            <Button text="Start Game!" theme="brand" style={{flexGrow: 1}}
+            <Button text="Start Game!" 
+                theme="brand" 
+                style={{flexGrow: 1}}
 				icon={require("@static/icon/play.png")}
-                hitbox={0} onPress={() => play(false)} />
+                hitbox={0} 
+                onPress={() => play(false)} />
                     
             {(isBeta && gamemode.maxPlayers > 1) && (
-                <Button icon={icons["groups"].outlineBlack} styleIcon={{marginHorizontal: 5}}
-				    theme="brand" rippleColor="#000000c0" overlayInner={true}
-                    hitbox={0} onPress={() => play(true)} />
+                <Button icon={icons["groups"].outlineBlack} 
+                    styleIcon={{marginHorizontal: 5}}
+				    theme="brand" 
+                    rippleColor="#000000c0" 
+                    overlayInner={true}
+                    hitbox={0} 
+                    onPress={() => {
+                        dispatch(joinMultiplayer({
+                            isInRoom: true,
+                            players: []
+                        }));
+                    }} />
             )}
 					
-			<Button icon={require("@static/icon/edit.png")} styleIcon={{marginHorizontal: 5}}
-				theme="brand" rippleColor="#000000c0" overlayInner={true}
-				hitbox={0} onPress={() => play(true)} />
+			<Button icon={require("@static/icon/edit.png")} 
+                styleIcon={{marginHorizontal: 5}}
+				theme="brand" 
+                rippleColor="#000000c0" 
+                overlayInner={true}
+				hitbox={0} 
+                onPress={() => play(true)} />
         </View>
     );
 }

@@ -3,13 +3,15 @@ import { gamemodesSlice } from "./gamemodes";
 import { settingsSlice } from "./settings";
 import { profileSlice } from "./profile";
 import { packsSlice } from "./packs";
+import { themeSlice } from "./theme";
 
 export const store = configureStore({
 	reducer: {
 		gamemodes: gamemodesSlice.reducer,
 		settings: settingsSlice.reducer,
 		profile: profileSlice.reducer,
-		packs: packsSlice.reducer
+		packs: packsSlice.reducer,
+		theme: themeSlice.reducer
 	}
 });
 

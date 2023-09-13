@@ -1,41 +1,17 @@
 import { useRef, useEffect } from "react";
 import { View, Image, Animated, StyleSheet } from "react-native";
 import type { SetScreenProps } from "../../App";
+import { startAnimation } from "./splashAnimation";
+import { useSplashInit } from "./splashInitialization";
 
 export default function Splash({setScreen}: { setScreen: SetScreenProps }) {
+	useSplashInit();
 	const logoAnimation = useRef(new Animated.Value(0)).current;
 	const gradientAnimation = useRef(new Animated.Value(0)).current;
 	
 	useEffect(() => {
-		Animated.parallel([
-			Animated.timing(logoAnimation, {
-				toValue: 1,
-				duration: 750,
-				useNativeDriver: true
-			}),
-			Animated.timing(gradientAnimation, {
-				toValue: 1,
-				delay: 250,
-				duration: 1500,
-				useNativeDriver: true
-			})
-		]).start(() => {
-			Animated.parallel([
-				Animated.timing(logoAnimation, {
-					toValue: 0,
-					delay: 250,
-					duration: 1250,
-					useNativeDriver: true
-				}),
-				Animated.timing(gradientAnimation, {
-					toValue: 0,
-					delay: 200,
-					duration: 1250,
-					useNativeDriver: true
-				})
-			]).start(() => {
-				setScreen("loading", {target: "lobby"});
-			});
+		startAnimation(logoAnimation, gradientAnimation, () => {
+			setScreen("loading", {target: "lobby"});
 		});
 	}, []);
 	

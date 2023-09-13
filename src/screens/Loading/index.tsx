@@ -9,7 +9,7 @@ import settingsAll from "@data/settings.json";
 import { GameNative, AppBridge, PackBridge } from "@native";
 import { SetScreenProps } from "App";
 import * as constants from "@data/constants.json";
-import { useAppDispatch, useAsyncMemo } from "@util/hooks";
+import { useAppDispatch, useAsyncMemo, useTheme } from "@util/hooks";
 import { FadingView } from "features/effects/FadingView";
 
 let isGameStarted = false;
@@ -118,7 +118,7 @@ function Loading({setScreen, target, args}: {
 	}, [target]);
 	
 	return (
-		<FadingView style={styles.screen}>
+		<FadingView style={styles.screen} duration={400}>
 			<Image style={styles.banner} resizeMode="cover" source={require("@static/banner/loading_poster.jpg")} />
 			<Shadow />
 

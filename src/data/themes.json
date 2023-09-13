@@ -1,0 +1,28 @@
+{
+	"dark_sakura": {
+		"name": "Dark Sakura",
+		"colors": {
+			"primaryButtonBackground": "#fa52fa",
+			"popupButtonBackground": "hsl(290, 100%, 55%)",
+			"screenBackground": "#11071F"
+		}
+	},
+
+	"light_sakura": {
+		"name": "Light Sakura",
+		"colors": {
+			"primaryButtonBackground": "#fa52fa",
+			"popupButtonBackground": "hsl(290, 100%, 55%)",
+			"screenBackground": "white"
+		}
+	},
+
+	"amoled": {
+		"name": "Amoled",
+		"colors": {
+			"primaryButtonBackground": "white",
+			"popupButtonBackground": "white",
+			"screenBackground": "black"
+		}
+	}
+}

@@ -2,6 +2,7 @@ import { Pressable, Text, Image, ImageSourcePropType, ViewStyle, TextStyle, Imag
 import * as constants from "@data/constants.json";
 import { colors } from "@util/variables.json";
 import { memo } from "react";
+import { useTheme } from "@util/hooks";
 
 interface ButtonArguments {
 	onPress: () => void,
@@ -17,13 +18,33 @@ interface ButtonArguments {
 	overlayInner?: boolean
 }
 
-function Button({text, children, icon, theme, rippleColor, onPress, style, styleText, styleIcon, overlayInner, hitbox = 25}: ButtonArguments) {
+function Button({
+	text, 
+	children, 
+	icon, 
+	theme, 
+	rippleColor, 
+	onPress, 
+	style, 
+	styleText, 
+	styleIcon, 
+	overlayInner, 
+	hitbox = 25}: ButtonArguments
+) {
+	//const [currentTheme] = useTheme();
+
 	return (
 		<Pressable onPress={onPress} hitSlop={hitbox}
 			style={[
 				styles["default"].layout,
 				styles[theme].layout,
-				{ width: (text ? "auto" : 35) },
+
+				{ 
+					width: (text ? "auto" : 35),
+					// backgroundColor: (theme == "brand" ? currentTheme.colors.primaryButtonBackground :
+					// 	(theme == "popup" ? currentTheme.colors.popupButtonBackground : "red"))
+				},
+
 				style
 			]}
 

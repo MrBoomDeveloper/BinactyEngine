@@ -1,6 +1,7 @@
 import { memo, useEffect, useRef, useState } from "react";
 import { Animated, BackHandler, Dimensions, Pressable, StyleSheet, ViewStyle } from "react-native";
 import * as constants from "@data/constants.json";
+import { useTheme } from "@util/hooks";
 
 export interface SimpleDrawerProps {
     isOpened: boolean,
@@ -15,6 +16,7 @@ interface DrawerProps extends SimpleDrawerProps {
 }
 
 function Drawer({isOpened, onClose, width, direction, children, style}: DrawerProps) {
+    const [theme] = useTheme();
     const [isAnimationFinished, setIsAnimationFinished] = useState(false);
     const opacityAnimation = useRef(new Animated.Value(0)).current;
     const slideAnimation = useRef(new Animated.Value(0)).current;
@@ -56,7 +58,11 @@ function Drawer({isOpened, onClose, width, direction, children, style}: DrawerPr
 
 	return (
         <Animated.View style={[styles.layout, {opacity: opacityAnimation}]} pointerEvents={isOpened ? "auto" : "none"}>
-            <Animated.View style={[styles.menuLayout, {width, transform: [{translateX: slideAnimation}]}, style]}>
+            <Animated.View style={[styles.menuLayout, {
+                width,
+                backgroundColor: theme.colors.screenBackground,
+                transform: [{translateX: slideAnimation}]
+            }, style]}>
                 {children}
             </Animated.View>
             <Pressable style={backgroundStyle} onPressIn={e => {

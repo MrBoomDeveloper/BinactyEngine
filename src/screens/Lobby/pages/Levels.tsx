@@ -1,5 +1,5 @@
 import { GamemodesItem, Level, LevelsCategory, setActive, setActiveLevel } from "@context/gamemodes";
-import { Image, SectionList, StyleSheet, Text, TouchableOpacity, View, BackHandler } from "react-native";
+import { Image, SectionList, StyleSheet, Text, TouchableOpacity, View, BackHandler, Dimensions } from "react-native";
 import * as constants from "@data/constants.json";
 import { memo, useEffect, useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "@util/hooks";
@@ -83,7 +83,7 @@ export function LevelPreview({levels, gamemode, onPress}: {
     }, [gamemode, progress]);
 
     return (
-        <TouchableOpacity style={{flexGrow: 1}} onPress={onPress}>
+        <TouchableOpacity onPress={onPress}>
             <View style={styles.levelPreviewLayout}>
                 <View style={{gap: 4, flexGrow: 1}}>
                     <Text style={{color: "white", fontWeight: "500", fontFamily: "OpenSansRegular"}}>{level.name}</Text>
@@ -94,7 +94,11 @@ export function LevelPreview({levels, gamemode, onPress}: {
                         fontSize: 13
                     }}>{level.description || "No description were provided."}</Text>
                 </View>
-                <Image source={require("@static/icon/expand.png")} style={styles.LevelPreviewIcon} />
+
+                <Image source={require("@static/icon/expand.png")} style={[
+					styles.LevelPreviewIcon,
+					{ marginLeft: 10 }
+				]} />
             </View>
         </TouchableOpacity>
     );
@@ -109,9 +113,9 @@ const styles = StyleSheet.create({
 		gap: 12,
 		paddingTop: 10,
 		paddingHorizontal: constants.size.inlineScreenPadding - 12,
-		width: "100%",
 		flexDirection: "row",
-		flexWrap: "wrap"
+		flexWrap: "wrap",
+		width: Dimensions.get("screen").width
 	},
 
 	card: {

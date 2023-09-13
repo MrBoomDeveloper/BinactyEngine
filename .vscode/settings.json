@@ -1,12 +1,16 @@
 {
     "typescript.tsdk": "node_modules\\typescript\\lib",
     "cSpell.words": [
+        "amoled",
         "Binacty",
         "Gamemode",
         "Gamemodes",
         "gameover",
         "hitbox",
-        "Pressable"
+        "klarrie",
+        "Pressable",
+        "reduxjs",
+        "Sakura"
     ],
     "cSpell.language": "en-US,ru,en"
 }

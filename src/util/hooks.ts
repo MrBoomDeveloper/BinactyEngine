@@ -1,5 +1,6 @@
 import type { AppDispatch, AppState } from "@context/store";
-import { useEffect, useReducer, useState } from "react";
+import { Theme, setTheme } from "@context/theme";
+import { useCallback, useEffect, useReducer, useState } from "react";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 
 type DispatchMethod = () => AppDispatch;
@@ -21,6 +22,17 @@ export function useAsyncMemo<T>(callback: () => Promise<T>, initialValue: T, dep
     }, dependencies || []);
 
     return state;
+}
+
+export function useTheme(): [theme: Theme, setTheme: (theme: Theme) => void] {
+    const currentTheme = useAppSelector(state => state.theme);
+    const dispatch = useAppDispatch();
+
+    const setCurrentTheme = useCallback((theme: Theme) => {
+        dispatch(setTheme(theme));
+    }, []);
+
+    return [currentTheme, setCurrentTheme];
 }
 
 export function useFetch(initialUrl?: string): [fetched: FetchHookState, fetch: (url: string) => void] {

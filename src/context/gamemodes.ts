@@ -1,10 +1,16 @@
 import GameNative, { AppBridge } from "@native";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
+export interface MultiplayerState {
+	players: any[],
+	isInRoom: boolean
+}
+
 export interface GamemodesState {
 	current: GamemodesItem,
 	list: GamemodesCategory[],
-	progresses: Progresses
+	progresses: Progresses,
+	multiplayer: MultiplayerState
 }
 
 export type Progresses = Record<string, { latestLevel: { 
@@ -52,12 +58,18 @@ export interface GamemodesCategory {
 const initialState: GamemodesState = {
 	list: [],
 	progresses: {},
+
 	current: {
 		name: "Loading...",
 		description: "Loading...",
 		id: "__loading",
 		author: "Loading...",
 		maxPlayers: 0
+	},
+
+	multiplayer: {
+		isInRoom: false,
+		players: []
 	}
 }
 
@@ -77,6 +89,11 @@ export const gamemodesSlice = createSlice({
 		setActive(state, {payload}: PayloadAction<GamemodesItem>) {
 			state.current = payload;
 			AppBridge.setKey("string", "latestGamemode", JSON.stringify({row: payload.row, item: payload.id}));
+		},
+
+		joinMultiplayer(state, { payload }: PayloadAction<MultiplayerState>) {
+			state.multiplayer = payload;
+			return state;
 		},
 
 		setActiveLevel(state, {payload: {gamemode, category, level}}: PayloadAction<{
@@ -142,4 +159,4 @@ export const gamemodesSlice = createSlice({
 	}
 });
 
-export const { setActive, setupList, setActiveLevel, setupProgresses } = gamemodesSlice.actions;
+export const { setActive, setupList, setActiveLevel, setupProgresses, joinMultiplayer } = gamemodesSlice.actions;

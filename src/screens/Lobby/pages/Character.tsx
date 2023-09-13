@@ -2,21 +2,24 @@ import { Dimensions, FlatList, StyleSheet, Text, View } from "react-native";
 import * as constants from "@data/constants.json";
 import Button from "@components/Button";
 import Input from "@components/Input";
-import { useAsyncMemo } from "@util/hooks";
+import { useAsyncMemo, useTheme } from "@util/hooks";
 import { AppBridge } from "@native";
-import { memo } from "react";
+import { memo, useMemo } from "react";
+import themes from "@data/themes.json";
 
 function Character() {
 	const playerCharacter = useAsyncMemo(async () => await AppBridge.getKey("string", "playerCharacter", "{\"source\":\"INTERNAL\",\"path\":\"packs/official/src/characters/klarrie\"}"), "Loading...");
-	const categories = [
-		{
-
-		}
-	]
+	const [theme, setTheme] = useTheme();
+	
+	const categories = useMemo(() => [
+		{ name: "Character", icon: require("@static/icon/me.png") },
+		{ name: "Theme", icon: require("@static/icon/me.png") },
+		{ name: "Wallpaper", icon: require("@static/icon/me.png") }
+	], []);
 
 	const items = [
 		{}, {}, {}, {}, {}
-	]
+	];
 
 	return (
 		<View style={styles.layout}>
@@ -49,11 +52,26 @@ function Character() {
 				<Input defaultValue={playerCharacter as string} 
 					type="string"
 					maxLength={250}
+					style={{width: 250}}
 					onChangeText={(newValue) => {
 						AppBridge.setKey("string", "playerCharacter", newValue);
 					}} />
 
-				<Text>Coming soon...</Text>
+				<Input defaultValue={JSON.stringify(theme)} 
+					type="string"
+					maxLength={9999}
+					style={{width: 250}}
+					onChangeText={(newValue) => {
+						try {
+							JSON.parse(newValue);
+						} catch(e) {
+							return;
+						}
+
+						setTheme(JSON.parse(newValue));
+					}} />
+
+				<Text>DON'T CHANGE ANYTHING HERE, IF YOU DON'T KNOW WHAT IS DOES!</Text>
 			</View>
 		</View>
 	)

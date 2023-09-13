@@ -10,6 +10,7 @@ import Overview from "./home/Overview";
 function Home({ setScreen }: { setScreen: SetScreenProps }) {
     const currentGamemode = useAppSelector(state => state.gamemodes.current);
 	const allGamemodes = useAppSelector(state => state.gamemodes.list);
+    const multiplayer = useAppSelector(state => state.gamemodes.multiplayer);
     const scrollView = useRef(null);
 
     useEffect(() => {
@@ -26,17 +27,23 @@ function Home({ setScreen }: { setScreen: SetScreenProps }) {
 
     return (
         <View>
-            <Image source={bannerBinary || {uri: banner || "asset:/packs/official/src/images/banner.jpg"}} style={styles.backgroundWallpaper} />
-            <SectionList sections={allGamemodes}
-                ref={scrollView}
-                showsVerticalScrollIndicator={false}
-                overScrollMode="never"
-                ListHeaderComponent={() => <Overview gamemode={currentGamemode} setScreen={setScreen} />}
-                ListFooterComponent={End}
-                style={styles.layout}
-                keyExtractor={item => item.id}
-                renderItem={() => null}
-                renderSectionHeader={item => <Section {...item.section} />} />
+            <Image source={bannerBinary || {
+                uri: banner || "asset:/packs/official/src/images/banner.jpg"
+            }} style={styles.backgroundWallpaper} />
+
+            {multiplayer.isInRoom 
+                ? (<Overview gamemode={currentGamemode} setScreen={setScreen} />) 
+                : (<SectionList sections={allGamemodes}
+                    ref={scrollView}
+                    showsVerticalScrollIndicator={false}
+                    overScrollMode="never"
+                    ListHeaderComponent={() => <Overview gamemode={currentGamemode} setScreen={setScreen} />}
+                    ListFooterComponent={End}
+                    style={styles.layout}
+                    keyExtractor={item => item.id}
+                    renderItem={() => null}
+                    renderSectionHeader={item => <Section {...item.section} />} />)
+            }
 
             <Image resizeMode="stretch"
                 style={{width: "100%", height: 100, position: "absolute", top: 0, left: 0, transform: [{rotate: "180deg"}]}}
@@ -127,8 +134,8 @@ const styles = StyleSheet.create({
     },
 
     backgroundWallpaper: {
-        width: "100%",
-        height: "100%",
+        width: Dimensions.get("screen").width,
+        height: Dimensions.get("screen").height,
         position: "absolute",
         top: 0,
         left: 0
