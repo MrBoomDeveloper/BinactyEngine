@@ -12,7 +12,7 @@ export function useSplashInit() {
 		const themesList = themes as Record<string, Theme>;
 		const foundTheme = themesList[requestedTheme];
 
-		console.error(JSON.stringify(foundTheme));
+		//console.error(JSON.stringify(foundTheme));
 
 		dispatch(setTheme(foundTheme || themes.dark_sakura));
 	}

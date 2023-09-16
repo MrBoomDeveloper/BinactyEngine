@@ -25,16 +25,15 @@ export default function GameOver({setScreen}: GameOverProps) {
 	
 	useEffect(() => {
 		(async function() {
-			const coins = await AppBridge.getKey("int", "coins", 0) as number;
-			const diamonds = await AppBridge.getKey("int", "diamonds", 0) as number;
+			const coins = await AppBridge.getKey("int", "coins", 0);
+			const diamonds = await AppBridge.getKey("int", "diamonds", 0);
 			setStats(await GameNative.getStats());
 			setBalance({coins, diamonds});
 			setIsLoaded(true);
 		})();
-	}, []);
-	
-	useEffect(() => {
+
 		if(!isLoaded) return;
+
 		Animated.spring(titlePopupAnimation, {
 			toValue: 1,
 			useNativeDriver: true
@@ -59,7 +58,8 @@ export default function GameOver({setScreen}: GameOverProps) {
 				});
 			});
 		});
-	}, [titlePopupAnimation, buttonsFadeAnimation, isLoaded]);
+	}, [isLoaded]);
+
 	
 	const titleScrollInterpolate = titleScrollAnimation.interpolate({
 		inputRange: [0, 1],
@@ -68,9 +68,11 @@ export default function GameOver({setScreen}: GameOverProps) {
 	
 	function close() {
 		if(!isLoaded) return;
+
 		if(stats.isWin) {
-			AppBridge.setKey("int", "coins", String(balance.coins + 1));
+			AppBridge.setKey("int", "coins", balance.coins + 1);
 		}
+
 		setScreen("loading", {target: "lobby"});
 	}
 	
@@ -87,9 +89,10 @@ export default function GameOver({setScreen}: GameOverProps) {
 					theme="brand"
 					onPress={() => {
 						Share.share({
-							message: "Hey, I just found out about a cool ActionPlatformer game! I recommend playing! https://gamejolt.com/games/actionplatformer/670228"
+							message: `Check out my score in Binacty Engine!\nI just won!`
 						});
 					}} />
+
 				<Button text="Continue"
 					style={styles.action}
 					theme="brand"
