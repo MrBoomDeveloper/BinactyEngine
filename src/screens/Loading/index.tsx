@@ -7,10 +7,12 @@ import { setup as setupPacks } from "@context/packs";
 import Button from "@components/Button";
 import settingsAll from "@data/settings.json";
 import { GameNative, AppBridge, PackBridge } from "@native";
-import { SetScreenProps } from "App";
 import * as constants from "@data/constants.json";
 import { useAppDispatch, useAsyncMemo, useTheme } from "@util/hooks";
 import { FadingView } from "features/effects/FadingView";
+import { useNavigation } from "@react-navigation/native";
+import { NavigationTypes } from "App";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 let isGameStarted = false;
 
@@ -19,11 +21,8 @@ interface LoadingStepProps {
 	dispatch: (payload: any) => void
 }
 
-function Loading({setScreen, target, args}: {
-	setScreen: SetScreenProps,
-	target: string,
-	args: any
-}) {
+function Loading({route: { params: { target, args } }}: NativeStackScreenProps<NavigationTypes, "loading">) {
+	const navigation = useNavigation();
 	const [loaded, setLoaded] = useState({progress: 0, task: "account"});
 	const [isFirstGame, setIsFirstGame] = useState(false);
 	const [isSigned, setIsSigned] = useState(true);
@@ -34,6 +33,7 @@ function Loading({setScreen, target, args}: {
 
 	async function login(method: string) {
 		if(isProcessing) return;
+
 		try {
 			setIsProcessing(true);
 			await AppBridge.signIn(method);
@@ -80,12 +80,12 @@ function Loading({setScreen, target, args}: {
 			dispatch(loadMoney({coins, diamonds}));
 
 			setLoaded({progress: 90, task: "lobby"});
-			setScreen("lobby");
+			navigation.reset({index: 0, routes: [{name: "lobby"}]});
 			AppBridge.startMusic();
 		} catch(e) {
 			console.error(e);
 			setLoaded({progress: 90, task: "lobby"});
-			setScreen("lobby");
+			navigation.reset({index: 0, routes: [{name: "lobby"}]});
 		}
 	}
 	
@@ -100,8 +100,8 @@ function Loading({setScreen, target, args}: {
 			}
 
 			const gameOverListener = new NativeEventEmitter(GameNative).addListener("GameOver", e => {
-				setScreen("gameover");
 				isGameStarted = false;
+				loadStuff();
 				gameOverListener.remove();
 			});
 			
@@ -111,7 +111,10 @@ function Loading({setScreen, target, args}: {
 		}
 		
 		new NativeEventEmitter(GameNative).addListener("ForceExit", e => {
-			setScreen("loading", { target: "lobby" });
+			navigation.reset({ index: 0, routes: [{
+				name: "loading", params: { target: "lobby" }
+			}]});
+
 			loadStuff();
 			isGameStarted = false;
 		});
@@ -131,7 +134,7 @@ function Loading({setScreen, target, args}: {
 
 				{(isSigned && !isFirstGame) && (<>
 					<Text style={styles.progressPercentage}>Loading {loaded.task}:  {loaded.progress}%</Text>
-					<View style={[styles.progressBar, {width: loaded.progress + "%"}]} />
+					<View style={[styles.progressBar, { width: `${loaded.progress}%` }]} />
 				</>)}
 
 				{(!isSigned) && <View style={{opacity: (isProcessing ? 0.5 : 1)}}>
@@ -283,6 +286,7 @@ const styles = StyleSheet.create({
 	},
 
 	screen: {
+		backgroundColor: "black",
 		flex: 1,
 		justifyContent: "flex-end"
 	},

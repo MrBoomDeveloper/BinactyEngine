@@ -7,6 +7,7 @@ export function startAnimation(logoAnimation: Animated.Value, gradientAnimation:
 			duration: 750,
 			useNativeDriver: true
 		}),
+		
 		Animated.timing(gradientAnimation, {
 			toValue: 1,
 			delay: 250,

@@ -1,18 +1,12 @@
 import type { AppDispatch, AppState } from "@context/store";
 import { Theme, setTheme } from "@context/theme";
+import { useNavigation } from "@react-navigation/native";
 import { useCallback, useEffect, useReducer, useState } from "react";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 
 type DispatchMethod = () => AppDispatch;
 export const useAppDispatch: DispatchMethod = useDispatch;
 export const useAppSelector: TypedUseSelectorHook<AppState> = useSelector;
-
-interface FetchHookState {
-    resultMessage: string,
-    errorMessage: string,
-    isDone: boolean,
-    isError: boolean
-}
 
 export function useAsyncMemo<T>(callback: () => Promise<T>, initialValue: T, dependencies?: any[]): T {
     const [state, setState] = useState(initialValue);
@@ -35,10 +29,17 @@ export function useTheme(): [theme: Theme, setTheme: (theme: Theme) => void] {
     return [currentTheme, setCurrentTheme];
 }
 
+interface FetchHookState {
+    resultMessage: string,
+    errorMessage: string,
+    isDone: boolean,
+    isError: boolean
+}
+
 export function useFetch(initialUrl?: string): [fetched: FetchHookState, fetch: (url: string) => void] {
     const [fetched, updateState] = useReducer((state: FetchHookState, action: FetchHookState) => {
         return action;
-    }, {isDone: false, isError: false, resultMessage: "", errorMessage: ""});
+    }, { isDone: false, isError: false, resultMessage: "", errorMessage: "" });
 
     useEffect(() => {
         if(initialUrl != null) start(initialUrl);
@@ -59,8 +60,5 @@ export function useFetch(initialUrl?: string): [fetched: FetchHookState, fetch: 
         }
     }
 
-    return [
-        fetched,
-        start
-    ]
+    return [ fetched, start ];
 }

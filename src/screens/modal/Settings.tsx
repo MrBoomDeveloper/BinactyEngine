@@ -47,6 +47,7 @@ function Setting({title, description, type, restart, value, id, variants}: Setti
 						<Toggle defaultValue={value as boolean}
 							onToggle={newValue => {
 								dispatch(updateSetting({id, newValue, type}));
+								
 								if(restart) AppBridge.restart();
 							}} />
 					)}

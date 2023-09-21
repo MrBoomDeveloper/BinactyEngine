@@ -1,18 +1,33 @@
 import { useRef, useEffect } from "react";
-import { View, Image, Animated, StyleSheet } from "react-native";
-import type { SetScreenProps } from "../../App";
+import { View, Image, Animated, StyleSheet, BackHandler, NativeEventSubscription } from "react-native";
 import { startAnimation } from "./splashAnimation";
 import { useSplashInit } from "./splashInitialization";
+import { useNavigation } from "@react-navigation/native";
+import themes from "@data/themes.json";
+import { AppBridge } from "@native";
 
-export default function Splash({setScreen}: { setScreen: SetScreenProps }) {
-	useSplashInit();
+export default function Splash() {
+	const backHandler = useRef<NativeEventSubscription>();
+	const navigation = useNavigation();
 	const logoAnimation = useRef(new Animated.Value(0)).current;
 	const gradientAnimation = useRef(new Animated.Value(0)).current;
+	useSplashInit();
 	
 	useEffect(() => {
-		startAnimation(logoAnimation, gradientAnimation, () => {
-			setScreen("loading", {target: "lobby"});
+		AppBridge.stopMusic();
+
+		const handler = BackHandler.addEventListener("hardwareBackPress", () => {
+			return true;
 		});
+
+		backHandler.current = handler;
+
+		startAnimation(logoAnimation, gradientAnimation, () => {
+			navigation.navigate("loading", { target: "lobby" });
+			backHandler.current?.remove();
+		});
+
+		return () => handler.remove();
 	}, []);
 	
 	return (
@@ -31,6 +46,7 @@ export default function Splash({setScreen}: { setScreen: SetScreenProps }) {
 
 const styles = StyleSheet.create({
 	screen: {
+		backgroundColor: themes.dark_sakura.colors.screenBackground,
 		flex: 1
 	},
 	

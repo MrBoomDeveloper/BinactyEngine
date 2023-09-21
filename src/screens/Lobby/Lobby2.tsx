@@ -3,7 +3,6 @@ import { color } from "@data/constants.json";
 import Header from "@components/layout/Header";
 import Home from "./pages/Home";
 import { useRef, useState, useMemo, useReducer, useEffect, useCallback } from "react";
-import { SetScreenProps } from "App";
 import Creative from "./pages/Creative";
 import { ProfileDrawer } from "@screens/modal/Profile";
 import { NavigationProps } from "@components/layout/Navigation";
@@ -12,8 +11,10 @@ import { AppBridge } from "@native";
 import { NewsDrawer } from "@screens/modal/News";
 import Character from "./pages/Character";
 import { useTheme } from "@util/hooks";
+import { useNavigation } from "@react-navigation/native";
 
-export default function Lobby2({setScreen}: { setScreen: SetScreenProps }) {
+export default function Lobby2() {
+    const navigation = useNavigation();
     const [theme] = useTheme();
     const [isProfileOpened, setProfileOpened] = useState(false);
     const [isNewsOpened, setNewsOpened] = useState(false);
@@ -74,10 +75,10 @@ export default function Lobby2({setScreen}: { setScreen: SetScreenProps }) {
                 ref={scrollView}
                 style={styles.pagesLayout}>
                 
-                <Home setScreen={setScreen} />
+                <Home />
                 <Character />
                 <Placeholder />
-                <Creative setScreen={setScreen} />
+                <Creative />
             </ScrollView>
 
             <ProfileDrawer isOpened={isProfileOpened} onClose={() => setProfileOpened(false)} />

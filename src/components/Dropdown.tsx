@@ -1,6 +1,8 @@
-import { View, Text, Pressable, StyleSheet, Image, Animated } from 'react-native';
+import { View, Text, Pressable, StyleSheet, Image, Animated, NativeTouchEvent } from 'react-native';
 import { Ref, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { setCurrentPopup } from "@context/popup";
 import * as constants from "@data/constants.json";
+import { useAppDispatch } from '@util/hooks';
 
 interface DropdownProps {
 	onSelect: (item: DropdownItem) => void,
@@ -16,20 +18,25 @@ interface DropdownItem {
 }
 
 function Dropdown({items, onSelect, horizontal, selected}: DropdownProps) {
+	const dispatch = useAppDispatch();
 	const opacityAnimation = useRef(new Animated.Value(0));
 	const scaleAnimation = useRef(new Animated.Value(0));
 	const [isOpened, setOpened] = useState(false);
 	const [isAnimationFinished, setAnimationFinished] = useState(true);
+
 	const [currentItem, setCurrentItem] = useState(items.find(item => item.value == selected) || {
 		title: "Select item",
 		value: "null"
 	});
 
-	const onPress = useCallback((item: DropdownItem) => {
+	const onPress = useCallback((item: DropdownItem, e: NativeTouchEvent) => {
 		setAnimationFinished(false);
 		onSelect(item);
 		setCurrentItem(item);
 		setOpened(false);
+
+		dispatch(setCurrentPopup());
+		//TODO: Add dropdown as a popup menu.
 	}, [onSelect]);
 
 	useEffect(() => {
@@ -71,7 +78,10 @@ function Dropdown({items, onSelect, horizontal, selected}: DropdownProps) {
 						const {title, value, unavailable } = item;
 
 						return (
-							<Pressable android_ripple={unavailable ? null : {color: "#ffffff7b"}} key={String(value)} onPress={() => onPress(item)}>
+							<Pressable android_ripple={unavailable ? null : {color: "#ffffff7b"}} 
+								key={String(value)} 
+								onPress={(e) => onPress(item, e.nativeEvent)}>
+
 								<View style={[styles.popupItem, {
 									paddingLeft: (index == 0) ? 22 : 16,
 									paddingRight: (index == array.length - 1) ? 22 : 16

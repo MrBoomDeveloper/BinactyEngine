@@ -6,6 +6,7 @@ import { useAsyncMemo, useTheme } from "@util/hooks";
 import { AppBridge } from "@native";
 import { memo, useMemo } from "react";
 import themes from "@data/themes.json";
+import CharacterPreview from "@components/native/CharacterPreview";
 
 function Character() {
 	const playerCharacter = useAsyncMemo(async () => await AppBridge.getKey("string", "playerCharacter", "{\"source\":\"INTERNAL\",\"path\":\"packs/official/src/characters/klarrie\"}"), "Loading...");
@@ -71,7 +72,11 @@ function Character() {
 						setTheme(JSON.parse(newValue));
 					}} />
 
-				<Text>DON'T CHANGE ANYTHING HERE, IF YOU DON'T KNOW WHAT IS DOES!</Text>
+				<Text>DON'T CHANGE ANYTHING HERE</Text>
+
+				<CharacterPreview src="Hello from a Native Component!" />
+
+				<Text>IF YOU DON'T KNOW WHAT IS DOES!</Text>
 			</View>
 		</View>
 	)

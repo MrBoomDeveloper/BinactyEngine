@@ -1,7 +1,6 @@
 import { Animated, Dimensions, Image, StyleSheet, Text, View } from "react-native";
 import * as constants from "@data/constants.json";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { SetScreenProps } from "App";
 import { GamemodesItem, joinMultiplayer } from "@context/gamemodes";
 import Button from "@components/Button";
 import { useAppDispatch, useAppSelector } from "@util/hooks";
@@ -12,11 +11,9 @@ import { formatPlayersCount } from "@util/format";
 import ExpandableText from "features/data/ExpandableText";
 import { FadingView } from "features/effects/FadingView";
 import Multiplayer from "./Multiplayer";
+import { useNavigation } from "@react-navigation/native";
 
-function Overview({ gamemode, setScreen }: {
-    setScreen: SetScreenProps,
-    gamemode: GamemodesItem
-}) {
+function Overview({ gamemode }: { gamemode: GamemodesItem }) {
     const { maps, description, author, name, levels, entry, maxPlayers, time } = gamemode;
 
     const animation = useRef(new Animated.Value(0)).current;
@@ -61,9 +58,7 @@ function Overview({ gamemode, setScreen }: {
             {description && <ExpandableText text={description} 
                 style={[styles.infoDescriptionLabel, { color: "#f5ecf3" }]} />}
 
-            {(maps != null || entry != null && maxPlayers > 0) && <OverviewActions 
-                gamemode={gamemode}
-                setScreen={setScreen} />}
+            {(maps != null || entry != null && maxPlayers > 0) && <OverviewActions gamemode={gamemode} />}
         </View>
     );
 
@@ -105,10 +100,8 @@ function Overview({ gamemode, setScreen }: {
     );
 }
 
-function OverviewActions({gamemode, setScreen}: {
-    gamemode: GamemodesItem,
-    setScreen: SetScreenProps
-}) {
+function OverviewActions({gamemode}: { gamemode: GamemodesItem }) {
+    const navigation = useNavigation();
     const dispatch = useAppDispatch();
 
     const isBeta: boolean = useAppSelector(state => state.settings.list)
@@ -129,7 +122,7 @@ function OverviewActions({gamemode, setScreen}: {
     const play = useCallback((isEditor: boolean) => {
         const map = gamemode.maps == null ? null : gamemode.maps[0].file;
 
-        setScreen("loading", { target: "game", args: {
+        navigation.navigate("loading", { target: "game", args: {
             ...gamemode, level,
             enableEditor: isEditor,
             mapFile: map

@@ -3,11 +3,10 @@ import { useRef, useEffect, memo } from "react";
 import * as constants from "@data/constants.json";
 import { useAppDispatch, useAppSelector } from "@util/hooks";
 import { GamemodesItem, GamemodesCategory, setActive } from "@context/gamemodes";
-import { SetScreenProps } from "App";
 import { openUrl } from "@util/redirect";
 import Overview from "./home/Overview";
 
-function Home({ setScreen }: { setScreen: SetScreenProps }) {
+function Home() {
     const currentGamemode = useAppSelector(state => state.gamemodes.current);
 	const allGamemodes = useAppSelector(state => state.gamemodes.list);
     const multiplayer = useAppSelector(state => state.gamemodes.multiplayer);
@@ -32,12 +31,12 @@ function Home({ setScreen }: { setScreen: SetScreenProps }) {
             }} style={styles.backgroundWallpaper} />
 
             {multiplayer.isInRoom 
-                ? (<Overview gamemode={currentGamemode} setScreen={setScreen} />) 
+                ? (<Overview gamemode={currentGamemode} />) 
                 : (<SectionList sections={allGamemodes}
                     ref={scrollView}
                     showsVerticalScrollIndicator={false}
                     overScrollMode="never"
-                    ListHeaderComponent={() => <Overview gamemode={currentGamemode} setScreen={setScreen} />}
+                    ListHeaderComponent={() => <Overview gamemode={currentGamemode} />}
                     ListFooterComponent={End}
                     style={styles.layout}
                     keyExtractor={item => item.id}

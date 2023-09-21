@@ -3,17 +3,12 @@ import Input from "@components/Input";
 import { size } from "@data/constants.json";
 import { PackBridge } from "@native";
 import { useAppDispatch, useAppSelector } from "@util/hooks";
-import { SetScreenProps } from "App";
 import { View, StyleSheet, Dimensions, Text, Alert, SectionList, Image, TouchableOpacity, FlatList } from "react-native";
 import * as constants from "@data/constants.json";
 import { memo, useState } from "react";
 import { Pack } from "@context/packs";
 
-interface CreativeProps {
-    setScreen: SetScreenProps
-}
-
-function Creative({setScreen}: CreativeProps) {
+function Creative() {
     const packs = useAppSelector(state => state.packs.installed);
     const dispatch = useAppDispatch();
 

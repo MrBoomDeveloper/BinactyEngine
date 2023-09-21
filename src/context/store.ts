@@ -4,6 +4,7 @@ import { settingsSlice } from "./settings";
 import { profileSlice } from "./profile";
 import { packsSlice } from "./packs";
 import { themeSlice } from "./theme";
+import { popupSlice } from "./popup";
 
 export const store = configureStore({
 	reducer: {
@@ -11,7 +12,8 @@ export const store = configureStore({
 		settings: settingsSlice.reducer,
 		profile: profileSlice.reducer,
 		packs: packsSlice.reducer,
-		theme: themeSlice.reducer
+		theme: themeSlice.reducer,
+		popup: popupSlice.reducer
 	}
 });
 
