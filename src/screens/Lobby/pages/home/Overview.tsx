@@ -14,7 +14,7 @@ import Multiplayer from "./Multiplayer";
 import { useNavigation } from "@react-navigation/native";
 
 function Overview({ gamemode }: { gamemode: GamemodesItem }) {
-    const { maps, description, author, name, levels, entry, maxPlayers, time } = gamemode;
+    const { description, author, name, levels, entry, maxPlayers, time } = gamemode;
 
     const animation = useRef(new Animated.Value(0)).current;
     const multiplayer = useAppSelector(state => state.gamemodes.multiplayer);
@@ -58,7 +58,7 @@ function Overview({ gamemode }: { gamemode: GamemodesItem }) {
             {description && <ExpandableText text={description} 
                 style={[styles.infoDescriptionLabel, { color: "#f5ecf3" }]} />}
 
-            {(maps != null || entry != null && maxPlayers > 0) && <OverviewActions gamemode={gamemode} />}
+            {(entry != null && maxPlayers > 0) && <OverviewActions gamemode={gamemode} />}
         </View>
     );
 
@@ -104,7 +104,7 @@ function OverviewActions({gamemode}: { gamemode: GamemodesItem }) {
     const navigation = useNavigation();
     const dispatch = useAppDispatch();
 
-    const isBeta: boolean = useAppSelector(state => state.settings.list)
+    const isBeta = useAppSelector(state => state.settings.list)
         .find(cat => cat.id == "features")?.data
         .find(item => item.id == "beta")?.value as boolean;
 
@@ -120,12 +120,9 @@ function OverviewActions({gamemode}: { gamemode: GamemodesItem }) {
     }, [gamemode.levels, progress]);
 
     const play = useCallback((isEditor: boolean) => {
-        const map = gamemode.maps == null ? null : gamemode.maps[0].file;
-
         navigation.navigate("loading", { target: "game", args: {
             ...gamemode, level,
-            enableEditor: isEditor,
-            mapFile: map
+            enableEditor: isEditor
         }});
     }, [gamemode, level]);
     

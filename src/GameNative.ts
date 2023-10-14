@@ -26,6 +26,7 @@ interface DebugFieldsMap {
 interface AppBridgeModule extends NativeModule {
     exit: () => void,
     restart: () => void,
+    play: (args: any) => void,
 
     getDebug: () => Promise<DebugField[]>,
     getDebugMap: () => Promise<DebugFieldsMap>,
@@ -116,5 +117,3 @@ export const {
 };
 
 export const CustomViews = requireNativeComponent("CharacterView");
-export const { GameNative } = NativeModules;
-export default GameNative;

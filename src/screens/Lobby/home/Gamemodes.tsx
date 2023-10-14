@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Text, View, FlatList, Animated, StyleSheet, TouchableOpacity, Image, SectionList, ImageSourcePropType } from "react-native";
 import { colors } from "@util/variables.json";
 import { setActive } from "@context/gamemodes";
-import { AppBridge, GameNative } from "@native";
+import { AppBridge } from "@native";
 
 function Gamemodes({swipeAnimation, setCurrentScreen}) {
 	const allGamemodes = useSelector(state => state.gamemodes.list);

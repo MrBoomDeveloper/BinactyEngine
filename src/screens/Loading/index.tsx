@@ -6,7 +6,7 @@ import { SettingsItem, setup as setupSettings } from "@context/settings";
 import { setup as setupPacks } from "@context/packs";
 import Button from "@components/Button";
 import settingsAll from "@data/settings.json";
-import { GameNative, AppBridge, PackBridge } from "@native";
+import { AppBridge, PackBridge } from "@native";
 import * as constants from "@data/constants.json";
 import { useAppDispatch, useAsyncMemo, useTheme } from "@util/hooks";
 import { FadingView } from "features/effects/FadingView";
@@ -98,19 +98,13 @@ function Loading({route: { params: { target, args } }}: NativeStackScreenProps<N
 				isGameStarted = false;
 				return;
 			}
-
-			const gameOverListener = new NativeEventEmitter(GameNative).addListener("GameOver", e => {
-				isGameStarted = false;
-				loadStuff();
-				gameOverListener.remove();
-			});
 			
 			AppBridge.stopMusic();
-			GameNative.play(args);
+			AppBridge.play(args);
 			isGameStarted = true;
 		}
 		
-		new NativeEventEmitter(GameNative).addListener("ForceExit", e => {
+		new NativeEventEmitter(AppBridge).addListener("ForceExit", e => {
 			navigation.reset({ index: 0, routes: [{
 				name: "loading", params: { target: "lobby" }
 			}]});

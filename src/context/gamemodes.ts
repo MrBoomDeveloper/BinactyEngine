@@ -1,4 +1,4 @@
-import GameNative, { AppBridge } from "@native";
+import { AppBridge } from "@native";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 export interface MultiplayerState {
@@ -23,7 +23,6 @@ export interface GamemodesItem {
 	description?: string,
 	id: string,
 	author: string,
-	maps?: any[],
 	entry?: string,
 	time?: string,
 	maxPlayers: number,
